@@ -42,30 +42,43 @@ body {
   min-height: 300px;
 }
 
-/* 내부 레이아웃 중앙 정렬 */
+/* 내부 레이아웃 (위에서부터 쌓이도록 수정) */
 .content-section {
-  display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
   height: 100%;
 }
 
-/* 타이틀 스타일 */
+/* 타이틀 스타일 (폰트 상속으로 수정됨) */
 .tt-title {
-  font-family: 'Courier New', Courier, serif; color: #3e2723; font-weight: bold;
+  font-family: inherit; /* 💡 기본 폰트(고운 돋움)를 그대로 상속받음 */
+  color: #3e2723; font-weight: bold;
   font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; 
+  word-break: keep-all;
   border-bottom: 2px solid rgba(62, 39, 35, 0.2);
   display: inline-block; padding-bottom: 5px; opacity: 0.9;
 }
 .text-sm { font-size: 16px; margin: 0;}
 .sub-title { font-size: 12px; color: #5d4037; font-weight: bold; margin-bottom: 30px;}
 
-/* 텍스트 영역 (크기 고정으로 덜컹거림 방지) */
+/* 텍스트 영역 (남은 공간을 모두 차지하고 정중앙에 배치) */
 .text-area-wrapper {
-  width: 100%; height: 250px; 
-  display: flex; align-items: center; justify-content: center;
+  width: 100%; 
+  flex: 1; /* 💡 고정 높이(height)를 지우고 남은 공간을 꽉 채우게 함 */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
 }
+
+/* 텍스트 영역 (단어 단위 줄바꿈 및 커서 수정) */
 .typing-text {
-  font-size: 1.1rem; line-height: 1.8; word-break: break-all;
+  font-size: 1.1rem; line-height: 1.8; 
+  word-break: keep-all; /* 💡 글자가 아닌 단어(어절) 단위로 줄바꿈 */
+  overflow-wrap: break-word;
   white-space: pre-wrap; width: 100%; text-align: center;
+  cursor: pointer; /* 💡 클릭할 수 있다는 것을 마우스 커서로 알려줌 */
 }
 
 /* 🚀 자체 디자인 버튼 및 인풋 */
@@ -84,13 +97,18 @@ body {
 .custom-btn:hover { background-color: #efebe9; transform: translateY(-1px); box-shadow: 0 3px 6px rgba(0,0,0,0.12); }
 .custom-btn:active { transform: translateY(0); }
 
-/* ▼ 진행 버튼 */
+/* ▼ 진행 버튼 (인라인 밀착 및 애니메이션 방향 수정) */
 .bounce-btn {
-  background: none; border: none; font-size: 1.5rem; color: #5d4037;
-  cursor: pointer; padding: 10px; margin-top: auto;
-  animation: bounce 1.5s infinite ease-in-out;
+  background: none; border: none; font-size: 1.2rem; color: #5d4037;
+  cursor: pointer; padding: 0 5px; 
+  display: inline-block; /* 💡 블록이 아니라 글자처럼 취급되어 마지막 단어 옆에 붙음 */
+  vertical-align: middle; /* 글자와 수직 중앙 정렬 */
+  animation: bounce-inline 1.5s infinite ease-in-out;
 }
-@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+@keyframes bounce-inline { 
+  0%, 100% { transform: translateY(0); } 
+  50% { transform: translateY(3px); } 
+}
 
 /* 상단 힌트, 모달 닫기 등 아이콘 버튼 */
 .header-group { width: 100%; display: flex; justify-content: space-between; align-items: center; }
@@ -110,3 +128,74 @@ body {
   opacity: 0; transition: opacity 0.3s;
 }
 #custom-modal-overlay.open { display: flex; opacity: 1; }
+
+/* 🚀 토스트 메시지 스타일 */
+.toast {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(62, 39, 35, 0.85);
+  color: #f2eee5;
+  padding: 12px 24px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 20000; /* 모달보다 위에 뜨도록 설정 */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+/* 🚀 초기화 버튼 스타일 (맨 아래, 연하게) */
+.reset-btn {
+  background: none; border: none;
+  color: #8d6e63;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  opacity: 0.5; /* 평소엔 눈에 잘 안 띄게 연하게 */
+  margin-top: 10px;
+  transition: opacity 0.2s, color 0.2s;
+}
+.reset-btn:hover {
+  opacity: 1;
+  color: #bf360c;
+}
+
+/* 🚀 힌트 말풍선 스타일 (절대 위치로 둥둥 떠 있게) */
+.hint-bubble {
+  position: absolute;
+  top: 30px; /* 버튼 바로 아래 위치 */
+  right: 0;  /* 버튼 기준 우측 정렬 */
+  width: 200px;
+  padding: 15px;
+  background-color: #fdfbf7;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 13px;
+  color: #5d4037;
+  text-align: left;
+  word-break: keep-all;
+  z-index: 100; /* 💡 다른 텍스트나 입력창보다 무조건 위에 오도록! */
+}
+
+/* 말풍선 위쪽 뾰족한 꼬리 */
+.hint-bubble::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 35px;
+  width: 10px;
+  height: 10px;
+  background-color: #fdfbf7;
+  border-top: 1px solid #d7ccc8;
+  border-left: 1px solid #d7ccc8;
+  transform: rotate(45deg);
+}

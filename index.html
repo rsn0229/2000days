@@ -23,21 +23,21 @@
         <button id="start-btn" class="custom-btn">항해 시작하기</button>
       </div>
 
-      <div id="game-section" class="content-section hidden">
-        <div class="header-group">
+<div id="game-section" class="content-section hidden">
+<div class="header-group" style="justify-content: center;">
           <h2 id="chapter-title" class="tt-title text-sm"></h2>
-          <button id="hint-btn" class="icon-btn">📝</button>
         </div>
         
         <div class="text-area-wrapper">
-          <div id="text-box" class="typing-text"></div>
+          <div id="text-wrapper" class="typing-text"><span id="text-box"></span><button id="next-text-btn" class="bounce-btn" style="display: none;">▼</button></div>
         </div>
         
-        <button id="next-text-btn" class="bounce-btn">▼</button>
+        <button id="reset-btn" class="reset-btn">[초기화]</button>
       </div>
-
     </div>
   </div>
+
+  <div id="toast-msg" class="toast">호칭을 입력해 주세요!</div>
 
   <div id="custom-modal-overlay">
     <div id="modal-paper" class="paper-container modal-size">
