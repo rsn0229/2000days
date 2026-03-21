@@ -3,7 +3,7 @@ const STORY_DATA = [
   {
     chapter: 0,
     title: "0. 프롤로그 : 파도가 실어 온 아이", // [cite: 4]
-    bgm: "assets/bgm_1_youth.mp3", // 프롤로그~유년기 테마
+    bgm: "assets/bgm1.mp3", // 프롤로그~유년기 테마
     scripts: [
       "햇볕이 내리쬐는 어느 무더운 여름날.", // [cite: 4]
       "사르디나의 해변을 나란히 거닐던 로잔나와 헬가의 귓가에 희미한 울음소리가 들려왔다.", // [cite: 5]
@@ -22,7 +22,7 @@ const STORY_DATA = [
   {
     chapter: 1,
     title: "1. 유년기 : 달콤한 기억의 조각", // [cite: 10]
-    bgm: "assets/bgm_1_youth.mp3",
+    bgm: "assets/bgm2.mp3",
     scripts: [
       "아이는 '마야'라는 이름으로 자라났다.", // [cite: 10]
       "마야는 유독 로잔나를 졸졸 따라다녔고, 로잔나는 그런 마야를 '맹랑한 애송이'라 부르며 퉁명스레 대했다.", // [cite: 10]
@@ -41,7 +41,7 @@ const STORY_DATA = [
   {
     chapter: 2,
     title: "2. 기사단 입단 : 닻을 지키는 파도", // [cite: 17]
-    bgm: "assets/bgm_1_youth.mp3",
+    bgm: "assets/bgm2.mp3",
     scripts: [
       "시간이 흘러 사관학교를 졸업한 마야.", // [cite: 17]
       "쉼 없는 노력 끝에 마야는 발터의 추천을 받아 파도 기사단에 정식으로 입단하게 되었다.", // [cite: 18]
@@ -59,7 +59,7 @@ const STORY_DATA = [
   {
     chapter: 3,
     title: "3. 장마철의 악몽 : 비워진 서류", // [cite: 24]
-    bgm: "assets/bgm_2_daily.mp3", // 일상 테마 시작
+    bgm: "assets/bgm3.mp3", // 일상 테마 시작
     scripts: [
       "그러나 찬란한 날만 계속된 건 아니었다.", // [cite: 24]
       "장마철이 찾아오면 마야는 이유 모를 깊은 악몽에 시달리며 힘든 밤을 보내야 했다.", // [cite: 25]
@@ -76,7 +76,7 @@ const STORY_DATA = [
   },
   {
     chapter: 4,
-    title: "4. 보좌관의 일상 : 스며드는 시간", // [cite: 30]
+    title: "bgm4", // [cite: 30]
     bgm: "assets/bgm_2_daily.mp3",
     scripts: [
       "시간이 흐르며 마야는 로잔나의 보좌관으로서 집무실에 자리를 잡았다.", // [cite: 30]
@@ -94,7 +94,7 @@ const STORY_DATA = [
   {
     chapter: 5,
     title: "5. 한밤중의 고백 : 넘실대는 진심", // [cite: 35]
-    bgm: "assets/bgm_3_romance.mp3", // 로맨스 테마 시작
+    bgm: "assets/bgm4.mp3", // 로맨스 테마 시작
     scripts: [
       "어릴 적부터 품어왔던 동경은 어느새 짙은 사랑으로 자라났다.", // [cite: 35]
       "그러나 마야는 감히 제 마음을 내비치지 못한 채 애를 태웠다.", // [cite: 36]
@@ -114,7 +114,7 @@ const STORY_DATA = [
   {
     chapter: 6,
     title: "6. 첫 데이트 : 바다 위의 입맞춤", // [cite: 42]
-    bgm: "assets/bgm_3_romance.mp3",
+    bgm: "assets/bgm4.mp3",
     scripts: [
       "두 사람의 첫 데이트 장소는 사르디나의 앞바다였다.", // [cite: 42]
       "작은 조각배 위에서 샌드위치를 나눠 먹고, 하늘을 붉게 물들이는 노을을 가만히 지켜보는 둘.", // [cite: 43]
@@ -132,7 +132,7 @@ const STORY_DATA = [
   {
     chapter: 7,
     title: "7. 단골 바의 밤 : 취중 진담", // [cite: 48]
-    bgm: "assets/bgm_3_romance.mp3",
+    bgm: "assets/bgm5.mp3",
     scripts: [
       "하루 일과를 마친 뒤 로잔나의 단골 바에 나란히 앉아 술을 기울이는 밤.", // [cite: 48]
       "독한 럼을 즐기는 로잔나 옆에서, 달콤한 칵테일을 홀짝이는 마야.", // [cite: 49]
@@ -150,7 +150,7 @@ const STORY_DATA = [
   {
     chapter: 8,
     title: "8. 메디치 저택 : 함께하는 삶", // [cite: 54]
-    bgm: "assets/bgm_4_night.mp3", // 깊은 밤 테마 시작
+    bgm: "assets/bgm5", // 깊은 밤 테마 시작
     scripts: [
       "로잔나의 끝없는 설득 끝에 메디치 저택에서 동거를 시작하게 된 마야.", // [cite: 54]
       "귀가가 늦어지는 날이면 마야는 늦은 밤까지 꾸벅꾸벅 졸면서도 그녀를 기다리곤 했다.", // [cite: 55]
@@ -167,7 +167,7 @@ const STORY_DATA = [
   {
     chapter: 9,
     title: "9. 축제의 밤 : 불꽃놀이", // [cite: 59]
-    bgm: "assets/bgm_4_night.mp3",
+    bgm: "assets/bgm6.mp3",
     scripts: [
       "사르디나의 여름 축제 날.", // [cite: 59]
       "시끌벅적한 인파를 피해 두 사람은 한적한 공원 뒤편으로 걸음을 옮겼다.", // [cite: 59]
@@ -184,7 +184,7 @@ const STORY_DATA = [
   {
     chapter: 10,
     title: "10. 청혼 : 영원을 약속하며", // [cite: 65]
-    bgm: "assets/bgm_4_night.mp3",
+    bgm: "assets/bgm6.mp3",
     scripts: [
       "가장 화려하고 커다란 불꽃이 밤하늘을 수놓던 그 순간.", // [cite: 65]
       "불꽃놀이를 핑계 삼아 마야를 바라보던 로잔나가 숨을 삼키며 입을 열었다.", // [cite: 66]
@@ -202,7 +202,7 @@ const STORY_DATA = [
   {
     chapter: 11,
     title: "11. 반지: 사파이어와 다이아몬드", // [cite: 72]
-    bgm: "assets/bgm_5_wedding.mp3", // 웨딩 테마 시작
+    bgm: "assets/bgm6.mp3", // 웨딩 테마 시작
     scripts: [
       "부드럽게 열린 상자 속에는 영롱한 반지가 담겨 있었다.", // [cite: 72]
       "로잔나가 사르디나 최고의 장인에게 특별히 의뢰한 것이었다.", // [cite: 72]
@@ -219,7 +219,7 @@ const STORY_DATA = [
   {
     chapter: 12,
     title: "12. 최종장: 바다 앞의 서약", // [cite: 76]
-    bgm: "assets/bgm_5_wedding.mp3",
+    bgm: "assets/bgm6.mp3",
     scripts: [
       "마침내 다가온 결혼식 날.", // [cite: 76]
       "두 사람은 탁 트인 바다가 한눈에 담기는 아름다운 식장에 나란히 섰다.", // [cite: 76]
