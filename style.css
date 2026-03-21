@@ -199,3 +199,42 @@ body {
   border-left: 1px solid #d7ccc8;
   transform: rotate(45deg);
 }
+
+/* 🚀 0장: 숫자 다이얼 자물쇠 기믹 UI */
+.dial-lock-container {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.dial-digit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fdfbf7;
+  border: 2px solid #a1887f; /* 황동색 테두리 느낌 */
+  border-radius: 6px;
+  padding: 5px;
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dial-btn {
+  background: none; border: none;
+  font-size: 14px; color: #8d6e63;
+  cursor: pointer; padding: 5px;
+  transition: transform 0.1s, color 0.2s;
+}
+.dial-btn:hover { color: #bf360c; transform: scale(1.2); }
+.dial-btn:active { transform: scale(0.9); }
+
+.dial-value {
+  font-size: 26px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace; /* 타자기/기계 장치 폰트 느낌 */
+  color: #3e2723;
+  margin: 5px 0;
+  width: 35px;
+  text-align: center;
+  user-select: none; /* 드래그 방지 */
+}

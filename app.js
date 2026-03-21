@@ -142,59 +142,56 @@ function showScript() {
 // 💡 텍스트 본문이나 ▼ 버튼 중 아무 곳이나 클릭해도 showScript 실행
 DOM.textWrapper.addEventListener('click', showScript);
 
-// 4. 퍼즐 렌더링 (커스텀 모달 사용)
+// 4. 퍼즐 렌더링 (puzzles.js의 핸들러를 호출)
 function renderPuzzle() {
   const chapterData = STORY_DATA[currentChapterIdx];
   const puzzle = chapterData.puzzle;
   
+  // 💡 puzzles.js에서 해당 타입의 핸들러를 가져옴
+  const handler = PuzzleHandlers[puzzle.type];
+  
+  if (!handler) {
+    console.error(`${puzzle.type} 핸들러가 없습니다.`);
+    return;
+  }
+
+  // 퍼즐 성공 시 실행될 공통 콜백 함수
+  const onComplete = () => {
+    showModal("<p>자물쇠가 열렸습니다.</p><button id='continue-btn' class='custom-btn'>다음으로</button>", false);
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      hideModal();
+      currentScriptIdx++;
+      showScript();
+    });
+  };
+
+  // 핸들러로부터 UI와 초기화 함수를 받아옴
+  const { ui, init } = handler(puzzle, onComplete);
+
   const html = `
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
       <h3 class="tt-title" style="margin: 0;">잠긴 자물쇠</h3>
-      
       <div style="position: relative;">
         <button id="modal-hint-btn" style="background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[업무 수첩]</button>
-        
         <div id="hint-text" class="hidden hint-bubble">
           <strong>업무 수첩:</strong><br><span style="margin-top:5px; display:inline-block;">${chapterData.hint}</span>
         </div>
       </div>
     </div>
-    
     <p style="font-size: 14px; margin-bottom: 20px;">${puzzle.question.replace(/\n/g, '<br>')}</p>
-    <input type="text" id="puzzle-answer" class="custom-input" placeholder="정답 입력">
-    <br>
+    <div id="puzzle-body">${ui}</div> <br>
     <button id="submit-puzzle" class="custom-btn">풀기</button>
   `;
   
-  // 🔒 두 번째 인자를 false로 주어 X(닫기) 버튼을 강제로 숨김
   showModal(html, false);
   
-// 💡 [업무 수첩] 클릭 시 힌트 열기/닫기 (토글)
+  // 💡 puzzles.js에서 정의한 이벤트 바인딩 실행
+  init();
+
+  // 힌트 토글 이벤트는 공통이므로 app.js에서 관리
   document.getElementById('modal-hint-btn').addEventListener('click', (e) => {
-    e.stopPropagation(); // 💡 이벤트 전파를 막아 아래의 '바깥 클릭'이 즉시 발동하지 않게 함
-    const hintEl = document.getElementById('hint-text');
-    hintEl.classList.toggle('hidden');
-  });
-
-  document.getElementById('submit-puzzle').addEventListener('click', () => {
-    if(document.getElementById('puzzle-answer').value === puzzle.answer) {
-      
-      // 정답 맞춘 후 알림
-      showModal("<p>자물쇠가 열렸습니다.</p><button id='continue-btn' class='custom-btn'>다음으로</button>", false);
-      
-      document.getElementById('continue-btn').addEventListener('click', () => {
-        hideModal(); // 모달 완전히 닫기
-        currentScriptIdx++; // "[PUZZLE]" 텍스트 인덱스를 뛰어넘음
-        showScript(); // 남은 스크립트를 마저 진행!
-      });
-
-    } else {
-      // 오답 시 알림
-      showModal("<p>다시 시도해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-      document.getElementById('retry-btn').addEventListener('click', () => {
-        renderPuzzle(); // 퍼즐 다시 렌더링 (다시 풀기)
-      });
-    }
+    e.stopPropagation(); 
+    document.getElementById('hint-text').classList.toggle('hidden');
   });
 }
 
