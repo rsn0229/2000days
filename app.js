@@ -157,7 +157,7 @@ function renderPuzzle() {
 
   // 퍼즐 성공 시 실행될 공통 콜백 함수
   const onComplete = () => {
-    showModal("<p>자물쇠가 열렸습니다.</p><button id='continue-btn' class='custom-btn'>다음으로</button>", false);
+    showModal("<p>퍼즐을 풀었습니다.</p><button id='continue-btn' class='custom-btn'>다음으로</button>", false);
     document.getElementById('continue-btn').addEventListener('click', () => {
       hideModal();
       currentScriptIdx++;
@@ -178,7 +178,7 @@ function renderPuzzle() {
         </div>
       </div>
     </div>
-    <p style="font-size: 14px; margin-bottom: 20px;">${puzzle.question.replace(/\n/g, '<br>')}</p>
+    <div class="clue-box">${puzzle.question.replace(/\n/g, '<br>')}</div>
     <div id="puzzle-body">${ui}</div> <br>
     <button id="submit-puzzle" class="custom-btn">풀기</button>
   `;

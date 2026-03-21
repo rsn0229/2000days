@@ -1,8 +1,8 @@
-/* 기본 초기화 */
 body {
   margin: 0; padding: 0;
   background-color: #3b2f2f;
-  font-family: 'Gowun Dodum', sans-serif;
+  /* 💡 고운 돋움 폰트 뒤에 이모지 폰트를 예비용으로 달아줍니다. */
+  font-family: 'Gowun Dodum', 'Noto Color Emoji', sans-serif;
   color: #3e2723;
   overflow: hidden; /* 스크롤 방지 */
   display: flex; align-items: center; justify-content: center;
@@ -200,6 +200,20 @@ body {
   transform: rotate(45deg);
 }
 
+/* 🚀 퍼즐 단서(자료) 박스 스타일 */
+.clue-box {
+  background-color: #ffffff; /* 완전한 흰색 배경 */
+  padding: 15px;
+  border-radius: 6px; /* 살짝 둥근 모서리 */
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: #3e2723;
+  line-height: 1.6;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* 아웃라인 없이 아주 연한 그림자만 */
+  word-break: keep-all;
+}
+
 /* 🚀 0장: 숫자 다이얼 자물쇠 기믹 UI */
 .dial-lock-container {
   display: flex;
@@ -237,4 +251,696 @@ body {
   width: 35px;
   text-align: center;
   user-select: none; /* 드래그 방지 */
+}
+
+/* 🚀 1장: 기호 맞추기 자물쇠 (Symbol Lock) UI */
+.symbol-lock-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.symbol-btn {
+  width: 55px; 
+  height: 55px; 
+  font-size: 28px; /* 이모지 크기 */
+  font-family: 'Noto Color Emoji', sans-serif; /* 💡 기호 다이얼은 무조건 이 폰트를 쓰도록 강제! */
+  background: #fdfbf7; 
+  border: 2px solid #a1887f; 
+  border-radius: 8px;
+  cursor: pointer; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05), 0 3px 6px rgba(0,0,0,0.1);
+  transition: transform 0.1s, background-color 0.2s;
+  user-select: none;
+}
+
+.symbol-btn:hover { 
+  background-color: #efebe9; 
+  transform: translateY(-2px); 
+}
+.symbol-btn:active { 
+  transform: translateY(2px); 
+}
+
+/* 2장: 기사단 인장 슬롯 퍼즐 UI */
+.icon-slot-container {
+  display: flex; 
+  justify-content: center; 
+  gap: 15px; 
+  margin: 15px 0 25px 0;
+}
+
+.icon-slot {
+  width: 50px; 
+  height: 50px;
+  border: 2px dashed #a1887f;
+  border-radius: 8px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 26px; 
+  font-family: 'Noto Color Emoji', sans-serif;
+  background-color: rgba(161, 136, 127, 0.1);
+  cursor: pointer; 
+  transition: all 0.2s;
+}
+
+.icon-slot.filled {
+  border: 2px solid #8d6e63;
+  background-color: #fdfbf7;
+}
+
+/* 선택되었을 때의 테두리와 배경색 강조 */
+.icon-slot.selected {
+  border-color: #bf360c;
+  background-color: #fbe9e7;
+}
+
+.icon-pool {
+  display: flex; 
+  justify-content: center; 
+  gap: 12px; 
+  flex-wrap: wrap;
+  min-height: 50px; /* 조각이 사라져도 컨테이너 높이를 유지하여 덜컹거림 방지 */
+  margin-bottom: 20px;
+}
+
+.pool-icon {
+  width: 45px; 
+  height: 45px;
+  border: 1px solid #d7ccc8; 
+  border-radius: 50%;
+  background-color: #fffaf0;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  font-size: 24px; 
+  font-family: 'Noto Color Emoji', sans-serif;
+  cursor: pointer; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.1s;
+  user-select: none;
+}
+
+.pool-icon:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+.pool-icon:active { transform: translateY(0); }
+/* 💡 2장: 조각이 보드에 올라가면 투명해지되 공간은 유지! */
+.pool-icon.invisible { visibility: hidden; pointer-events: none; }
+
+/* 선택되었을 때 살짝 떠오르며 강조 */
+.pool-icon.selected {
+  border-color: #bf360c;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(191,54,12,0.3);
+}
+
+/* 🚀 3장: 찢어진 서류 (3x3 직소 퍼즐) UI */
+.jigsaw-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+/* 3x3 빈 격자판 */
+.jigsaw-board {
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  grid-template-rows: repeat(3, 50px);
+  gap: 2px;
+  background-color: #d7ccc8; /* 격자 선 색상 역할 */
+  border: 2px solid #a1887f;
+  padding: 2px;
+}
+
+.jigsaw-slot {
+  width: 50px;
+  height: 50px;
+  background-color: rgba(242, 238, 229, 0.5); /* 빈 칸은 반투명 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* 하단 흩어진 조각 풀 */
+.jigsaw-pool {
+  display: grid;
+  grid-template-columns: repeat(5, 40px); /* 5칸씩 2줄 배치 */
+  gap: 8px;
+  min-height: 90px;
+  justify-content: center;
+}
+
+.jigsaw-piece {
+  width: 100%;
+  height: 40px;
+  background-color: #fdfbf7;
+  border: 1px solid #a1887f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #5d4037;
+  cursor: pointer;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.1);
+  user-select: none;
+}
+
+/* 조각이 보드에 올라갔을 때 크기 맞춤 */
+.jigsaw-slot .jigsaw-piece {
+  width: 100%;
+  height: 100%;
+  box-shadow: none;
+  border: none;
+}
+
+/* 💡 3장: 조각이 보드에 올라가면 투명해지되 공간은 유지! */
+.jigsaw-piece.invisible { visibility: hidden; pointer-events: none; }
+
+/* 선택 강조 스타일 */
+.jigsaw-slot.selected { box-shadow: inset 0 0 0 2px #bf360c; }
+.jigsaw-piece.selected { 
+  border-color: #bf360c; 
+  background-color: #fbe9e7;
+  transform: translateY(-2px);
+}
+
+/* 🚀 4장: 영문 크로스워드(십자말풀이) UI */
+.crossword-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.crossword-board {
+  display: grid;
+  grid-template-columns: repeat(6, 40px); /* 6칸 */
+  grid-template-rows: repeat(5, 40px);    /* 5줄 */
+  gap: 0;
+  border: 2px solid #3e2723;
+  background-color: #3e2723; /* 격자 테두리 색상 */
+  padding: 2px;
+}
+
+.cw-cell-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: #ffffff;
+}
+
+.cw-empty {
+  background-color: transparent; /* 글자가 안 들어가는 빈 공간 */
+}
+
+.cw-input {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #d7ccc8;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  color: #3e2723;
+  background: transparent;
+  text-transform: uppercase; /* 소문자를 입력해도 대문자로 변환 */
+  outline: none;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.cw-input:focus {
+  background-color: #fbe9e7; /* 입력 중인 칸 강조 */
+}
+
+/* 십자말풀이 번호 */
+.cw-number {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 10px;
+  color: #8d6e63;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* 💡 정답 L,O,V,E가 모일 동그라미 표시 */
+.cw-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  border: 2px solid #bf360c;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* 💡 미리 채워진 힌트 칸 스타일 */
+.cw-input.prefilled {
+  background-color: rgba(141, 110, 99, 0.15); /* 살짝 어두운 배경 */
+  color: #8d6e63; /* 연한 갈색 글자 */
+  pointer-events: none; /* 클릭 불가 */
+}
+
+/* 정답 입력용 하단 LOVE 슬롯 */
+.love-result-box {
+  margin-top: 25px;
+  display: flex;
+  gap: 12px;
+}
+
+/* 💡 글씨를 띄워주던 div에서 -> 직접 입력하는 input으로 변경! */
+.love-input {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-bottom: 2px dashed #a1887f;
+  background: transparent;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #bf360c;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  outline: none;
+}
+
+.love-input:focus {
+  border-bottom: 2px solid #bf360c;
+  background-color: #fbe9e7;
+}
+
+/* 🚀 5장: 촛불 스위치 (빛과 그림자) UI */
+.shadow-wall {
+  width: 100%;
+  height: 100px;
+  border: 1px solid rgba(161, 136, 127, 0.3);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 45px;
+  font-family: 'Noto Color Emoji', sans-serif;
+  
+  /* 💡 검정 덮개를 씌우기 위한 설정 */
+  position: relative; 
+  overflow: hidden; 
+  background-color: #fdfbf7; /* 불이 다 켜졌을 때의 기본 벽 색상 */
+  
+  transition: all 0.5s ease-in-out; 
+}
+
+/* 💡 모든 촛불이 켜졌을 때의 하트 연출 */
+.shadow-wall.heart-mode {
+  background-color: rgba(191, 54, 12, 0.08);
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(191, 54, 12, 0.2);
+}
+
+.candle-container {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.candle-btn {
+  width: 45px;
+  height: 60px;
+  background-color: transparent;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-size: 30px;
+  outline: none;
+}
+
+/* 꺼져있는 기본 불꽃 (투명하게 숨김) */
+.candle-flame {
+  position: absolute;
+  top: -15px;
+  font-size: 24px;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+/* 불이 켜졌을 때 일렁이는 애니메이션 */
+.candle-btn.lit .candle-flame {
+  opacity: 1;
+  animation: flicker 0.8s infinite alternate;
+}
+
+@keyframes flicker {
+  0% { transform: scale(0.9) rotate(-2deg); opacity: 0.9; }
+  100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+}
+
+/* 🚀 6장: 나침반 돌리기 UI */
+.compass-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.compass-wrapper {
+  position: relative;
+  width: 130px; 
+  height: 130px;
+  border: 4px solid #a1887f; /* 황동색 테두리 */
+  border-radius: 50%;
+  background: #fdfbf7;
+  margin: 10px auto 20px auto;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* 동서남북 글자 */
+.compass-mark {
+  position: absolute;
+  font-weight: bold; 
+  color: #8d6e63; 
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+}
+.mark-n { top: 6px; left: 50%; transform: translateX(-50%); color: #bf360c; } /* 북쪽은 붉은색 */
+.mark-s { bottom: 6px; left: 50%; transform: translateX(-50%); }
+.mark-e { top: 50%; right: 8px; transform: translateY(-50%); }
+.mark-w { top: 50%; left: 8px; transform: translateY(-50%); }
+
+/* 나침반 바늘 (위는 빨강, 아래는 짙은 갈색) */
+.compass-needle {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 10px; height: 100px;
+  margin-top: -50px; margin-left: -5px;
+  background: linear-gradient(to bottom, #bf360c 50%, #3e2723 50%);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* 마름모 형태 */
+  
+  /* 💡 바늘이 돌아갈 때 팅~ 하고 튕기는 탄력 있는 애니메이션 */
+  transition: transform 0.4s cubic-bezier(0.4, 2.5, 0.4, 0.8); 
+  transform: rotate(0deg); /* 초기 북쪽(N) */
+  z-index: 2;
+}
+
+/* 나침반 중앙의 핀 */
+.compass-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 14px; height: 14px;
+  background: #fdfbf7;
+  border: 3px solid #8d6e63;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+/* 좌우 회전 버튼 */
+.compass-btn-group {
+  display: flex; 
+  justify-content: center; 
+  gap: 30px;
+}
+
+.compass-btn {
+  background: #fdfbf7; 
+  border: 2px solid #d7ccc8; 
+  border-radius: 50%;
+  width: 45px; height: 45px; 
+  font-size: 20px; 
+  font-weight: bold;
+  cursor: pointer; 
+  color: #5d4037;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.1s;
+}
+.compass-btn:active { 
+  background: #efebe9; 
+  transform: scale(0.9); 
+}
+
+/* 🚀 7장: 칵테일 제조기 UI */
+.cocktail-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 바텐더의 레시피 쪽지 */
+.recipe-note {
+  background: #fff9c4;
+  border: 1px solid #d7ccc8;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #3e2723;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+}
+.recipe-note ul {
+  margin: 5px 0 0 0; 
+  padding-left: 20px;
+}
+
+/* 주문 현황판 */
+.order-board {
+  font-weight: bold;
+  color: #bf360c;
+  font-size: 14px;
+  margin-bottom: 15px;
+  text-align: center;
+  background: rgba(191, 54, 12, 0.05);
+  padding: 5px 15px;
+  border-radius: 15px;
+}
+
+/* 투명한 칵테일 유리잔 */
+.glass-station {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 90px;
+  margin-bottom: 15px;
+}
+.cocktail-glass {
+  width: 50px;
+  height: 70px;
+  border: 3px solid #a1887f;
+  border-top: none; /* 위는 뚫려있음 */
+  border-radius: 0 0 10px 10px;
+  background: rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column-reverse; /* 💡 액체가 바닥에서부터 차오르도록! */
+  overflow: hidden;
+  box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
+}
+
+/* 잔에 채워지는 액체 (한 방울당 20px씩) */
+.liquid-drop {
+  width: 100%;
+  height: 20px;
+  transition: height 0.2s, background-color 0.3s;
+}
+.drop-base { background-color: rgba(236, 239, 241, 0.9); } /* 베이스: 반투명 흰색 */
+.drop-syrup { background-color: rgba(233, 30, 99, 0.6); } /* 시럽: 핑크/레드계열 */
+.drop-soda { background-color: rgba(3, 169, 244, 0.5); }  /* 탄산: 청량한 블루 */
+
+/* 3개의 재료 병 버튼 */
+.bottle-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.bottle-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  background: #fdfbf7;
+  border: 1px solid #a1887f;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #5d4037;
+  font-family: inherit;
+  font-weight: bold;
+  transition: all 0.1s;
+}
+.bottle-btn:active {
+  transform: scale(0.95);
+  background: #efebe9;
+}
+
+/* 🚀 8장: 시계 태엽 맞추기 UI */
+.clock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 배경의 괘종시계 느낌을 주는 박스 */
+.grandfather-clock {
+  font-size: 14px;
+  color: #3e2723;
+  margin-bottom: 20px;
+  background: #d7ccc8;
+  padding: 10px 25px;
+  border-radius: 8px;
+  border: 2px solid #a1887f;
+  text-align: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+.gf-time {
+  font-size: 24px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  color: #bf360c;
+  display: block;
+  margin-top: 5px;
+}
+
+/* 마야의 아날로그 손목시계 */
+.watch-face {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border: 6px solid #a1887f; /* 금속 테두리 */
+  border-radius: 50%;
+  background: #fdfbf7;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.05), 0 4px 8px rgba(0,0,0,0.1);
+  margin-bottom: 10px;
+}
+
+.watch-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 10px; height: 10px;
+  background: #3e2723;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
+
+/* 시침과 분침 */
+.hand-hour {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 6px; height: 35px;
+  background: #5d4037;
+  transform-origin: bottom center;
+  margin-left: -3px; margin-top: -35px;
+  z-index: 2;
+  border-radius: 3px;
+  transition: transform 0.1s;
+}
+
+.hand-minute {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 4px; height: 50px;
+  background: #bf360c; /* 분침은 붉은색 포인트 */
+  transform-origin: bottom center;
+  margin-left: -2px; margin-top: -50px;
+  z-index: 3;
+  border-radius: 2px;
+  transition: transform 0.1s;
+}
+
+/* 시계 숫자 마킹 */
+.watch-mark { position: absolute; font-size: 13px; font-weight: bold; color: #8d6e63; font-family: 'Courier New', monospace; }
+.mark-12 { top: 4px; left: 50%; transform: translateX(-50%); }
+.mark-3 { top: 50%; right: 6px; transform: translateY(-50%); }
+.mark-6 { bottom: 4px; left: 50%; transform: translateX(-50%); }
+.mark-9 { top: 50%; left: 6px; transform: translateY(-50%); }
+
+/* 💡 시침/분침 슬라이더 그룹 */
+.slider-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.slider-label {
+  width: 40px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #8d6e63;
+  text-align: left;
+}
+.time-slider {
+  flex-grow: 1;
+  accent-color: #8d6e63;
+  cursor: pointer;
+}
+
+.digital-time {
+  font-family: 'Courier New', monospace;
+  color: #5d4037;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+/* 9장: 별자리 회전하기 (불꽃놀이) UI */
+.night-sky-box {
+  background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77); /* 깊은 밤하늘 그라데이션 */
+  border-radius: 8px;
+  padding: 30px 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.constellation-wrapper {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.constellation-item {
+  width: 65px;
+  height: 65px;
+  cursor: pointer;
+  /* 통통 튀면서 돌아가는 애니메이션 */
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 50%;
+  padding: 5px;
+}
+
+/* 터치했을 때 살짝 빛나는 효과 */
+.constellation-item:active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* 펑! 터지는 폭죽 애니메이션 */
+.firework-emoji {
+  position: absolute;
+  font-size: 40px;
+  pointer-events: none;
+  opacity: 0;
+  animation: firework-pop 1s ease-out forwards;
+  z-index: 10;
+}
+
+@keyframes firework-pop {
+  0% { transform: scale(0.2) translateY(30px); opacity: 1; }
+  50% { transform: scale(1.5) translateY(-10px); opacity: 1; }
+  100% { transform: scale(2) translateY(-20px); opacity: 0; }
 }
