@@ -429,18 +429,22 @@ const init = () => {
     // 💡 1, 2, 3, 5번을 눌러야 풀리는 까다로운 시작 조합 유지
     let candles = [true, false, true, true, false]; 
 
-    // [puzzles.js 내 switch_light 핸들러 수정]
+// puzzles.js 내 switch_light 핸들러의 ui 부분 수정
     const ui = `
       <div class="shadow-wall shadow-blackout" id="shadow-wall">
-        <div class="shadow-silhouette">♥️</div>
+        <div class="shadow-silhouette">
+          <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Red%20heart/3D/red_heart_3d.png" alt="heart" style="width: 50px; height: 50px; object-fit: contain;" onerror="this.outerHTML='♥️'">
+        </div>
         <div id="dark-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.5s ease-in-out; z-index: 2;"></div>
       </div>
       <div style="font-size: 12px; color: #8d6e63; margin-bottom: 15px;">촛불을 하나 켜면 주변의 불꽃도 함께 흔들립니다</div>
       <div class="candle-container">
         ${[0, 1, 2, 3, 4].map(i => `
           <button class="candle-btn" data-idx="${i}">
-            <div class="candle-flame">🔥</div>
-            🕯️
+            <div class="candle-flame" style="top: -22px;">
+              <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Fire/3D/fire_3d.png" alt="fire" style="width: 28px; height: 28px; object-fit: contain;" onerror="this.outerHTML='🔥'">
+            </div>
+            <img src="https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/Candle/3D/candle_3d.png" alt="candle" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.outerHTML='🕯️'">
           </button>
         `).join('')}
       </div>

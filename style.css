@@ -1,3 +1,21 @@
+/* 💡 전체 텍스트 선택(드래그) 및 모바일 터치 파란색 하이라이트 방지 */
+* {
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+  -webkit-tap-highlight-color: transparent; /* 모바일 터치 시 깜빡이는 음영 제거 */
+  -webkit-touch-callout: none; /* 아이폰(iOS) 길게 누르기 메뉴 방지 */
+}
+
+/* 💡 단, 입력창(닉네임, 퍼즐 등)은 타이핑과 커서 이동이 가능해야 하므로 예외 처리! */
+input {
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  -ms-user-select: auto;
+  user-select: auto;
+}
+
 body {
   margin: 0; padding: 0;
   background-color: #3b2f2f;
@@ -1612,4 +1630,27 @@ body {
     padding: 6px 2px;
     font-size: 10px; /* 버튼 글씨 축소 */
   }
+}
+
+/* 💡 챕터 전환 타이틀 화면 중앙 정렬 및 페이드 효과 */
+.chapter-transition {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  pointer-events: none; /* 클릭 방해 금지 */
+}
+
+/* JS에서 .show 클래스를 붙이면 화면에 서서히 나타남 */
+.chapter-transition.show {
+  opacity: 1;
+}
+
+/* 기존 UI도 서서히 나타나도록 트랜지션 추가 */
+.header-group, .text-area-wrapper {
+  transition: opacity 1s ease-in-out;
 }

@@ -1,3 +1,40 @@
+// 💡 [보안] 클라이언트 소스 보호 스크립트
+(function() {
+  // 1. 우클릭 방지 (컨텍스트 메뉴 차단)
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
+
+  // 2. 이미지 및 텍스트 드래그 방지
+  document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+  });
+
+  // 3. 개발자 도구 단축키 방지
+  document.addEventListener('keydown', function(e) {
+    // F12 차단
+    if (e.key === 'F12' || e.keyCode === 123) {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+I 또는 Cmd+Option+I (개발자 도구)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+J 또는 Cmd+Option+J (콘솔)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+      e.preventDefault();
+    }
+    // Ctrl+U 또는 Cmd+U (페이지 소스 보기)
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u')) {
+      e.preventDefault();
+    }
+    // Ctrl+Shift+C 또는 Cmd+Option+C (요소 검사)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+      e.preventDefault();
+    }
+  });
+})();
+
 // 상태 변수
 let currentChapterIdx = parseInt(localStorage.getItem("chapter")) || 0;
 let currentScriptIdx = 0;
@@ -59,13 +96,23 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// 💡 커스텀 모달 제어 함수
+// 💡 커스텀 모달 제어 함수 (오답 메시지 중앙 정렬 자동화!)
 function showModal(htmlContent, showCloseBtn = true) {
+  
+  // 💡 마법의 로직: 만약 들어온 내용이 '<p>' 태그로 시작하는 단순 메시지(오답, 종료 안내 등)라면?
+  // 텍스트와 버튼을 화면 정중앙으로 예쁘게 밀어주는 투명한 박스를 자동으로 씌워줍니다!
+  if (htmlContent.trim().startsWith('<p>')) {
+    htmlContent = `
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 220px; text-align: center;">
+        ${htmlContent}
+      </div>
+    `;
+  }
+
   DOM.modalContent.innerHTML = htmlContent;
   DOM.modalCloseBtn.style.display = showCloseBtn ? 'block' : 'none';
   DOM.modalOverlay.classList.add('open');
 }
-
 function hideModal() {
   DOM.modalOverlay.classList.remove('open');
 }
@@ -157,7 +204,7 @@ if (userNickname !== "") {
   });
 }
 
-// 2. 챕터 로드
+// 2. 챕터 로드 (💡 중앙 타이틀 연출 추가)
 function loadChapter(idx) {
   const chapterData = STORY_DATA[idx];
   if(!chapterData) {
@@ -166,12 +213,44 @@ function loadChapter(idx) {
   }
   
   currentScriptIdx = 0;
-
-  // BGM 재생 로직 (페이드 효과 적용)
-  changeBGM(chapterData.bgm);
+  changeBGM(chapterData.bgm); // 안전한 BGM 교체
   
-  document.getElementById('chapter-title').innerText = chapterData.title;
-  showScript();
+  // 💡 연출을 위한 요소들 가져오기
+  const headerGroup = document.querySelector('.header-group');
+  const textWrapper = document.getElementById('text-wrapper');
+  const transitionBox = document.getElementById('chapter-transition');
+  const transitionTitle = document.getElementById('transition-title');
+
+  // 1. 기존 상단 제목과 텍스트 영역을 투명하게 숨기고 클릭 방지
+  headerGroup.style.opacity = '0';
+  textWrapper.style.opacity = '0';
+  textWrapper.style.pointerEvents = 'none';
+
+  // 2. 중앙 타이틀 텍스트 설정 및 나타나기 준비
+  transitionTitle.innerText = chapterData.title;
+  transitionBox.classList.remove('hidden');
+
+  // 3. 브라우저가 인식할 아주 짧은 시간을 준 뒤 페이드 인!
+  setTimeout(() => {
+    transitionBox.classList.add('show');
+  }, 50);
+
+  // 4. 중앙 타이틀을 2초 동안 보여준 후 다시 페이드 아웃
+  setTimeout(() => {
+    transitionBox.classList.remove('show');
+
+    // 5. 1초 뒤(중앙 타이틀이 완전히 사라지면), 상단 제목과 본편을 띄우고 텍스트 타이핑 시작!
+    setTimeout(() => {
+      transitionBox.classList.add('hidden');
+      document.getElementById('chapter-title').innerText = chapterData.title;
+      
+      headerGroup.style.opacity = '1';
+      textWrapper.style.opacity = '1';
+      textWrapper.style.pointerEvents = 'auto'; // 클릭 다시 허용
+      
+      showScript();
+    }, 1000); 
+  }, 2000); // 2초 대기
 }
 
 // 3. 텍스트 타이핑 효과 및 흐름 제어
@@ -367,25 +446,29 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   });
 });
 
-// 💡 [수정] 엔딩 크레딧의 '처음으로 돌아가기' 버튼 전용 리스너
+// 💡 [수정] 엔딩 크레딧의 '처음으로 돌아가기' 버튼 전용 리스너 (페이드 아웃 적용)
 document.addEventListener('click', (e) => {
   if (e.target && e.target.id === 'restart-btn') {
-    // 1. 저장된 데이터 삭제
-    localStorage.removeItem("chapter");
-    localStorage.removeItem("nickname");
-    
-    // 2. 페이지 새로고침하여 초기 화면(이름 입력)으로 이동
-    location.reload(); 
+    // 1. 버튼 연타 방지 및 텍스트 변경
+    e.target.disabled = true;
+    e.target.innerText = "항해 일지를 덮는 중...";
+
+    // 2. 진행 중인 음악 페이드 효과가 있다면 중지
+    if (fadeInterval) clearInterval(fadeInterval);
+
+    // 3. 서서히 볼륨을 줄이고, 0이 되면 데이터를 지우고 새로고침!
+    fadeInterval = setInterval(() => {
+      let newVol = bgmAudio.volume - 0.05;
+      if (newVol <= 0) {
+        bgmAudio.volume = 0;
+        clearInterval(fadeInterval);
+        
+        localStorage.removeItem("chapter");
+        localStorage.removeItem("nickname");
+        location.reload(); 
+      } else {
+        bgmAudio.volume = newVol;
+      }
+    }, 50); // 약 1초에 걸쳐 부드럽게 페이드 아웃
   }
 });
-
-// (기존 모달 닫기 로직은 힌트 기능만 남겨두세요)
-DOM.modalOverlay.addEventListener('click', (e) => {
-  const hintEl = document.getElementById('hint-text');
-  if (hintEl && !hintEl.classList.contains('hidden')) {
-    if (!hintEl.contains(e.target)) {
-      hintEl.classList.add('hidden');
-    }
-  }
-});
-
