@@ -563,7 +563,7 @@ const init = () => {
     // 💡 1. 레시피 데이터 보강 (마야의 감성 설명 추가)
     const recipes = [
       { name: "사파이어 마티니", seq: ['base', 'syrup', 'syrup'], mayaDesc: "보석처럼 푸른 바다를 한 잔에 담아낸 것 같아요." },
-      { name: "선라이즈", seq: ['syrup', 'base', 'soda'], mayaDesc: "지평선 너머로 해가 떠오르는 아침의 설렘이 느껴져요." },
+      { name: "선라이즈", seq: ['syrup', 'base', 'soda'], mayaDesc: "수평선 너머로 해가 떠오르는 아침의 설렘이 느껴져요." },
       { name: "오션 브리즈", seq: ['base', 'soda', 'syrup'], mayaDesc: "바다에서 불어오는 시원한 산들바람 같은 맛이에요." },
       { name: "블루 하와이", seq: ['syrup', 'syrup', 'soda'], mayaDesc: "이국적인 섬의 해변가에서 휴식을 취하는 기분이에요." },
       { name: "피치 크러쉬", seq: ['base', 'syrup', 'base'], mayaDesc: "달콤한 복숭아 향이 입안 가득 퍼지는 사랑스러운 맛이에요." },
