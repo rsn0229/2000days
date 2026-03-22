@@ -238,7 +238,6 @@ function renderPuzzle() {
   const chapterData = STORY_DATA[currentChapterIdx];
   const puzzle = chapterData.puzzle;
   
-  // 💡 puzzles.js에서 해당 타입의 핸들러를 가져옴
   const handler = PuzzleHandlers[puzzle.type];
   
   if (!handler) {
@@ -246,7 +245,6 @@ function renderPuzzle() {
     return;
   }
 
-  // 퍼즐 성공 시 실행될 공통 콜백 함수
   const onComplete = () => {
     showModal("<p>퍼즐을 풀었습니다.</p><button id='continue-btn' class='custom-btn'>다음으로</button>", false);
     document.getElementById('continue-btn').addEventListener('click', () => {
@@ -256,34 +254,45 @@ function renderPuzzle() {
     });
   };
 
-  // 핸들러로부터 UI와 초기화 함수를 받아옴
   const { ui, init } = handler(puzzle, onComplete);
+
+  // 💡 힌트가 있을 때만 [도움말] 버튼 생성
+  const hintHtml = chapterData.hint ? `
+    <div style="position: relative;">
+      <button id="modal-hint-btn" style="background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[도움말]</button>
+      <div id="hint-text" class="hidden hint-bubble">
+        <strong>도움말:</strong><br><span style="margin-top:5px; display:inline-block;">${chapterData.hint}</span>
+      </div>
+    </div>
+  ` : "";
+
+  // 💡 설명(question)이 있을 때만 흰색 박스(.clue-box) 생성
+  const clueHtml = puzzle.question ? `
+    <div class="clue-box">${puzzle.question.replace(/\n/g, '<br>')}</div>
+  ` : "";
 
   const html = `
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
       <h3 class="tt-title" style="margin: 0;">잠긴 자물쇠</h3>
-      <div style="position: relative;">
-        <button id="modal-hint-btn" style="background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[도움말]</button>
-        <div id="hint-text" class="hidden hint-bubble">
-          <strong>도움말:</strong><br><span style="margin-top:5px; display:inline-block;">${chapterData.hint}</span>
-        </div>
-      </div>
+      ${hintHtml}
     </div>
-    <div class="clue-box">${puzzle.question.replace(/\n/g, '<br>')}</div>
+    ${clueHtml}
     <div id="puzzle-body">${ui}</div> <br>
     <button id="submit-puzzle" class="custom-btn">풀기</button>
   `;
   
   showModal(html, false);
   
-  // 💡 puzzles.js에서 정의한 이벤트 바인딩 실행
   init();
 
-  // 힌트 토글 이벤트는 공통이므로 app.js에서 관리
-  document.getElementById('modal-hint-btn').addEventListener('click', (e) => {
-    e.stopPropagation(); 
-    document.getElementById('hint-text').classList.toggle('hidden');
-  });
+  // 💡 버튼이 존재할 때만 이벤트 리스너 연결 (에러 방지)
+  const hintBtn = document.getElementById('modal-hint-btn');
+  if (hintBtn) {
+    hintBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); 
+      document.getElementById('hint-text').classList.toggle('hidden');
+    });
+  }
 }
 
 // 💡 [신규] 초기화 버튼 로직

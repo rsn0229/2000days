@@ -1136,18 +1136,18 @@ const PuzzleHandlers = {
                 }, 1500);
               }
             }
-          } else {
-            isPlayerTurn = false;
-            status.style.color = '#d32f2f';
-            status.style.background = 'rgba(244, 67, 54, 0.1)';
-            status.innerText = "순서가 틀렸습니다. 다시 시도하세요.";
-            
-            showModal("<p>보석의 빛이 흐려졌습니다.<br>집중해서 순서를 다시 기억해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 보기</button>", false);
-            document.getElementById('retry-btn').addEventListener('click', () => {
-              hideModal();
-              playSequence(); 
-            });
-          }
+} else {
+  isPlayerTurn = false;
+  status.style.color = '#d32f2f';
+  status.style.background = 'rgba(244, 67, 54, 0.1)';
+  status.innerText = "순서가 틀렸습니다. 다시 시도하세요.";
+  
+  // 💡 수정: '다시 보기' 버튼 클릭 시 hideModal 대신 renderPuzzle() 호출
+  showModal("<p>보석의 빛이 흐려졌습니다.<br>집중해서 순서를 다시 기억해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 시도</button>", false);
+  document.getElementById('retry-btn').addEventListener('click', () => {
+    renderPuzzle(); // 👈 모달을 닫지 않고 퍼즐 UI를 초기화하여 다시 그림
+  });
+}
         });
       });
     };
@@ -1159,16 +1159,11 @@ const PuzzleHandlers = {
   finale_map: (puzzle, onComplete) => {
     const ui = `
       <div class="map-container">
-        <iframe src="https://maps.google.com/maps?q=Sardinia,Italy&t=&z=8&ie=UTF8&iwloc=&output=embed" frameborder="0" allowfullscreen></iframe>
+        <iframe src="https://maps.google.com/maps?ll=40.1209,9.0129&z=8&t=m&hl=ko&output=embed" frameborder="0" allowfullscreen></iframe>
       </div>
       
       <div class="address-note">
-        <div style="color:#8b6508; font-weight:bold; margin-bottom:5px;">📍 예식 장소: Porto Flavia</div>
-        
-        <div style="font-size: 12px; color: #795548; margin-bottom: 15px; line-height: 1.4;">
-          * 지도 앱이나 브라우저를 열어 직접 장소를 검색해 보세요!<br>
-          <a href="https://www.google.com/maps/search/Porto+Flavia" target="_blank" style="color: #bf360c; text-decoration: underline; font-weight: bold;">[구글 맵 열기 🔍]</a>
-        </div>
+        <div style="color:#8b6508; font-weight:bold; margin-bottom:5px;">📍:  Porto Flavia</div>
 
         Frazione Masua,<br>
         <div class="postal-group">
@@ -1178,9 +1173,8 @@ const PuzzleHandlers = {
           <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
           <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
         </div>
-        Masua CI, 이탈리아
+        Masua CI, Italy
       </div>
-      <div style="font-size: 12px; color: #8d6e63; text-align: center;">쪽지에 누락된 5자리 우편번호(Postal Code)를 지도에서 찾아 입력하세요.</div>
     `;
 
     const init = () => {
@@ -1201,16 +1195,16 @@ const PuzzleHandlers = {
         const userAnswer = Array.from(inputs).map(i => i.value).join('');
 
         if (userAnswer === puzzle.answer) {
-          // 💡 정답을 맞추면 모달이 닫히고 다음 스크립트로 넘어감!
           onComplete(); 
         } else {
-          showModal("<p>우편번호가 맞지 않습니다.<br>구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+          showModal("<p>우편번호가 맞지 않습니다.<br>구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 확인</button>", false);
+          document.getElementById('retry-btn').addEventListener('click', () => {
+            renderPuzzle(); 
+          });
         }
       });
     };
 
     return { ui, init };
   }
-
 };
