@@ -50,15 +50,20 @@ const DOM = {
   modalCloseBtn: document.getElementById('modal-close-btn')
 };
 
-
 document.addEventListener('click', async (e) => {
   if (e.target && e.target.id === 'credit-btn') {
+    const creditBtn = e.target;
     const creditOverlay = document.getElementById('ending-credit-overlay');
     const nameListContainer = document.getElementById('player-names-list');
     const creditContent = document.getElementById('credit-content');
 
-
-    if (creditOverlay) creditOverlay.classList.add('show');
+    creditBtn.disabled = true;
+    let dotCount = 0;
+    const loadingInterval = setInterval(() => {
+      dotCount = (dotCount + 1) % 4; // 0 -> 1 -> 2 -> 3 -> 0 반복
+      const dots = ".".repeat(dotCount);
+      creditBtn.innerText = `준비하는 중${dots}`;
+    }, 400); 
 
     try {
 
@@ -73,7 +78,12 @@ document.addEventListener('click', async (e) => {
     } catch (error) {
        console.error(error);
        nameListContainer.innerHTML = "<p style='color:#888;'>기록을 불러오지 못했습니다.</p>";
+    } finally {
+       clearInterval(loadingInterval);
+       creditBtn.innerText = "🎬 엔딩 크레딧"; 
     }
+
+    if (creditOverlay) creditOverlay.classList.add('show');
 
     setTimeout(() => {
       if (creditContent) creditContent.classList.add('scroll-up');
@@ -172,10 +182,6 @@ if (userNickname !== "") {
     }
     userNickname = inputVal;
     localStorage.setItem("nickname", userNickname);
-
-    if (typeof saveNickname === 'function') {
-      saveNickname(userNickname);
-    }
     
     DOM.startSection.classList.add('hidden');
     DOM.gameSection.classList.remove('hidden');
@@ -205,6 +211,7 @@ function loadChapter(idx) {
     document.getElementById('go-reset-btn').addEventListener('click', () => {
       localStorage.removeItem("chapter");
       localStorage.removeItem("nickname");
+      localStorage.removeItem("isSaved");
       location.reload(); 
     });
     return;
@@ -378,6 +385,7 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   document.getElementById('confirm-reset-btn').addEventListener('click', () => {
     localStorage.removeItem("chapter");
     localStorage.removeItem("nickname");
+    localStorage.removeItem("isSaved");
     location.reload(); 
   });
 
@@ -402,6 +410,7 @@ document.addEventListener('click', (e) => {
         
         localStorage.removeItem("chapter");
         localStorage.removeItem("nickname");
+        localStorage.removeItem("isSaved"); 
         location.reload(); 
       } else {
         bgmAudio.volume = newVol;
@@ -419,13 +428,20 @@ function showFinale() {
   const finaleNameEl = document.getElementById('finale-player-name');
   if (finaleNameEl) finaleNameEl.innerText = userNickname || '소중한 분';
 
+  if (typeof saveNickname === 'function' && userNickname) {
+    if (!localStorage.getItem('isSaved')) {
+      saveNickname(userNickname);
+      localStorage.setItem('isSaved', 'true');
+    }
+  }
+
   const downloadBtn = document.getElementById('download-btn');
   if (downloadBtn) {
     downloadBtn.onclick = () => {
       const inviteCard = document.querySelector('.wedding-invitation');
       const btnGroup = document.getElementById('finale-btn-group');
       
-      btnGroup.style.display = 'none'; 
+      btnGroup.style.display = 'none';
 
       html2canvas(inviteCard, {
         scale: 2, 
@@ -443,7 +459,7 @@ function showFinale() {
           console.error("이미지 추출 중 보안 에러 발생:", err);
           alert("로컬 환경에서는 다운로드가 제한될 수 있습니다.");
         }
-        btnGroup.style.display = 'flex'; 
+        btnGroup.style.display = 'flex';
       });
     };
   }
