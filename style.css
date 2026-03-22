@@ -1463,10 +1463,9 @@ body {
 
 /* 한글 이름 */
 .name-kor {
-  font-size: 10px;
+  font-size: 11px;
   color: #8d6e63;
   margin-top: 4px;
-  letter-spacing: 1px;
 }
 
 /* 💡 암전 및 청첩장 컨테이너 (세로 정렬 추가) */
@@ -1699,7 +1698,7 @@ body {
 
   /* 커플 이름 크기 조절 */
   .name-kor {
-    font-size: 11px; 
+    font-size: 10px; 
   }
 }
 
