@@ -1,4 +1,3 @@
-💡 [수정] 복사한 GAS 웹 앱 URL을 아래에 붙여넣으세요!
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyPRKkR0kKwC9x7msErQDJLU6yu0BleU1F9ySRBwC6RGlSVmzQJrcUGZ_4-Z45pXYX60A/exec";
 
 async function saveNickname(nickname) {
