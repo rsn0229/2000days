@@ -273,7 +273,7 @@ function renderPuzzle() {
 
   const html = `
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
-      <h3 class="tt-title" style="margin: 0;">잠긴 자물쇠</h3>
+      <h3 class="tt-title" style="margin: 0;"></h3>
       ${hintHtml}
     </div>
     ${clueHtml}

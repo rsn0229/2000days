@@ -99,11 +99,12 @@ const PuzzleHandlers = {
   icon_slot: (puzzle, onComplete) => {
     // 정답 데이터와 매칭될 아이콘 풀 (페이크 아이콘 포함)
     const iconData = [
-      { id: '닻', emoji: '⚓' },
-      { id: '방패', emoji: '🛡️' },
       { id: '파도', emoji: '🌊' },
       { id: '검', emoji: '⚔️' },
-      { id: '별', emoji: '⭐' }
+      { id: '닻', emoji: '⚓' },
+      { id: '별', emoji: '⭐' },
+      { id: '방패', emoji: '🛡️' },
+      { id: '연장', emoji: '🛠️' },
     ];
 
     let slots = [null, null, null]; // 3개의 빈 슬롯 상태 관리
@@ -111,13 +112,11 @@ const PuzzleHandlers = {
 
     // UI 구성: 3개의 슬롯 영역과 하단 아이콘 풀 영역
     const ui = `
-      <div style="font-size: 13px; color: #8d6e63; margin-bottom: 10px;">클릭하여 인장을 선택하고 빈 칸에 넣으세요</div>
       <div class="icon-slot-container">
         <div class="icon-slot" data-slot="0"></div>
         <div class="icon-slot" data-slot="1"></div>
         <div class="icon-slot" data-slot="2"></div>
       </div>
-      <div style="font-size: 13px; color: #8d6e63; margin-bottom: 10px;">사용 가능한 인장 조각</div>
       <div class="icon-pool" id="icon-pool">
         ${iconData.map((item, idx) => `
           <div class="pool-icon" data-id="${item.id}" data-emoji="${item.emoji}" data-idx="${idx}">${item.emoji}</div>
@@ -247,126 +246,76 @@ const PuzzleHandlers = {
     return { ui, init };
   },
 
-// 3. 장마철의 악몽 : 찢어진 서류 맞추기 (직소 퍼즐)
+// 3. 장마철의 악몽 : 찢어진 서류 맞추기 (위치 맞바꾸기 방식)
   jigsaw: (puzzle, onComplete) => {
-    // 1~9번 조각 데이터 (초기 풀에는 섞어서 배치할 예정)
-    const pieceData = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => ({ id: n.toString(), text: n }));
-    
-    // 조각을 무작위로 섞음 (셔플)
-    const shuffledPieces = [...pieceData].sort(() => Math.random() - 0.5);
+    // 1~9번 조각 데이터를 만들고 무작위로 섞음
+    let pieces = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => ({ id: n.toString() }));
+    pieces.sort(() => Math.random() - 0.5);
 
-    let slots = Array(9).fill(null); // 3x3 보드의 9칸
-    let selected = null; // { type: 'slot' | 'pool', index: number }
+    let firstSelectedIndex = null; // 첫 번째로 클릭한 조각의 인덱스
 
     const ui = `
       <div class="jigsaw-container">
-        <div class="jigsaw-board" id="jigsaw-board">
-          ${Array(9).fill(0).map((_, i) => `<div class="jigsaw-slot" data-slot="${i}"></div>`).join('')}
-        </div>
-        <div style="font-size: 12px; color: #8d6e63;">조각을 클릭하여 보드에 맞추세요</div>
-        <div class="jigsaw-pool" id="jigsaw-pool">
-          ${shuffledPieces.map((p, i) => `
-            <div class="jigsaw-piece" data-id="${p.id}" data-idx="${i}">${p.text}</div>
-          `).join('')}
+        <div class="jigsaw-board single-grid" id="jigsaw-board">
+          ${pieces.map((p, i) => `<div class="jigsaw-piece swap-mode" data-idx="${i}"></div>`).join('')}
         </div>
       </div>
     `;
 
     const init = () => {
-      const slotEls = document.querySelectorAll('.jigsaw-slot');
-      const poolEls = document.querySelectorAll('.jigsaw-piece');
+      const pieceEls = document.querySelectorAll('.jigsaw-piece');
 
       const updateUI = () => {
-        // 1. 슬롯 업데이트
-        slotEls.forEach((slotEl, i) => {
-          slotEl.innerHTML = ''; // 안쪽 비우기
-          slotEl.classList.remove('selected');
-          if (slots[i]) {
-            // 슬롯 안에 조각 UI를 복제해서 넣어줌
-            const pieceHtml = `<div class="jigsaw-piece" style="cursor: pointer;">${slots[i].text}</div>`;
-            slotEl.innerHTML = pieceHtml;
+        pieceEls.forEach((el, i) => {
+          const pieceId = parseInt(pieces[i].id) - 1;
+          const x = (pieceId % 3) * -50;
+          const y = Math.floor(pieceId / 3) * -50;
+          
+          el.style.backgroundPosition = `${x}px ${y}px`;
+          
+          // 선택된 조각 강조 표시
+          if (firstSelectedIndex === i) {
+            el.classList.add('selected');
+          } else {
+            el.classList.remove('selected');
           }
         });
-
-// 2. 풀 업데이트 (사용된 아이콘 숨기기)
-        const usedIdxs = slots.filter(s => s !== null).map(s => parseInt(s.poolIdx));
-        poolEls.forEach((poolEl, i) => {
-          if (usedIdxs.includes(i)) poolEl.classList.add('invisible'); // 💡 여기도 invisible
-          else poolEl.classList.remove('invisible');
-          poolEl.classList.remove('selected');
-        });
-
-        // 3. 선택된 요소 강조
-        if (selected) {
-          if (selected.type === 'slot') slotEls[selected.index].classList.add('selected');
-          else if (selected.type === 'pool') poolEls[selected.index].classList.add('selected');
-        }
       };
 
-      const clearSelection = () => selected = null;
+      pieceEls.forEach(el => {
+        el.addEventListener('click', (e) => {
+          const clickedIdx = parseInt(e.currentTarget.dataset.idx);
 
-      // 풀 조각 클릭
-      poolEls.forEach(pieceEl => {
-        pieceEl.addEventListener('click', (e) => {
-          const pIdx = parseInt(e.target.dataset.idx);
-
-          if (selected && selected.type === 'slot') {
-            const sIdx = selected.index;
-            slots[sIdx] = { id: pieceEl.dataset.id, text: pieceEl.innerText, poolIdx: pIdx };
-            clearSelection();
-          } else if (selected && selected.type === 'pool' && selected.index === pIdx) {
-            clearSelection();
+          if (firstSelectedIndex === null) {
+            // 1. 첫 번째 조각 선택
+            firstSelectedIndex = clickedIdx;
+          } else if (firstSelectedIndex === clickedIdx) {
+            // 2. 같은 조각을 다시 누르면 선택 취소
+            firstSelectedIndex = null;
           } else {
-            selected = { type: 'pool', index: pIdx };
+            // 3. 다른 조각을 누르면 두 조각의 데이터를 맞바꿈 (Swap)
+            const temp = pieces[firstSelectedIndex];
+            pieces[firstSelectedIndex] = pieces[clickedIdx];
+            pieces[clickedIdx] = temp;
+            
+            firstSelectedIndex = null; // 선택 초기화
           }
           updateUI();
         });
       });
 
-      // 슬롯 클릭
-      slotEls.forEach(slotEl => {
-        slotEl.addEventListener('click', (e) => {
-          // 이벤트 위임 처리 (자식인 piece를 클릭해도 부모 slot의 인덱스를 찾도록)
-          const targetSlot = e.target.closest('.jigsaw-slot');
-          if (!targetSlot) return;
-          const sIdx = parseInt(targetSlot.dataset.slot);
-
-          if (selected && selected.type === 'pool') {
-            const pIdx = selected.index;
-            const poolTarget = document.querySelector(`.jigsaw-pool .jigsaw-piece[data-idx="${pIdx}"]`);
-            slots[sIdx] = { id: poolTarget.dataset.id, text: poolTarget.innerText, poolIdx: pIdx };
-            clearSelection();
-          } else if (selected && selected.type === 'slot') {
-            const sIdx2 = selected.index;
-            if (sIdx === sIdx2) {
-              if (slots[sIdx]) slots[sIdx] = null; // 원래 자리로 빼기
-              clearSelection();
-            } else {
-              // 두 슬롯 내용물 스왑
-              const temp = slots[sIdx];
-              slots[sIdx] = slots[sIdx2];
-              slots[sIdx2] = temp;
-              clearSelection();
-            }
-          } else {
-            selected = { type: 'slot', index: sIdx };
-          }
-          updateUI();
-        });
-      });
-
-      // 정답 확인 로직
+      // 정답 확인 로직 (제출 버튼 클릭 시)
       document.getElementById('submit-puzzle').addEventListener('click', () => {
-        // 1번부터 9번까지 순서대로 채워졌는지 확인 ("123456789")
-        const userAnswer = slots.map(s => s ? s.id : '').join('');
-        
-        if (userAnswer === "123456789") { // 프로토타입 임시 정답
+        const currentOrder = pieces.map(p => p.id).join('');
+        if (currentOrder === "123456789") {
           onComplete();
         } else {
-          showModal("<p>서류가 아직 다 맞춰지지 않았습니다.<br>내용이 자연스럽게 이어지는지 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 시도</button>", false);
+          showModal("<p>서류의 내용이 아직 맞지 않습니다.<br>이미지를 잘 살펴보고 다시 시도해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
+
+      updateUI(); // 초기 렌더링
     };
 
     return { ui, init };
@@ -411,7 +360,6 @@ const PuzzleHandlers = {
     const ui = `
       <div class="crossword-container">
         <div class="crossword-board">${gridHtml}</div>
-        <div style="font-size: 12px; color: #8d6e63; margin-top: 15px;">동그라미 친 알파벳을 조합해 단어를 완성하세요</div>
         <div class="love-result-box" id="love-result-box">
           <input type="text" class="love-input" id="love-0" maxlength="1">
           <input type="text" class="love-input" id="love-1" maxlength="1">
@@ -421,22 +369,51 @@ const PuzzleHandlers = {
       </div>
     `;
 
-    const init = () => {
-      const allInputs = document.querySelectorAll('.cw-input, .love-input');
-      allInputs.forEach(input => {
+const init = () => {
+      // 💡 1. 격자 내 입력창 (이미 채워진 칸 제외) 자동 포커스 설정
+      const cwInputs = Array.from(document.querySelectorAll('.cw-input:not(.prefilled)'));
+      cwInputs.forEach((input, index) => {
         input.addEventListener('input', function() {
           this.value = this.value.toUpperCase();
+          // 글자가 입력되면 다음 칸으로 이동
+          if (this.value.length === 1 && index < cwInputs.length - 1) {
+            cwInputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', function(e) {
+          // 백스페이스를 눌렀을 때 칸이 비어있으면 이전 칸으로 이동
+          if (e.key === 'Backspace' && this.value === '' && index > 0) {
+            cwInputs[index - 1].focus();
+          }
         });
       });
 
-      // 💡 정답 제출 로직 (하단 LOVE 슬롯만 검사하도록 단순화됨!)
+      // 💡 2. 하단 LOVE 결과 입력창 자동 포커스 설정
+      const loveInputs = document.querySelectorAll('.love-input');
+      loveInputs.forEach((input, index) => {
+        input.addEventListener('input', function() {
+          this.value = this.value.toUpperCase();
+          // 글자가 입력되면 다음 칸으로 이동
+          if (this.value.length === 1 && index < loveInputs.length - 1) {
+            loveInputs[index + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', function(e) {
+          // 백스페이스를 눌렀을 때 칸이 비어있으면 이전 칸으로 이동
+          if (e.key === 'Backspace' && this.value === '' && index > 0) {
+            loveInputs[index - 1].focus();
+          }
+        });
+      });
+
+      // 💡 정답 제출 로직
       document.getElementById('submit-puzzle').addEventListener('click', () => {
-        
-        // 하단 4칸의 입력값을 모아서 하나의 문자열로 만듦
         const loveAnswer = [0, 1, 2, 3].map(i => document.getElementById(`love-${i}`).value).join('');
 
         if (loveAnswer === puzzle.answer) {
-          onComplete(); // 하단 단어만 맞으면 바로 통과!
+          onComplete(); 
         } else {
           showModal("<p>의미가 완성되지 않았습니다.<br>조합한 단어가 맞는지 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
@@ -449,13 +426,14 @@ const PuzzleHandlers = {
 
 // 5. 한밤중의 고백 : 빛과 그림자 (스위치 퍼즐)
   switch_light: (puzzle, onComplete) => {
-    // 💡 5개의 촛불. 2번, 4번 촛불만 미리 켜진 상태로 시작
-    let candles = [false, true, false, true, false];
+    // 💡 1, 2, 3, 5번을 눌러야 풀리는 까다로운 시작 조합 유지
+    let candles = [true, false, true, true, false]; 
 
+    // [puzzles.js 내 switch_light 핸들러 수정]
     const ui = `
-      <div class="shadow-wall" id="shadow-wall">
-        <span id="wall-emoji" style="z-index: 1;">👥</span>
-        <div id="dark-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: black; pointer-events: none; transition: opacity 0.5s ease-in-out; z-index: 2;"></div>
+      <div class="shadow-wall shadow-blackout" id="shadow-wall">
+        <div class="shadow-silhouette">♥️</div>
+        <div id="dark-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.5s ease-in-out; z-index: 2;"></div>
       </div>
       <div style="font-size: 12px; color: #8d6e63; margin-bottom: 15px;">촛불을 하나 켜면 주변의 불꽃도 함께 흔들립니다</div>
       <div class="candle-container">
@@ -471,39 +449,33 @@ const PuzzleHandlers = {
     const init = () => {
       const candleBtns = document.querySelectorAll('.candle-btn');
       const wall = document.getElementById('shadow-wall');
-      const emoji = document.getElementById('wall-emoji');
       const overlay = document.getElementById('dark-overlay');
 
-      // 💡 화면 업데이트 및 실시간 덮개(밝기) 조절 함수
+// [puzzles.js 내 switch_light 핸들러의 updateUI 부분]
       const updateUI = () => {
         let litCount = 0;
-        
         candleBtns.forEach((btn, i) => {
-          if (candles[i]) {
-            btn.classList.add('lit');
-            litCount++;
-          } else {
-            btn.classList.remove('lit');
-          }
+          if (candles[i]) { btn.classList.add('lit'); litCount++; }
+          else { btn.classList.remove('lit'); }
         });
 
-        // 5개가 모두 켜졌을 때
         if (litCount === 5) {
-          emoji.innerHTML = '❤️';
+          wall.classList.remove('shadow-blackout');
           wall.classList.add('heart-mode');
-          overlay.style.opacity = '0'; // 덮개를 완전히 치워서 제일 밝게!
+          // 💡 성공 시에도 아늑함을 위해 0.2 정도의 비네팅 유지
+          overlay.style.opacity = '0.2'; 
         } else {
-          emoji.innerHTML = '👥'; 
+          wall.classList.add('shadow-blackout');
           wall.classList.remove('heart-mode');
           
-          // 💡 촛불이 0개면 덮개 투명도 0.9 (거의 암흑)
-          // 촛불이 켜질 때마다 덮개가 점점 투명해짐 (방이 밝아짐)
-          const darkness = 0.9 - (litCount * 0.18); 
+          // 💡 변화 폭을 키운 공식 (0개: 0.95 -> 4개: 약 0.35)
+          // 0.15씩 줄어들게 하여 촛불 하나하나의 영향력을 키웠습니다.
+          const darkness = 0.95 - (litCount * 0.15); 
           overlay.style.opacity = darkness.toString();
         }
       };
 
-      // 촛불 클릭 이벤트
+      // 촛불 클릭 시 연쇄 반응 로직
       candleBtns.forEach(btn => {
         btn.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
@@ -516,10 +488,8 @@ const PuzzleHandlers = {
         });
       });
 
-      // 초기 화면 렌더링
-      updateUI();
+      updateUI(); // 초기 상태 반영
 
-      // 풀기 버튼
       document.getElementById('submit-puzzle').addEventListener('click', () => {
         const isAllLit = candles.every(state => state === true);
         
@@ -527,7 +497,7 @@ const PuzzleHandlers = {
           onComplete(); 
         } else {
           showModal("<p>아직 방이 완전히 밝혀지지 않았습니다.<br>마음이 맞닿는 순간을 찾아보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
     };
@@ -535,117 +505,101 @@ const PuzzleHandlers = {
     return { ui, init };
   },
 
-// 6. 첫 데이트 : 바다 위의 입맞춤 (나침반 돌리기)
+// 6. 첫 데이트 : 바다 위의 입맞춤 (나침반 유리 조준선 돌리기)
   compass: (puzzle, onComplete) => {
-    let currentDeg = 0; // 초기 각도 (0도 = N)
+    let currentDeg = 0; 
     
-    // 💡 45도 단위로 8방위 매핑
-    const directions = {
-      0: 'N', 45: 'NE', 90: 'E', 135: 'SE',
-      180: 'S', 225: 'SW', 270: 'W', 315: 'NW'
-    };
-
     const ui = `
       <div class="compass-container">
         <div class="compass-wrapper">
-          <div class="compass-mark mark-n">N</div>
-          <div class="compass-mark mark-e">E</div>
-          <div class="compass-mark mark-s">S</div>
-          <div class="compass-mark mark-w">W</div>
-          <div class="compass-needle" id="compass-needle"></div>
+          <div class="compass-dial">
+            <div class="compass-mark mark-n">N</div>
+            <div class="compass-mark mark-e">E</div>
+            <div class="compass-mark mark-s">S</div>
+            <div class="compass-mark mark-w">W</div>
+          </div>
+          <div class="compass-needle-fixed"></div>
+          
+          <div class="compass-overlay" id="compass-overlay">
+            <div class="lubber-line"></div>
+          </div>
+          
           <div class="compass-center"></div>
         </div>
-        <div style="font-size: 12px; color: #8d6e63; margin-bottom: 15px;">버튼을 눌러 뱃머리의 방향을 맞추세요</div>
         <div class="compass-btn-group">
-          <button class="compass-btn" id="btn-ccw">↺</button>
-          <button class="compass-btn" id="btn-cw">↻</button>
+          <button class="compass-btn" id="btn-ccw" title="왼쪽으로 회전">↺</button>
+          <button class="compass-btn" id="btn-cw" title="오른쪽으로 회전">↻</button>
         </div>
       </div>
     `;
 
     const init = () => {
-      const needle = document.getElementById('compass-needle');
+      const overlay = document.getElementById('compass-overlay');
+      const updateOverlay = () => { overlay.style.transform = `rotate(${currentDeg}deg)`; };
 
-      const updateNeedle = () => {
-        needle.style.transform = `rotate(${currentDeg}deg)`;
-      };
+      document.getElementById('btn-ccw').addEventListener('click', () => { currentDeg -= 45; updateOverlay(); });
+      document.getElementById('btn-cw').addEventListener('click', () => { currentDeg += 45; updateOverlay(); });
 
-      // 왼쪽(반시계)으로 45도 회전
-      document.getElementById('btn-ccw').addEventListener('click', () => {
-        currentDeg -= 45;
-        updateNeedle();
-      });
-
-      // 오른쪽(시계)으로 45도 회전
-      document.getElementById('btn-cw').addEventListener('click', () => {
-        currentDeg += 45;
-        updateNeedle();
-      });
-
-      // 풀기 버튼 클릭
       document.getElementById('submit-puzzle').addEventListener('click', () => {
-        // 현재 각도를 0~315 사이의 값으로 정규화 (ex. -45도는 315도(NW)로 변환)
         let normalizedDeg = ((currentDeg % 360) + 360) % 360;
-        const userDir = directions[normalizedDeg];
-
-        // 💡 data.js의 정답이 'S' 같은 알파벳이든, '180' 같은 각도든 둘 다 통과되도록 유연하게 검사
-        if (userDir === puzzle.answer || normalizedDeg.toString() === puzzle.answer) {
+        // 서쪽(W)은 270도 지점에 고정되어 있습니다.
+        if (normalizedDeg === 270) {
           onComplete();
         } else {
-          showModal("<p>배가 엉뚱한 곳을 향하고 있습니다.<br>도착해야 할 곳의 방향을 다시 떠올려보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => {
-            hideModal(); // 모달만 닫고 나침반 각도는 그대로 유지
-          });
+          showModal("<p>배가 엉뚱한 곳을 향하고 있습니다.<br>조준선(▲)을 정확한 방향으로 맞추세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
     };
-
     return { ui, init };
   },
 
 // 7. 단골 바의 밤 : 취중 진담 (칵테일 제조기)
   cocktail: (puzzle, onComplete) => {
-    // 💡 6개의 레시피 데이터 (필요한 재료의 '순서' 배열)
+    // 💡 1. 레시피 데이터 보강 (마야의 감성 설명 추가)
     const recipes = [
-      { name: "사파이어 마티니", seq: ['base', 'syrup', 'syrup'], desc: "베이스 ➔ 시럽 ➔ 시럽" },
-      { name: "선라이즈", seq: ['syrup', 'base', 'soda'], desc: "시럽 ➔ 베이스 ➔ 탄산" },
-      { name: "오션 브리즈", seq: ['base', 'soda', 'syrup'], desc: "베이스 ➔ 탄산 ➔ 시럽" },
-      { name: "블루 하와이", seq: ['syrup', 'syrup', 'soda'], desc: "시럽 ➔ 시럽 ➔ 탄산" },
-      { name: "피치 크러쉬", seq: ['base', 'syrup', 'base'], desc: "베이스 ➔ 시럽 ➔ 베이스" },
-      { name: "미드나잇 럼", seq: ['base', 'base', 'soda'], desc: "베이스 ➔ 베이스 ➔ 탄산" }
+      { name: "사파이어 마티니", seq: ['base', 'syrup', 'syrup'], mayaDesc: "보석처럼 푸른 바다를 한 잔에 담아낸 것 같아요." },
+      { name: "선라이즈", seq: ['syrup', 'base', 'soda'], mayaDesc: "지평선 너머로 해가 떠오르는 아침의 설렘이 느껴져요." },
+      { name: "오션 브리즈", seq: ['base', 'soda', 'syrup'], mayaDesc: "바다에서 불어오는 시원한 산들바람 같은 맛이에요." },
+      { name: "블루 하와이", seq: ['syrup', 'syrup', 'soda'], mayaDesc: "이국적인 섬의 해변가에서 휴식을 취하는 기분이에요." },
+      { name: "피치 크러쉬", seq: ['base', 'syrup', 'base'], mayaDesc: "달콤한 복숭아 향이 입안 가득 퍼지는 사랑스러운 맛이에요." },
+      { name: "미드나잇 럼", seq: ['base', 'base', 'soda'], mayaDesc: "깊고 고요한 밤바다의 신비로움을 머금은 듯해요." }
     ];
 
-    // 마야가 순서대로 주문할 3잔의 칵테일
-    const targetOrders = [recipes[0], recipes[1], recipes[2]];
+    // 💡 2. 랜덤 주문 생성 (중복 없이 3잔 선택)
+    const shuffled = [...recipes].sort(() => Math.random() - 0.5);
+    const targetOrders = shuffled.slice(0, 3);
+    
     let currentRound = 0; 
     let currentMix = [];  
 
-    const ui = `
-      <div class="cocktail-container">
-        <div class="recipe-note">
-          <strong>📝 바텐더의 비밀 레시피</strong>
-          <ul>
-            ${recipes.map(r => `<li><strong>${r.name}</strong> : ${r.desc}</li>`).join('')}
-          </ul>
-        </div>
-        
-        <div class="order-board" id="order-board">
-          마야의 주문 (1/3) : [${targetOrders[0].name}]
-        </div>
+// puzzles.js 내 cocktail 핸들러의 ui 부분 수정
+const ui = `
+  <div class="cocktail-container">
+    <div class="recipe-note">
+      <strong>바텐더의 레시피</strong>
+      <ul style="list-style: none; padding-left: 0; margin-top: 5px; font-size: 11px;">
+        ${recipes.map(r => `<li>• <strong>${r.name}</strong> : ${r.seq.map(s => s === 'base' ? '🍾' : s === 'syrup' ? '🍯' : '🫧').join('➔')}</li>`).join('')}
+      </ul>
+    </div>
+    
+    <div class="order-board" id="order-board"></div>
 
-        <div class="glass-station">
-          <div class="cocktail-glass" id="cocktail-glass"></div>
-        </div>
+    <div class="cocktail-main-area" style="display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: 15px;">
+      
+<div class="glass-station" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+        <div class="cocktail-glass" id="cocktail-glass"></div>
+        <button id="clear-glass-btn">[잔 비우기]</button> </div>
 
-        <div class="bottle-group">
-          <button class="bottle-btn" data-type="base">🍾 베이스</button>
-          <button class="bottle-btn" data-type="syrup">🍯 시럽</button>
-          <button class="bottle-btn" data-type="soda">🫧 탄산</button>
-        </div>
-        
-        <button id="clear-glass-btn" style="background:transparent; border:none; text-decoration:underline; color:#a1887f; cursor:pointer; font-size:12px; margin-top:5px; font-family:inherit;">잔 비우기</button>
+      <div class="bottle-group" style="display: flex; flex-direction: column; gap: 8px;">
+        <button class="bottle-btn" data-type="base">🍾 베이스</button>
+        <button class="bottle-btn" data-type="syrup">🍯 시럽</button>
+        <button class="bottle-btn" data-type="soda">🫧 탄산</button>
       </div>
-    `;
+      
+    </div>
+  </div>
+`;
 
     const init = () => {
       const submitBtn = document.getElementById('submit-puzzle');
@@ -658,9 +612,10 @@ const PuzzleHandlers = {
         glass.innerHTML = currentMix.map(type => `<div class="liquid-drop drop-${type}"></div>`).join('');
       };
 
+      // 💡 3. 이름 대신 마야의 설명으로 주문 표시
       const updateOrder = () => {
         if(currentRound < 3) {
-          orderBoard.innerText = `마야의 주문 (${currentRound + 1}/3) : [${targetOrders[currentRound].name}]`;
+          orderBoard.innerHTML = `<span style="font-style: italic;">"${targetOrders[currentRound].mayaDesc}"</span>`;
         }
       };
 
@@ -679,9 +634,7 @@ const PuzzleHandlers = {
         updateGlass();
       });
 
-      // 정답(제공하기) 확인 로직
       submitBtn.addEventListener('click', () => {
-        // 💡 메시지가 떠 있는 1.5초 동안은 중복 클릭 방지
         if (submitBtn.disabled) return;
 
         const target = targetOrders[currentRound];
@@ -693,17 +646,14 @@ const PuzzleHandlers = {
           updateGlass();
           
           if (currentRound >= 3) {
-            // 3잔 모두 성공 시 모달을 닫으며 통과!
             onComplete();
           } else {
-             // 💡 모달 대신 주문 현황판 글씨를 초록색으로 변경!
              orderBoard.style.background = 'rgba(76, 175, 80, 0.1)';
              orderBoard.style.color = '#388e3c';
-             orderBoard.innerHTML = `"맛있어요 통령님!"<br><span style="font-size:11px;">(다음 잔 준비 중...)</span>`;
+             orderBoard.innerHTML = `<strong>"✨<br>와, 정말 맛있어요!"</strong>`;
              
              submitBtn.disabled = true;
 
-             // 1.5초 뒤에 다음 주문으로 변경
              setTimeout(() => {
                orderBoard.style.background = 'rgba(191, 54, 12, 0.05)';
                orderBoard.style.color = '#bf360c';
@@ -712,16 +662,14 @@ const PuzzleHandlers = {
              }, 1500);
           }
         } else {
-          // 💡 실패 시 주문 현황판 글씨를 붉은색으로 변경!
           orderBoard.style.background = 'rgba(244, 67, 54, 0.1)';
           orderBoard.style.color = '#d32f2f';
-          orderBoard.innerHTML = `"맛이 조금 이상해요..."<br><span style="font-size:11px;">(다시 만들기)</span>`;
+          orderBoard.innerHTML = `<strong>"💦<br>음... 맛이 좀 이상해요..."</strong>`;
 
-          currentMix = []; // 잔 강제 비우기
+          currentMix = [];
           updateGlass();
           submitBtn.disabled = true;
 
-          // 1.5초 뒤에 원래 주문으로 복구
           setTimeout(() => {
             orderBoard.style.background = 'rgba(191, 54, 12, 0.05)';
             orderBoard.style.color = '#bf360c';
@@ -822,7 +770,7 @@ const PuzzleHandlers = {
           onComplete();
         } else {
           showModal("<p>시간이 맞지 않습니다.<br>저택의 괘종시계가 가리키는 시간을 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
     };
@@ -940,7 +888,7 @@ const PuzzleHandlers = {
           }, 500);
         } else {
           showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 출발해 오른쪽 화살표로 빠져나가야 합니다.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
     };
@@ -1005,7 +953,7 @@ const PuzzleHandlers = {
           onComplete();
         } else {
           showModal("<p>자물쇠가 열리지 않습니다.<br>우리가 영원히 함께할 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
     };

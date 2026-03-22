@@ -214,43 +214,69 @@ body {
   word-break: keep-all;
 }
 
-/* 🚀 0장: 숫자 다이얼 자물쇠 기믹 UI */
+/* 🚀 0장: 원통형 황동 숫자 자물쇠 (Barrel Lock) UI */
 .dial-lock-container {
   display: flex;
   justify-content: center;
-  gap: 12px;
-  margin: 20px 0;
+  align-items: center;
+  gap: 5px; /* 다이얼 사이의 좁은 간격 */
+  margin: 30px 0;
+  padding: 15px;
+  /* 자물쇠가 놓인 베이스 판 */
+  background: #2e1d16;
+  border-radius: 10px;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.4);
+  position: relative;
 }
+
 
 .dial-digit {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fdfbf7;
-  border: 2px solid #a1887f; /* 황동색 테두리 느낌 */
-  border-radius: 6px;
-  padding: 5px;
-  box-shadow: inset 0 3px 5px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.05);
+  /* 💡 원통형 느낌을 주는 수직 그라데이션 (금속 반사광) */
+  background: linear-gradient(
+    to bottom, 
+    #7d5e1b 0%, 
+    #a67c00 20%, 
+    #f8e5a2 50%, 
+    #a67c00 80%, 
+    #7d5e1b 100%
+  );
+  border: 1px solid #5d4037;
+  border-radius: 5px; /* 약간만 둥글게 */
+  padding: 2px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1;
 }
 
 .dial-btn {
-  background: none; border: none;
-  font-size: 14px; color: #8d6e63;
-  cursor: pointer; padding: 5px;
-  transition: transform 0.1s, color 0.2s;
+  background: rgba(0,0,0,0.2); 
+  border: none;
+  font-size: 12px; 
+  color: #3e2723;
+  cursor: pointer; 
+  padding: 4px 10px;
+  width: 100%;
+  transition: background 0.2s, color 0.2s;
 }
-.dial-btn:hover { color: #bf360c; transform: scale(1.2); }
-.dial-btn:active { transform: scale(0.9); }
+
+.dial-btn:hover { background: rgba(255, 255, 255, 0.2); color: #bf360c; }
+.dial-btn:active { background: rgba(0,0,0,0.4); }
 
 .dial-value {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: bold;
-  font-family: 'Courier New', monospace; /* 타자기/기계 장치 폰트 느낌 */
-  color: #3e2723;
-  margin: 5px 0;
-  width: 35px;
+  /* 💡 음각으로 새겨진 듯한 텍스트 효과 */
+  font-family: 'Courier New', monospace;
+  color: #2e1d16;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+  margin: 8px 0;
+  width: 40px;
   text-align: center;
-  user-select: none; /* 드래그 방지 */
+  user-select: none;
+  z-index: 2;
 }
 
 /* 🚀 1장: 기호 맞추기 자물쇠 (Symbol Lock) UI */
@@ -397,39 +423,41 @@ body {
   justify-content: center;
 }
 
-.jigsaw-piece {
-  width: 100%;
-  height: 40px;
-  background-color: #fdfbf7;
-  border: 1px solid #a1887f;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: #5d4037;
+/* 🚀 3장: 직소 퍼즐 (단일 격자 맞바꾸기 방식) */
+.jigsaw-board.single-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 50px);
+  grid-template-rows: repeat(3, 50px);
+  gap: 2px;
+  background-color: #a1887f; /* 조각 사이의 선 색상 */
+  border: 3px solid #8d6e63;
+  padding: 2px;
+  margin: 0 auto;
+}
+
+.jigsaw-piece.swap-mode {
+  width: 50px;
+  height: 50px;
+  background-image: url('assets/clue_paper.png');
+  background-size: 150px 150px; /* 50px * 3칸 */
+  background-repeat: no-repeat;
   cursor: pointer;
-  box-shadow: 1px 2px 4px rgba(0,0,0,0.1);
-  user-select: none;
+  transition: transform 0.2s, filter 0.2s;
+  box-sizing: border-box;
 }
 
-/* 조각이 보드에 올라갔을 때 크기 맞춤 */
-.jigsaw-slot .jigsaw-piece {
-  width: 100%;
-  height: 100%;
-  box-shadow: none;
-  border: none;
+/* 조각 선택 시 강조 효과 */
+.jigsaw-piece.swap-mode.selected {
+  outline: 3px solid #bf360c;
+  outline-offset: -3px;
+  filter: brightness(1.1);
+  z-index: 10;
+  position: relative;
 }
 
-/* 💡 3장: 조각이 보드에 올라가면 투명해지되 공간은 유지! */
-.jigsaw-piece.invisible { visibility: hidden; pointer-events: none; }
-
-/* 선택 강조 스타일 */
-.jigsaw-slot.selected { box-shadow: inset 0 0 0 2px #bf360c; }
-.jigsaw-piece.selected { 
-  border-color: #bf360c; 
-  background-color: #fbe9e7;
-  transform: translateY(-2px);
+/* 마우스 오버 시 살짝 밝게 */
+.jigsaw-piece.swap-mode:hover {
+  filter: brightness(1.05);
 }
 
 /* 🚀 4장: 영문 크로스워드(십자말풀이) UI */
@@ -541,34 +569,77 @@ body {
   background-color: #fbe9e7;
 }
 
-/* 🚀 5장: 촛불 스위치 (빛과 그림자) UI */
+/* 🚀 5장: 촛불 스위치 (빛과 그림자) UI - 연출 최적화본 */
+
 .shadow-wall {
   width: 100%;
-  height: 100px;
+  height: 120px;
   border: 1px solid rgba(161, 136, 127, 0.3);
   border-radius: 8px;
   margin-bottom: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 45px;
-  font-family: 'Noto Color Emoji', sans-serif;
-  
-  /* 💡 검정 덮개를 씌우기 위한 설정 */
   position: relative; 
   overflow: hidden; 
-  background-color: #fdfbf7; /* 불이 다 켜졌을 때의 기본 벽 색상 */
-  
-  transition: all 0.5s ease-in-out; 
+  /* 💡 기본 벽색 (불이 다 켜졌을 때) */
+  background-color: #fdfbf7; 
+  transition: background-color 0.8s ease; 
 }
 
-/* 💡 모든 촛불이 켜졌을 때의 하트 연출 */
+/* 💡 촛불이 적을 때: 벽면 자체를 어둡게 하여 비네팅과의 대비를 낮춤 (비네팅이 약해 보임) */
+.shadow-wall.shadow-blackout {
+  background-color: #333333; 
+}
+
+/* 모든 촛불이 켜졌을 때의 따뜻한 조명 */
 .shadow-wall.heart-mode {
-  background-color: rgba(191, 54, 12, 0.08);
-  transform: scale(1.02);
-  box-shadow: 0 0 15px rgba(191, 54, 12, 0.2);
+  background-color: #fff9c4; 
+  box-shadow: 0 0 20px rgba(255, 235, 59, 0.2);
 }
 
+/* 💡 하트 실루엣 (크기를 45px로 줄여 더 정갈하게 배치) */
+.shadow-silhouette {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 45px; 
+  font-family: 'Noto Color Emoji', sans-serif;
+  color: #d32f2f; 
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(211, 47, 47, 0.3);
+  transition: all 0.8s ease-in-out;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* 불이 꺼져 있을 때의 희미한 검정 하트 */
+.shadow-wall.shadow-blackout .shadow-silhouette {
+  color: #000000;
+  opacity: 0.05; 
+  text-shadow: none;
+}
+
+/* 💡 비네팅 레이어 (더 부드러운 그라데이션 적용) */
+#dark-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(
+    circle, 
+    transparent 20%, 
+    rgba(0, 0, 0, 0.5) 70%, 
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  pointer-events: none;
+  transition: opacity 0.6s ease-in-out;
+  z-index: 2; 
+}
+
+/* 4. 촛불 버튼 (네모 상자 제거 핵심) */
 .candle-container {
   display: flex;
   justify-content: center;
@@ -579,8 +650,8 @@ body {
 .candle-btn {
   width: 45px;
   height: 60px;
-  background-color: transparent;
-  border: none;
+  background-color: transparent; /* 💡 배경 투명하게 (네모 상자 제거) */
+  border: none;                  /* 💡 테두리 제거 (네모 상자 제거) */
   position: relative;
   cursor: pointer;
   display: flex;
@@ -588,21 +659,22 @@ body {
   justify-content: center;
   font-size: 30px;
   outline: none;
+  padding: 0;
 }
 
-/* 꺼져있는 기본 불꽃 (투명하게 숨김) */
+/* 5. 불꽃 제어 (꺼짐/켜짐 핵심) */
 .candle-flame {
   position: absolute;
   top: -15px;
   font-size: 24px;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s;
+  opacity: 0; /* 💡 기본 상태는 보이지 않음 (불 꺼짐) */
+  transition: opacity 0.3s;
   pointer-events: none;
 }
 
-/* 불이 켜졌을 때 일렁이는 애니메이션 */
+/* .lit 클래스가 붙었을 때만 불꽃이 보임 */
 .candle-btn.lit .candle-flame {
-  opacity: 1;
+  opacity: 1; /* 💡 불 켜짐 */
   animation: flicker 0.8s infinite alternate;
 }
 
@@ -611,87 +683,92 @@ body {
   100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
 }
 
-/* 🚀 6장: 나침반 돌리기 UI */
-.compass-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
+/* 🚀 6장: 나침반 UI 최종 진화 (방위 정렬 + 감성 버튼) */
 .compass-wrapper {
   position: relative;
-  width: 130px; 
-  height: 130px;
-  border: 4px solid #a1887f; /* 황동색 테두리 */
+  width: 140px; height: 140px;
+  border: 4px solid #a1887f;
   border-radius: 50%;
   background: #fdfbf7;
   margin: 10px auto 20px auto;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
 }
 
-/* 동서남북 글자 */
-.compass-mark {
-  position: absolute;
+/* 💡 방위 글자 개별 배치 (겹침 현상 해결) */
+.compass-mark { 
+  position: absolute; 
   font-weight: bold; 
   color: #8d6e63; 
-  font-size: 16px;
+  font-size: 16px; 
   font-family: 'Courier New', monospace;
+  z-index: 1;
 }
-.mark-n { top: 6px; left: 50%; transform: translateX(-50%); color: #bf360c; } /* 북쪽은 붉은색 */
-.mark-s { bottom: 6px; left: 50%; transform: translateX(-50%); }
-.mark-e { top: 50%; right: 8px; transform: translateY(-50%); }
-.mark-w { top: 50%; left: 8px; transform: translateY(-50%); }
+.mark-n { top: 8px; left: 50%; transform: translateX(-50%); color: #bf360c; }
+.mark-s { bottom: 8px; left: 50%; transform: translateX(-50%); }
+.mark-e { right: 10px; top: 50%; transform: translateY(-50%); }
+.mark-w { left: 10px; top: 50%; transform: translateY(-50%); }
 
-/* 나침반 바늘 (위는 빨강, 아래는 짙은 갈색) */
-.compass-needle {
+/* 💡 고정된 나침반 바늘 디자인 */
+.compass-needle-fixed {
   position: absolute;
   top: 50%; left: 50%;
-  width: 10px; height: 100px;
-  margin-top: -50px; margin-left: -5px;
+  width: 8px; height: 110px;
+  margin-top: -55px; margin-left: -4px;
   background: linear-gradient(to bottom, #bf360c 50%, #3e2723 50%);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); /* 마름모 형태 */
-  
-  /* 💡 바늘이 돌아갈 때 팅~ 하고 튕기는 탄력 있는 애니메이션 */
-  transition: transform 0.4s cubic-bezier(0.4, 2.5, 0.4, 0.8); 
-  transform: rotate(0deg); /* 초기 북쪽(N) */
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* 나침반 중앙의 핀 */
-.compass-center {
+/* 💡 회전하는 유리판 조준선 */
+.compass-overlay {
   position: absolute;
-  top: 50%; left: 50%;
-  width: 14px; height: 14px;
-  background: #fdfbf7;
-  border: 3px solid #8d6e63;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 3;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  transition: transform 0.4s cubic-bezier(0.4, 2.5, 0.4, 0.8);
+  z-index: 5;
+}
+.lubber-line {
+  position: absolute;
+  top: 0; left: 50%;
+  width: 2px; height: 18px;
+  background: #bf360c;
+  transform: translateX(-50%);
+}
+.lubber-line::before {
+  content: '▲';
+  position: absolute;
+  top: 13px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px; color: #bf360c; font-weight: bold;
 }
 
-/* 좌우 회전 버튼 */
+/* 💡 [업데이트] 동그란 회전 버튼 스타일 */
 .compass-btn-group {
-  display: flex; 
-  justify-content: center; 
-  gap: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 5px;
 }
-
 .compass-btn {
-  background: #fdfbf7; 
-  border: 2px solid #d7ccc8; 
-  border-radius: 50%;
-  width: 45px; height: 45px; 
-  font-size: 20px; 
-  font-weight: bold;
-  cursor: pointer; 
-  color: #5d4037;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: all 0.1s;
+  width: 40px; height: 40px;
+  border-radius: 50%; /* 동그랗게 */
+  border: 1px solid #d7ccc8;
+  background-color: #fdfbf7;
+  color: #8d6e63;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.2s;
+  padding: 0; outline: none;
 }
-.compass-btn:active { 
-  background: #efebe9; 
-  transform: scale(0.9); 
+.compass-btn:hover {
+  background-color: #efebe9;
+  color: #bf360c;
+  transform: scale(1.1);
 }
+.compass-btn:active { transform: scale(0.95); }
 
 /* 🚀 7장: 칵테일 제조기 UI */
 .cocktail-container {
@@ -725,6 +802,8 @@ body {
   color: #bf360c;
   font-size: 14px;
   margin-bottom: 15px;
+  word-break: keep-all; 
+  overflow-wrap: break-word;
   text-align: center;
   background: rgba(191, 54, 12, 0.05);
   padding: 5px 15px;
@@ -736,12 +815,12 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  height: 90px;
-  margin-bottom: 15px;
+  height: 120px;
+  margin-bottom: 10px;
 }
 .cocktail-glass {
-  width: 50px;
-  height: 70px;
+  width: 55px;
+  height: 120px;
   border: 3px solid #a1887f;
   border-top: none; /* 위는 뚫려있음 */
   border-radius: 0 0 10px 10px;
@@ -752,14 +831,29 @@ body {
   box-shadow: inset 0 -5px 10px rgba(0,0,0,0.05);
 }
 
+/* 💡 잔 비우기 버튼: 밑줄을 없애고 텍스트 버튼처럼 연출 */
+#clear-glass-btn {
+  background: transparent;
+  border: none;
+  text-decoration: none; /* 밑줄 제거 */
+  color: #a1887f;
+  cursor: pointer;
+  font-size: 12px; /* 괄호가 들어갔으니 크기를 아주 살짝 키웠습니다 */
+  font-family: inherit;
+  padding: 0;
+}
+#clear-glass-btn:hover {
+  color: #bf360c; /* 마우스를 올렸을 때 클릭 가능하다는 걸 보여주기 위해 색상 변경 추가 */
+}
+
 /* 잔에 채워지는 액체 (한 방울당 20px씩) */
 .liquid-drop {
   width: 100%;
-  height: 20px;
+  height: 25px;
   transition: height 0.2s, background-color 0.3s;
 }
-.drop-base { background-color: rgba(236, 239, 241, 0.9); } /* 베이스: 반투명 흰색 */
-.drop-syrup { background-color: rgba(233, 30, 99, 0.6); } /* 시럽: 핑크/레드계열 */
+.drop-base { background-color: rgba(253, 230, 143, 0.4); } /* 베이스: 반투명 흰색 */
+.drop-syrup { background-color: rgba(233, 122, 108, 0.6); } /* 시럽: 핑크/레드계열 */
 .drop-soda { background-color: rgba(3, 169, 244, 0.5); }  /* 탄산: 청량한 블루 */
 
 /* 3개의 재료 병 버튼 */
@@ -893,24 +987,6 @@ body {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 15px;
-}
-
-/* 🚀 9장: 인파 속 길 찾기 (파이프라인) UI */
-.night-sky-box {
-  background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
-  border-radius: 8px;
-  padding: 20px 10px 30px 10px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.path-puzzle-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-top: 15px;
 }
 
 /* 🚀 9장: 인파 속 길 찾기 (파이프라인) UI */
