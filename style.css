@@ -1684,17 +1684,22 @@ body {
   }
 
   .since-text {
-    margin-bottom: 20px; /* 💡 모바일 공간에 맞춰 적절히 축소 */
+    margin-bottom: 18px; /* 💡 모바일 공간에 맞춰 적절히 축소 */
   }
 
   .invitation-text {
-    font-size: 11.5px;
-    line-height: 1.6; /* 💡 모바일에서도 답답하지 않은 줄간격 유지 */
+    font-size: 11px;
+    line-height: 1.5; /* 💡 모바일에서도 답답하지 않은 줄간격 유지 */
   }
   
   /* 커플 이름 크기 조절 */
   .name-eng {
-    font-size: 26px; 
+    font-size: 25px; 
+  }
+
+  /* 커플 이름 크기 조절 */
+  .name-kor {
+    font-size: 11px; 
   }
 }
 
