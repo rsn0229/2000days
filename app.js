@@ -1,10 +1,11 @@
 // 상태 변수
 let currentChapterIdx = parseInt(localStorage.getItem("chapter")) || 0;
 let currentScriptIdx = 0;
-let userNickname = localStorage.getItem("nickname") || ""; // 💡 저장된 닉네임 불러오기
+let userNickname = localStorage.getItem("nickname") || ""; 
 let bgmAudio = new Audio();
 let typingInterval;
 let isTyping = false;
+let fadeInterval = null; // 💡 추가: BGM 페이드 효과 타이머를 관리할 변수
 
 const DOM = {
   startSection: document.getElementById('start-section'),
@@ -81,6 +82,50 @@ function showToast(msg) {
   }, 2000); // 2초 뒤에 스르륵 사라짐
 }
 
+// 💡 BGM 부드럽게 교체하기 (Fade Out -> Change -> Fade In)
+function changeBGM(newSrc) {
+  // 1. 이미 같은 곡을 재생 중이면 무시 (음악 이어지게!)
+  if (bgmAudio.src.includes(newSrc)) return;
+
+  // 2. 혹시 진행 중인 페이드 효과가 있다면 즉시 중단 (빠른 클릭 대비)
+  if (fadeInterval) clearInterval(fadeInterval);
+
+  // 3. 기존 곡이 재생 중이라면 먼저 서서히 볼륨을 줄임 (Fade Out)
+  if (!bgmAudio.paused && bgmAudio.volume > 0) {
+    fadeInterval = setInterval(() => {
+      let newVol = bgmAudio.volume - 0.05; // 볼륨 5%씩 감소
+      if (newVol <= 0) {
+        bgmAudio.volume = 0;
+        clearInterval(fadeInterval);
+        playNewBGM(newSrc); // 소리가 다 꺼지면 새 곡 재생 호출
+      } else {
+        bgmAudio.volume = newVol;
+      }
+    }, 50); // 0.05초마다 실행 (약 1초에 걸쳐 볼륨 0 됨)
+  } else {
+    // 재생 중인 곡이 없으면 바로 새 곡 재생
+    playNewBGM(newSrc);
+  }
+}
+
+// 💡 새 곡을 0부터 서서히 키우며 재생 (Fade In)
+function playNewBGM(newSrc) {
+  bgmAudio.src = newSrc;
+  bgmAudio.loop = true;
+  bgmAudio.volume = 0; // 💡 볼륨을 0으로 맞추고 시작
+  bgmAudio.play().catch(e => console.log("BGM 자동재생 방지됨"));
+
+  fadeInterval = setInterval(() => {
+    let newVol = bgmAudio.volume + 0.05; // 볼륨 5%씩 증가
+    if (newVol >= 1) {
+      bgmAudio.volume = 1;
+      clearInterval(fadeInterval);
+    } else {
+      bgmAudio.volume = newVol;
+    }
+  }, 50); // 0.05초마다 실행 (약 1초에 걸쳐 볼륨 1 됨)
+}
+
 // 1. 시작 화면 및 버튼 로직 (BGM 재생을 위한 클릭 유도)
 const startBtn = document.getElementById('start-btn');
 const nicknameInput = document.getElementById('nickname-input');
@@ -121,13 +166,9 @@ function loadChapter(idx) {
   }
   
   currentScriptIdx = 0;
-  
-  // BGM 재생 로직
-  if (!bgmAudio.src.includes(chapterData.bgm)) {
-    bgmAudio.src = chapterData.bgm;
-    bgmAudio.loop = true;
-    bgmAudio.play().catch(e => console.log("BGM 자동재생 방지됨"));
-  }
+
+  // BGM 재생 로직 (페이드 효과 적용)
+  changeBGM(chapterData.bgm);
   
   document.getElementById('chapter-title').innerText = chapterData.title;
   showScript();
@@ -150,10 +191,8 @@ function showScript() {
   if (currentScriptIdx >= scripts.length) {
     // 최종장(12장)의 마지막 스크립트까지 모두 읽었다면?
     if (currentChapterIdx === 12) {
-      // 💡 1. 극적인 BGM 전환! (청첩장 등장과 함께 bgm7.mp3 재생)
-      bgmAudio.src = "assets/bgm7.mp3";
-      bgmAudio.loop = true;
-      bgmAudio.play().catch(e => console.log("BGM 자동재생 방지됨"));
+      // 💡 1. 극적인 BGM 전환! (페이드 효과 적용)
+      changeBGM("assets/bgm7.mp3");
 
       // 💡 2. 암전 및 청첩장 연출 트리거 발동!
       const overlay = document.getElementById('finale-overlay');
@@ -299,7 +338,7 @@ function renderPuzzle() {
 document.getElementById('reset-btn').addEventListener('click', () => {
   const resetHtml = `
     <h3 class="tt-title">항해 기록 초기화</h3>
-    <p style="font-size: 14px; margin: 20px 0;">진행 상황이 초기화되고 첫 화면으로 돌아갑니다.<br>계속할까요?</p>
+    <p style="font-size: 14px; margin: 20px 0;">진행 상황이 초기화되고<br>첫 화면으로 돌아갑니다.<br>계속할까요?</p>
     <button id="confirm-reset-btn" class="custom-btn">예</button>
     <button id="cancel-reset-btn" class="custom-btn" style="margin-left: 10px;">아니오</button>
   `;

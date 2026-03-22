@@ -687,14 +687,14 @@ const ui = `
 
 // 8. 메디치 저택 : 함께하는 삶 (시계 태엽 맞추기)
   clock: (puzzle, onComplete) => {
-    // 💡 초기 시간 설정 (오전 9시 15분)
-    let currentH = 9;
-    let currentM = 15;
+    // 💡 초기 시간 설정 (오전 7시 20분)
+    let currentH = 7;
+    let currentM = 20;
 
     const ui = `
       <div class="clock-container">
         <div class="grandfather-clock">
-          🕰️ 저택의 괘종시계
+          🕰️ 저택의 시계
           <span class="gf-time">11 : 45</span>
         </div>
         
@@ -707,10 +707,6 @@ const ui = `
           <div class="hand-minute" id="hand-minute"></div>
           <div class="watch-center"></div>
         </div>
-
-        <div class="digital-time" id="digital-time">09:15</div>
-        
-        <div style="font-size: 12px; color: #8d6e63; margin-bottom: 15px;">슬라이더를 움직여 시간을 맞추세요</div>
 
         <div style="width: 90%;">
           <div class="slider-row">
@@ -743,10 +739,6 @@ const ui = `
         handHour.style.transform = `rotate(${hourDeg}deg)`;
         handMinute.style.transform = `rotate(${minuteDeg}deg)`;
 
-        // 디지털 시간 텍스트 포맷
-        const formattedH = currentH.toString().padStart(2, '0');
-        const formattedM = currentM.toString().padStart(2, '0');
-        digitalTime.innerText = `${formattedH}:${formattedM}`;
       };
 
       // 초기 렌더링
@@ -769,7 +761,7 @@ const ui = `
         if (currentH === 11 && currentM === 45) {
           onComplete();
         } else {
-          showModal("<p>시간이 맞지 않습니다.<br>저택의 괘종시계가 가리키는 시간을 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>시간이 맞지 않습니다.<br>저택의 시계가 가리키는 시간을 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -796,9 +788,8 @@ const ui = `
 
     const ui = `
       <div class="night-sky-box" id="night-sky">
-        <div style="font-size: 13px; color: #cfd8dc; margin-bottom: 5px;">타일을 돌려 인파를 벗어날 길을 연결하세요</div>
         <div class="path-puzzle-wrapper">
-          <div class="path-entrance">&#8680;</div>
+          <div class="path-entrance">➔</div>
           <div class="path-board">
             ${tiles.map((t, i) => {
               let svg = svgI;
@@ -807,7 +798,7 @@ const ui = `
               return `<div class="path-tile" data-idx="${i}" style="transform: rotate(${currentAngles[i]}deg);">${svg}</div>`;
             }).join('')}
           </div>
-          <div class="path-exit">&#8680;</div>
+          <div class="path-exit">➔</div>
         </div>
       </div>
     `;
@@ -1128,7 +1119,7 @@ const ui = `
     const init = () => {
       const inputs = document.querySelectorAll('.postal-input');
       const submitBtn = document.getElementById('submit-puzzle');
-      submitBtn.innerText = "서약 장소로 향하기"; 
+      submitBtn.innerText = "식장으로 향하기"; 
 
       inputs.forEach((input, index) => {
         input.addEventListener('input', function() {

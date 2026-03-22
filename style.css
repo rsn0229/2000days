@@ -989,22 +989,27 @@ body {
   margin-bottom: 15px;
 }
 
-/* 🚀 9장: 인파 속 길 찾기 (파이프라인) UI */
+/* 💡 1. 상위 박스: 튀어나온 화살표가 잘리지 않도록 overflow 속성 변경 */
 .night-sky-box {
   background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
   border-radius: 8px;
   padding: 20px 10px 30px 10px;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* 💡 기존 hidden을 visible로 변경하여 잘림 방지 */
   box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
   margin-bottom: 20px;
   text-align: center;
 }
 
-.path-puzzle-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-top: 15px;
+/* 💡 2. 진입/탈출 화살표: z-index를 높여 보드판 위로 확실히 띄움 */
+.path-entrance, .path-exit {
+  position: absolute;
+  font-size: 32px;
+  font-weight: 900;
+  color: #e64530; 
+  line-height: 55px;
+  z-index: 10; /* 💡 다른 요소들보다 무조건 위로 올라오도록 추가 */
+  animation: pulse-arrow 1.5s infinite alternate;
 }
 
 /* 4x4 타일 보드 */
@@ -1041,22 +1046,13 @@ body {
   pointer-events: none;
 }
 
-/* 💡 이모지 대신 굵직한 금빛 기호로 바꾼 진입/탈출 화살표 */
-.path-entrance, .path-exit {
-  position: absolute;
-  font-size: 32px;
-  font-weight: 900;
-  color: #fff9c4; /* 파이프 길과 동일한 색상 */
-  line-height: 55px;
-  animation: pulse-arrow 1.5s infinite alternate;
-}
 .path-entrance {
-  top: 4px; 
-  left: -35px;
+  top: 20px; 
+  left: -10px;
 }
 .path-exit {
-  bottom: 4px; 
-  right: -35px;
+  bottom: 35px; 
+  right: -5px;
 }
 
 @keyframes pulse-arrow {
@@ -1300,6 +1296,7 @@ body {
   gap: 8px;
   margin: 12px 0;
 }
+/* 5자리 우편번호(Postal Code) 입력칸 */
 .postal-input {
   width: 35px;
   height: 45px;
@@ -1310,6 +1307,10 @@ body {
   background: #ffffff;
   color: #3e2723;
   font-weight: bold;
+  
+  /* 💡 추가된 부분: LOVE 입력창과 동일한 폰트 적용 */
+  font-family: 'Courier New', monospace;
+  
   outline: none;
   transition: all 0.2s;
   /* 모바일에서 숫자 키패드가 뜨도록 설정하지만 화살표는 숨김 */
@@ -1397,14 +1398,14 @@ body {
   text-align: center;
 }
 
-/* (기존 폰트 스타일은 유지) */
+/* 상단 Wedding Invitation 문구 */
 .invitation-title {
-  font-size: 20px; /* 엽서 크기에 맞춰 살짝 조절 */
+  font-size: 45px; /* 💡 폰트 특성에 맞춰 크기를 시원하게 키웠습니다 (기존 20px) */
   color: #8b6508;
   font-weight: bold;
   margin-bottom: 20px;
-  letter-spacing: 2px;
-  font-family: 'Gowun Batang', serif;
+  /* letter-spacing: 2px; 필기체는 글자가 이어져야 예쁘므로 자간 속성은 지워줍니다! */
+  font-family: 'Tangerine', cursive; /* 💡 Tangerine 폰트 적용 */
 }
 
 .invitation-text {
@@ -1414,12 +1415,13 @@ body {
   margin-bottom: 25px;
 }
 
+/* 하단 Rosanna de Medici & Maya Schmitt 문구 */
 .invitation-names {
-  font-size: 17px; /* 엽서 크기에 맞춰 살짝 조절 */
+  font-size: 30px; /* 💡 여기도 폰트 크기 업! (기존 17px) */
   font-weight: bold;
   color: #3e2723;
-  margin-bottom: 0; /* 마지막 요소라 마진 제거 */
-  font-family: 'Gowun Batang', serif;
+  margin-bottom: 0; 
+  font-family: 'Tangerine', cursive; /* 💡 Tangerine 폰트 적용 */
 }
 
 /* 💡 청첩장 하단 버튼 그룹 (우측 컬럼 하단에 절대 배치) */
@@ -1563,4 +1565,38 @@ body {
 @keyframes fadeInRestart {
   0% { opacity: 0; pointer-events: none; }
   100% { opacity: 1; pointer-events: all; }
+}
+
+/* 💡 [반응형] 모바일 화면(가로 600px 이하)에서 엽서 비율과 레이아웃 유지하며 전체 크기 축소 */
+@media (max-width: 600px) {
+  /* 오른쪽 텍스트 영역 여백 비례 축소 */
+  .invitation-right-col {
+    padding: 15px 10px 45px 10px; /* 버튼 공간 확보를 위해 하단 여백 유지 */
+  }
+  
+  /* 폰트 크기 비례 축소 */
+  .invitation-title {
+    font-size: 28px; /* 기존 45 -> 28 (Tangerine은 작게 보이므로 너무 줄이지 않음) */
+    margin-bottom: 10px;
+  }
+  .invitation-text {
+    font-size: 11px; /* 기존 14 -> 11 */
+    margin-bottom: 15px;
+    line-height: 1.4;
+  }
+  .invitation-names {
+    font-size: 22px; /* 기존 40 -> 22 */
+  }
+  
+  /* 하단 버튼 그룹 여백 및 크기 축소 */
+  .finale-btn-group {
+    bottom: 8px;
+    right: 8px;
+    gap: 4px;
+    padding: 0 5px;
+  }
+  .download-btn, .credit-btn {
+    padding: 6px 2px;
+    font-size: 10px; /* 버튼 글씨 축소 */
+  }
 }
