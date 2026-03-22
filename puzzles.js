@@ -1064,7 +1064,7 @@ const ui = `
               isPlayerTurn = false;
               
               if (currentRound === maxRounds) {
-                status.innerText = "💍 세공 완성! 반지가 찬란하게 빛납니다.";
+                status.innerText = "💍 완성! 반지가 찬란하게 빛납니다.";
                 setTimeout(() => onComplete(), 1200);
               } else {
                 currentRound++;

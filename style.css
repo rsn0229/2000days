@@ -81,6 +81,19 @@ body {
   cursor: pointer; /* 💡 클릭할 수 있다는 것을 마우스 커서로 알려줌 */
 }
 
+/* 💡 시작 화면 BGM 안내 문구 (종이 하단 중앙 고정) */
+.bgm-notice {
+  position: absolute;
+  bottom: 20px; /* 바닥에서 살짝 띄움 */
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 11px;
+  color: #8d6e63;
+  line-height: 1.5;
+  opacity: 0.8; /* 너무 튀지 않게 살짝 연하게 */
+}
+
 /* 🚀 자체 디자인 버튼 및 인풋 */
 .custom-input {
   background: transparent; border: none; border-bottom: 1px dashed #8d6e63;

@@ -133,7 +133,7 @@ const nicknameInput = document.getElementById('nickname-input');
 if (userNickname !== "") {
   // 💡 이미 저장된 이름이 있다면 입력창을 숨기고 '이어서 하기' 버튼으로 변경
   nicknameInput.style.display = 'none';
-  startBtn.innerText = "이어서 항해하기";
+  startBtn.innerText = "일지 이어보기";
   
   startBtn.addEventListener('click', () => {
     DOM.startSection.classList.add('hidden');
@@ -284,8 +284,18 @@ function renderPuzzle() {
     return;
   }
 
+// app.js 내 renderPuzzle() 함수 안의 onComplete 수정
   const onComplete = () => {
-    showModal("<p>퍼즐을 풀었습니다.</p><button id='continue-btn' class='custom-btn'>다음으로</button>", false);
+    // 💡 Flexbox를 이용해 높이를 확보하고 수직 중앙(justify-content: center)에 정렬합니다.
+    const successHtml = `
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 220px;">
+        <p style="font-size: 18px; font-weight: bold; color: #5d4037; margin-bottom: 20px;">퍼즐을 풀었습니다!</p>
+        <button id='continue-btn' class='custom-btn'>다음으로</button>
+      </div>
+    `;
+    
+    showModal(successHtml, false);
+    
     document.getElementById('continue-btn').addEventListener('click', () => {
       hideModal();
       currentScriptIdx++;
@@ -337,7 +347,7 @@ function renderPuzzle() {
 // 💡 [신규] 초기화 버튼 로직
 document.getElementById('reset-btn').addEventListener('click', () => {
   const resetHtml = `
-    <h3 class="tt-title">항해 기록 초기화</h3>
+    <h3 class="tt-title">기록 초기화</h3>
     <p style="font-size: 14px; margin: 20px 0;">진행 상황이 초기화되고<br>첫 화면으로 돌아갑니다.<br>계속할까요?</p>
     <button id="confirm-reset-btn" class="custom-btn">예</button>
     <button id="cancel-reset-btn" class="custom-btn" style="margin-left: 10px;">아니오</button>
