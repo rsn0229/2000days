@@ -114,12 +114,21 @@ body {
   opacity: 0.8; /* 너무 튀지 않게 살짝 연하게 */
 }
 
-/* 🚀 자체 디자인 버튼 및 인풋 */
+/* 🚀 자체 디자인 버튼 및 인풋 (강력한 클릭 방어막 추가!) */
 .custom-input {
   background: transparent; border: none; border-bottom: 1px dashed #8d6e63;
   text-align: center; font-family: inherit; font-size: 16px; color: #3e2723;
   padding: 5px; margin-bottom: 20px; outline: none; width: 80%;
+  
+  /* 💡 추가된 코드: 회전 버그 무시 및 선택 강제 활성화 */
+  position: relative !important;
+  z-index: 100 !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
 }
+
 .custom-btn {
   padding: 8px 16px; background-color: #fffaf0;
   border: 1px solid #d7ccc8; border-radius: 4px;
