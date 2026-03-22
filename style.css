@@ -1405,38 +1405,51 @@ body {
 .invitation-left-col img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 이미지를 꽉 차게 잘라서 배치 */
-  object-position: center; /* 💡 추가: 잘리더라도 무조건 '이미지의 정중앙'을 유지하도록 강제! */
+  /* 💡 cover 대신 contain을 써서 html2canvas 캡처 시 찌그러지는 버그 방지 및 원본 그림 보호 */
+  object-fit: contain; 
+  object-position: center; 
   display: block;
 }
 
-/* ✍️ 오른쪽 컬럼: 문구 영역 (50% 차지 및 패딩 조절) */
+/* ✍️ 오른쪽 컬럼: 문구 영역 (패딩 균형 조절로 중앙 정렬 실현) */
 .invitation-right-col {
-  flex: 1; /* 너비 반반 */
+  flex: 1;
   width: 50%;
-  padding: 30px 20px 70px 20px; /* 버튼 그룹 공간 확보를 위해 하단 패딩 */
+  /* 💡 중요: 하단 패딩(70px)을 위쪽과 똑같이(30px) 맞춰야 내용이 정중앙에 옵니다! */
+  padding: 30px 20px; 
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 세공문구 중앙 정렬 */
+  justify-content: center; /* 💡 이제 위아래 여백이 같으므로 완벽한 중앙 정렬이 됩니다 */
   text-align: center;
+  box-sizing: border-box;
 }
 
 /* 상단 Wedding Day 문구 */
 .invitation-title {
   font-size: 45px; 
-  color: #3e2723; /* 💡 금색에서 묵직한 검정(다크 브라운)으로 변경 */
+  color: #3e2723;
   font-weight: bold;
-  margin-bottom: 5px; /* 💡 바로 아래에 since 문구가 오므로 간격을 좁힘 (기존 20px -> 5px) */
+  margin-bottom: 8px; /* 💡 since 문구와의 간격을 살짝 더 확보 */
   font-family: 'Tangerine', cursive; 
 }
 
-/* 💡 새로 추가된 since 문구 스타일 */
+/* since 문구 */
 .since-text {
-  font-family: 'Courier New', monospace; /* 타자기를 친 듯한 정갈한 감성 폰트 */
+  font-family: 'Courier New', monospace;
   font-size: 11px;
-  color: #a1887f; /* 💡 기본 글자색(#5d4037)보다 살짝 더 연하고 부드러운 색상 */
-  letter-spacing: 1px;
-  margin-bottom: 35px; /* 아래쪽 이름 영역과의 간격 띄우기 */
+  color: #a1887f;
+  letter-spacing: 2px;
+  margin-bottom: 35px; /* 💡 이름 영역과의 간격을 넉넉히 주어 시원하게 배치 */
+}
+
+/* 초대 문구 본문 */
+.invitation-text {
+  font-size: 14px;
+  color: #5d4037;
+  /* 💡 줄간격을 1.8~2.0 정도로 넉넉하게 주어 감성적인 여운을 줍니다 */
+  line-height: 1.8; 
+  margin-bottom: 0; /* 💡 마지막 요소이므로 하단 마진 제거 */
+  word-break: keep-all;
 }
 
 /* 영문 이름 */
@@ -1454,13 +1467,6 @@ body {
   color: #8d6e63;
   margin-top: 4px;
   letter-spacing: 1px;
-}
-
-.invitation-text {
-  font-size: 14px; /* 엽서 크기에 맞춰 살짝 조절 */
-  color: #5d4037;
-  line-height: 1.7;
-  margin-bottom: 25px;
 }
 
 /* 💡 암전 및 청첩장 컨테이너 (세로 정렬 추가) */
@@ -1665,23 +1671,33 @@ body {
   opacity: 0.6;
 }
 
-/* 💡 [반응형] 모바일 화면(가로 600px 이하)에서 엽서 비율과 레이아웃 유지하며 전체 크기 축소 */
+/* 💡 [반응형] 모바일 화면(가로 600px 이하) 수정 */
 @media (max-width: 600px) {
-  /* 오른쪽 텍스트 영역 여백 비례 축소 */
+  /* 오른쪽 텍스트 영역 여백 균형 조절 */
   .invitation-right-col {
-    padding: 15px 10px 45px 10px; /* 버튼 공간 확보를 위해 하단 여백 유지 */
+    padding: 20px 10px; /* 💡 모바일도 위아래 여백을 동일하게 맞춰 중앙 정렬 */
   }
   
-  /* 폰트 크기 비례 축소 */
   .invitation-title {
-    font-size: 28px; /* 기존 45 -> 28 (Tangerine은 작게 보이므로 너무 줄이지 않음) */
-    margin-bottom: 10px;
+    font-size: 32px; /* 💡 너무 작지 않게 살짝 키움 */
+    margin-bottom: 5px;
   }
+
+  .since-text {
+    margin-bottom: 20px; /* 💡 모바일 공간에 맞춰 적절히 축소 */
+  }
+
   .invitation-text {
-    font-size: 11px; /* 기존 14 -> 11 */
-    margin-bottom: 15px;
-    line-height: 1.4;
+    font-size: 11.5px;
+    line-height: 1.6; /* 💡 모바일에서도 답답하지 않은 줄간격 유지 */
   }
+  
+  /* 커플 이름 크기 조절 */
+  .name-eng {
+    font-size: 26px; 
+  }
+}
+
   .invitation-names {
     font-size: 22px; /* 기존 40 -> 22 */
   }
