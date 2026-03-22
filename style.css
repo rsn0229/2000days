@@ -8,12 +8,12 @@
   -webkit-touch-callout: none; /* 아이폰(iOS) 길게 누르기 메뉴 방지 */
 }
 
-/* 💡 단, 입력창(닉네임, 퍼즐 등)은 타이핑과 커서 이동이 가능해야 하므로 예외 처리! */
-input {
-  -webkit-user-select: auto;
-  -moz-user-select: auto;
-  -ms-user-select: auto;
-  user-select: auto;
+/* 💡 단, 입력창(닉네임, 퍼즐 등)은 타이핑과 커서 이동이 가능해야 하므로 확실하게 text로 예외 처리! */
+input, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 body {
