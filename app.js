@@ -1,9 +1,11 @@
 (function() {
   document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'INPUT') return; 
     e.preventDefault();
   });
 
   document.addEventListener('dragstart', function(e) {
+    if (e.target.tagName === 'INPUT') return; 
     e.preventDefault();
   });
 
