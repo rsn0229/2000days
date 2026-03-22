@@ -17,6 +17,47 @@ const DOM = {
   modalCloseBtn: document.getElementById('modal-close-btn')
 };
 
+// 💡 엔딩 크레딧 버튼 로직 (에러 방지를 위해 이벤트 위임 방식으로 변경!)
+document.addEventListener('click', async (e) => {
+  // 클릭한 요소의 ID가 'credit-btn'일 때만 아래 로직을 실행합니다.
+  if (e.target && e.target.id === 'credit-btn') {
+    const creditOverlay = document.getElementById('ending-credit-overlay');
+    const nameListContainer = document.getElementById('player-names-list');
+    const creditContent = document.getElementById('credit-content');
+
+    // 1. 화면을 완전히 까맣게 전환
+    if (creditOverlay) creditOverlay.classList.add('show');
+
+    // 💡 2. 구글 앱스 스크립트(GAS) Web App URL (여기에 본인의 배포 URL을 넣으세요!)
+    const GAS_URL = "https://script.google.com/macros/s/본인의_GAS_URL/exec";
+
+    try {
+       // GAS에서 데이터 불러오기 (배열 형태로 이름 목록을 리턴한다고 가정)
+       // const response = await fetch(GAS_URL);
+       // const data = await response.json(); 
+       
+       // 테스트용 더미 데이터 (실제 GAS 연동 시 이 부분 지우고 위 주석을 해제하세요!)
+       const data = ["헬가", "발터", "비앙카", "리카르도", "소중한 분", userNickname];
+
+       // 3. 불러온 이름들을 HTML로 만들어서 삽입
+       if (data && data.length > 0) {
+         nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
+       } else {
+         nameListContainer.innerHTML = "<p style='color:#888;'>첫 번째 클리어가 되어주셔서 감사합니다.</p>";
+       }
+
+    } catch (error) {
+       console.error(error);
+       nameListContainer.innerHTML = "<p style='color:#888;'>기록을 불러오지 못했습니다.</p>";
+    }
+
+    // 4. 화면이 까매진 후 1.5초 뒤에 크레딧 텍스트를 위로 올리기 시작!
+    setTimeout(() => {
+      if (creditContent) creditContent.classList.add('scroll-up');
+    }, 1500);
+  }
+});
+
 // 💡 커스텀 모달 제어 함수
 function showModal(htmlContent, showCloseBtn = true) {
   DOM.modalContent.innerHTML = htmlContent;
@@ -107,6 +148,56 @@ function showScript() {
 
   // 💡 2) 챕터가 끝났을 때의 처리
   if (currentScriptIdx >= scripts.length) {
+    // 최종장(12장)의 마지막 스크립트까지 모두 읽었다면?
+    if (currentChapterIdx === 12) {
+      // 💡 1. 극적인 BGM 전환! (청첩장 등장과 함께 bgm7.mp3 재생)
+      bgmAudio.src = "assets/bgm7.mp3";
+      bgmAudio.loop = true;
+      bgmAudio.play().catch(e => console.log("BGM 자동재생 방지됨"));
+
+      // 💡 2. 암전 및 청첩장 연출 트리거 발동!
+      const overlay = document.getElementById('finale-overlay');
+      if (overlay) overlay.classList.add('blackout');
+
+      // 청첩장에 유저 이름 넣기
+      const finaleNameEl = document.getElementById('finale-player-name');
+      if (finaleNameEl) finaleNameEl.innerText = userNickname || '소중한 분';
+
+      // 💡 3. 실제 다운로드 버튼 기능 연결
+      const downloadBtn = document.getElementById('download-btn');
+      if (downloadBtn) {
+        downloadBtn.onclick = () => {
+          const inviteCard = document.querySelector('.wedding-invitation');
+          const btnGroup = document.getElementById('finale-btn-group');
+          
+          btnGroup.style.display = 'none';
+
+          // 💡 html2canvas 옵션에 useCORS와 allowTaint 추가
+          html2canvas(inviteCard, {
+            scale: 2, 
+            backgroundColor: "#ffffff",
+            useCORS: true,   // 💡 교차 출처 이미지 사용 허용
+            allowTaint: true // 💡 오염된 캔버스라도 렌더링 허용
+          }).then(canvas => {
+            try {
+              const imageUrl = canvas.toDataURL('image/png');
+              const link = document.createElement('a');
+              link.download = '로잔나_마야_청첩장.png'; 
+              link.href = imageUrl;
+              link.click(); 
+            } catch (err) {
+              console.error("이미지 추출 중 보안 에러 발생:", err);
+              alert("로컬 환경(file://)에서는 보안 정책상 다운로드가 제한될 수 있습니다. 서버(Live Server 등)를 통해 실행해 주세요.");
+            }
+
+            btnGroup.style.display = 'flex';
+          });
+        };
+      }
+      return; // 일반 챕터처럼 다음으로 넘어가지 않고 여기서 진행을 멈춤!
+    }
+
+    // 일반 챕터일 경우 평소처럼 다음 챕터로 넘어감
     currentChapterIdx++;
     localStorage.setItem("chapter", currentChapterIdx);
     loadChapter(currentChapterIdx);
@@ -172,9 +263,9 @@ function renderPuzzle() {
     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 15px;">
       <h3 class="tt-title" style="margin: 0;">잠긴 자물쇠</h3>
       <div style="position: relative;">
-        <button id="modal-hint-btn" style="background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[업무 수첩]</button>
+        <button id="modal-hint-btn" style="background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[도움말]</button>
         <div id="hint-text" class="hidden hint-bubble">
-          <strong>업무 수첩:</strong><br><span style="margin-top:5px; display:inline-block;">${chapterData.hint}</span>
+          <strong>도움말:</strong><br><span style="margin-top:5px; display:inline-block;">${chapterData.hint}</span>
         </div>
       </div>
     </div>
@@ -218,15 +309,25 @@ document.getElementById('reset-btn').addEventListener('click', () => {
   });
 });
 
-// 💡 빈 공간(바깥쪽) 클릭 시 힌트 말풍선 닫기
+// 💡 [수정] 엔딩 크레딧의 '처음으로 돌아가기' 버튼 전용 리스너
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.id === 'restart-btn') {
+    // 1. 저장된 데이터 삭제
+    localStorage.removeItem("chapter");
+    localStorage.removeItem("nickname");
+    
+    // 2. 페이지 새로고침하여 초기 화면(이름 입력)으로 이동
+    location.reload(); 
+  }
+});
+
+// (기존 모달 닫기 로직은 힌트 기능만 남겨두세요)
 DOM.modalOverlay.addEventListener('click', (e) => {
   const hintEl = document.getElementById('hint-text');
-  
-  // 힌트 창이 존재하고, 열려있는 상태일 때
   if (hintEl && !hintEl.classList.contains('hidden')) {
-    // 클릭한 곳이 힌트 말풍선 내부가 아니라면 닫기
     if (!hintEl.contains(e.target)) {
       hintEl.classList.add('hidden');
     }
   }
 });
+

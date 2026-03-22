@@ -895,11 +895,11 @@ body {
   margin-bottom: 15px;
 }
 
-/* 9장: 별자리 회전하기 (불꽃놀이) UI */
+/* 🚀 9장: 인파 속 길 찾기 (파이프라인) UI */
 .night-sky-box {
-  background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77); /* 깊은 밤하늘 그라데이션 */
+  background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
   border-radius: 8px;
-  padding: 30px 10px;
+  padding: 20px 10px 30px 10px;
   position: relative;
   overflow: hidden;
   box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
@@ -907,40 +907,584 @@ body {
   text-align: center;
 }
 
-.constellation-wrapper {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-top: 20px;
+.path-puzzle-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-top: 15px;
 }
 
-.constellation-item {
-  width: 65px;
-  height: 65px;
+/* 🚀 9장: 인파 속 길 찾기 (파이프라인) UI */
+.night-sky-box {
+  background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
+  border-radius: 8px;
+  padding: 20px 10px 30px 10px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.path-puzzle-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-top: 15px;
+}
+
+/* 4x4 타일 보드 */
+.path-board {
+  display: grid;
+  grid-template-columns: repeat(4, 55px);
+  grid-template-rows: repeat(4, 55px);
+  gap: 2px;
+  background-color: #000000;
+  padding: 4px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.path-tile {
+  width: 55px;
+  height: 55px;
+  background-color: #2c3e50; /* 어두운 공원 타일 */
+  border-radius: 4px;
   cursor: pointer;
-  /* 통통 튀면서 돌아가는 애니메이션 */
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.2, 1.2, 0.4, 1);
+}
+
+.path-tile:active {
+  filter: brightness(1.3);
+}
+
+.path-tile svg {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* 💡 이모지 대신 굵직한 금빛 기호로 바꾼 진입/탈출 화살표 */
+.path-entrance, .path-exit {
+  position: absolute;
+  font-size: 32px;
+  font-weight: 900;
+  color: #fff9c4; /* 파이프 길과 동일한 색상 */
+  line-height: 55px;
+  animation: pulse-arrow 1.5s infinite alternate;
+}
+.path-entrance {
+  top: 4px; 
+  left: -35px;
+}
+.path-exit {
+  bottom: 4px; 
+  right: -35px;
+}
+
+@keyframes pulse-arrow {
+  0% { transform: translateX(0); opacity: 0.6; }
+  100% { transform: translateX(5px); opacity: 1; }
+}
+
+/* 🚀 10장: 청혼 (영문 자물쇠 암호) UI - 고급스러운 황동(Brass) 재질 */
+.metal-plate {
+  /* 💡 묵직하고 은은하게 빛나는 황동색 그라데이션 */
+  background: linear-gradient(135deg, #d4af37, #a67c00, #f8e5a2, #8b6508);
+  border: 4px solid #8b6508;
+  border-radius: 8px;
+  padding: 30px 15px;
+  text-align: center;
+  box-shadow: inset 0 0 20px rgba(139, 101, 8, 0.6), 0 5px 15px rgba(0,0,0,0.3);
+  margin-top: 15px;
+  position: relative;
+}
+
+.metal-text {
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: bold;
+  /* 💡 깊게 파인 음각 처리 (황동에 어울리는 어두운 고동색) */
+  color: #3e2723;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5), -1px -1px 2px rgba(0, 0, 0, 0.6);
+  letter-spacing: 3px;
+  margin-bottom: 25px;
+}
+
+/* 다이얼 그룹 */
+.dial-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+/* 💡 다이얼 홈 (어두운 기계장치 내부 느낌) */
+.dial-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #2e1d16; 
+  border: 2px solid #b38728;
+  border-radius: 6px;
+  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.4);
   padding: 5px;
 }
 
-/* 터치했을 때 살짝 빛나는 효과 */
-.constellation-item:active {
-  background: rgba(255, 255, 255, 0.1);
+/* 조작 버튼 (위/아래 화살표) */
+.dial-btn {
+  background: transparent;
+  border: none;
+  color: #b38728; /* 어두운 곳에서 은은하게 빛나는 톤 */
+  font-size: 16px;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: transform 0.1s, color 0.2s;
 }
 
-/* 펑! 터지는 폭죽 애니메이션 */
-.firework-emoji {
+.dial-btn:active {
+  transform: scale(0.8);
+  color: #f8e5a2; /* 💡 누를 때 밝은 금빛으로 반짝임 */
+}
+
+/* 현재 선택된 알파벳 표시 */
+.dial-letter {
+  font-family: 'Courier New', monospace;
+  font-size: 28px;
+  font-weight: bold;
+  color: #fdfbf7;
+  margin: 5px 0;
+  width: 30px;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  user-select: none;
+}
+
+/* 🚀 11장: 보석 세공 (패턴 기억 퍼즐) UI - 측면 다이아몬드 컷팅(Brilliant Cut) 복원 버전 */
+.gem-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.gem-status {
+  text-align: center;
+  font-weight: bold;
+  color: #8b6508;
+  background: rgba(139, 101, 8, 0.05);
+  padding: 8px 15px;
+  border-radius: 15px;
+  font-size: 13px;
+  margin-bottom: 25px;
+  min-height: 20px;
+  transition: all 0.3s;
+}
+
+/* 4개의 보석이 놓일 팔레트 ('어두운 흑갈색 벨벳' 느낌) */
+.gem-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  padding: 30px;
+  background: radial-gradient(circle at center, #3e2723 0%, #1e110d 100%);
+  border-radius: 20px;
+  border: none;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* 보석 래퍼 */
+.gem-btn {
+  width: 70px;
+  height: 50px; /* 옆면 모습이므로 비율을 낮춤 */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  opacity: 0.7; /* 평소에는 빛이 죽어있음 */
+  background: transparent; 
+  position: relative;
+  overflow: visible;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+}
+
+/* 💡 레이어 구조 정의 (z-index)
+   - .gem-btn::before (Base Shape) : z-index 1 (가장 아래)
+   - .gem-btn (Body, Side Facets) : 배경으로 Base 색상 깔림
+   - .gem-btn::before (윗면 사다리꼴) : z-index 2
+   - .gem-btn::after (중앙 아래 삼각형) : z-index 3 (가장 위)
+*/
+
+/* 1. 다이아몬드 외각 형태 및 전체 베이스 색상 (.gem-btn 자체) */
+.gem-btn {
+  /* 제공된 SVG/이미지에 기반한 정교한 측면 컷 coordinates */
+  clip-path: polygon(20% 0%, 80% 0%, 100% 30%, 50% 100%, 0% 30%);
+  
+  /* 💡 각 보석 고유의 어두운 외각 색상 */
+  background: var(--gem-outer);
+}
+
+/* 2. 💡 복원: 윗면 사다리꼴 (Table Facet, 두 번째로 밝음) */
+.gem-btn::before {
+  content: '';
   position: absolute;
-  font-size: 40px;
-  pointer-events: none;
-  opacity: 0;
-  animation: firework-pop 1s ease-out forwards;
-  z-index: 10;
+  top: 0; left: 20%; width: 60%; height: 30%; /* 전체 높이의 30% */
+  
+  /* 사다리꼴 모양 정의 */
+  clip-path: polygon(0% 0%, 100% 0%, 94% 100%, 6% 100%);
+  
+  background: var(--gem-table);
+  z-index: 2; /* 아래 베이스 보다는 위 */
 }
 
-@keyframes firework-pop {
-  0% { transform: scale(0.2) translateY(30px); opacity: 1; }
-  50% { transform: scale(1.5) translateY(-10px); opacity: 1; }
-  100% { transform: scale(2) translateY(-20px); opacity: 0; }
+/* 3. 💡 복원 및 최상위 레이어 배치: 중앙 하단 삼각형 (Pavilion Center, 가장 밝음) */
+.gem-btn::after {
+  content: '';
+  position: absolute;
+  top: 30%; left: 25%; width: 50%; height: 70%; /* 전체 높이의 70% */
+  
+  /* 💡 사다리꼴 아래에 완벽하게 맞물리는 뾰족한 삼각형 */
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  
+  background: var(--gem-center);
+  z-index: 3; /* 윗면 사다리꼴 위에 배치하여 찬란하게 빛나게 함 */
+}
+
+/* 4가지 보석의 딥한 컷팅 색상 변수 정의 (어두움 -> 밝음 -> 가장 밝음 단계) */
+/* 파랑 다이아몬드 (기존 SVG Azul 그대로 사용) */
+.gem-blue { 
+  --gem-outer: #42A0E5; /* 어두운 측면 */
+  --gem-table: #4FC1F8; /* 윗면 사다리꼴 */
+  --gem-center: #80D4FD; /* 💡 중앙 아래 삼각형 (가장 밝음) */
+}
+/* 초록 다이아몬드 (제공된 SVG 초록색으로 변경) */
+.gem-yellow { 
+  --gem-outer: #61BC88; 
+  --gem-table: #7CDDA8; 
+  --gem-center: #A1FFCE; /* 💡 중앙 아래 삼각형 (가장 밝음) */
+}
+/* 흰색 다이아몬드 (기존 하양) */
+.gem-white { 
+  --gem-outer: #9e9e9e; 
+  --gem-table: #bdbdbd; 
+  --gem-center: #ffffff; /* 💡 중앙 아래 삼각형 (가장 밝음) */
+}
+/* 보라 다이아몬드 (기존 보라) */
+.gem-purple { 
+  --gem-outer: #6a1b9a; 
+  --gem-table: #ab47bc; 
+  --gem-center: #ce93d8; /* 💡 중앙 아래 삼각형 (가장 밝음) */
+}
+
+/* 보석이 빛날 때 (Active) */
+.gem-btn.active {
+  opacity: 1;
+  transform: scale(1.15) translateY(-6px); /* 누르면 찬란하게 떠오름 */
+}
+
+/* 색상별로 바깥으로 퍼져나가는 강력한 네온 글로우(Glow) 부여 */
+.gem-blue.active { filter: drop-shadow(0 0 15px #00e5ff) brightness(1.2); }
+.gem-yellow.active { filter: drop-shadow(0 0 15px #00ff88) brightness(1.2); }
+.gem-white.active { filter: drop-shadow(0 0 15px #ffffff) brightness(1.2); }
+.gem-purple.active { filter: drop-shadow(0 0 15px #d500f9) brightness(1.2); }
+
+/* 🚀 12장: 최종장 (구글 맵 & 우편번호 찾기) UI */
+.map-container {
+  width: 100%;
+  height: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 3px solid #d7ccc8;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom: 15px;
+}
+.map-container iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* 주소가 적힌 고급스러운 쪽지 */
+.address-note {
+  background: #fdfbf7;
+  border: 1px solid #d7ccc8;
+  padding: 15px;
+  border-radius: 4px;
+  font-size: 15px;
+  color: #3e2723;
+  text-align: center;
+  box-shadow: 1px 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* 5자리 우편번호(Postal Code) 입력칸 */
+.postal-group {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.postal-input {
+  width: 35px;
+  height: 45px;
+  font-size: 20px;
+  text-align: center;
+  border: 2px solid #a1887f;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #3e2723;
+  font-weight: bold;
+  outline: none;
+  transition: all 0.2s;
+  /* 모바일에서 숫자 키패드가 뜨도록 설정하지만 화살표는 숨김 */
+  -moz-appearance: textfield;
+}
+.postal-input::-webkit-outer-spin-button,
+.postal-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.postal-input:focus {
+  border-color: #bf360c;
+  box-shadow: 0 0 8px rgba(191,54,12,0.3);
+}
+
+/* 💡 최종 보상: 암전(Blackout) 및 청첩장 연출 */
+.finale-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0); /* 처음엔 투명 */
+  pointer-events: none;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 2.5s ease-in-out; /* 2.5초 동안 서서히 완벽한 암전 */
+}
+
+/* 정답 시 JS에서 이 클래스를 붙여줍니다 */
+.finale-overlay.blackout {
+  background: rgba(0, 0, 0, 1);
+  pointer-events: all;
+}
+
+/* 🚀 최종장: 가로 직각 엽서 스타일 (청혼엽서) */
+.wedding-invitation {
+  width: 90%;
+  max-width: 650px; /* 💡 가로형 엽서 너비로 확장 */
+  background: #fff;
+  border: 4px solid #d4af37; /* 금빛 테두리 */
+  
+  /* 💡 직각 모서리 적용 */
+  border-radius: 0; 
+  
+  /* 💡 두 컬럼 가로 배치를 위한 Flexbox 적용 */
+  display: flex;
+  position: relative; /* 버튼 그룹 배치를 위해 설정 */
+  overflow: hidden; /* 이미지 돌출 방지 */
+  box-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 2s ease-in-out;
+  transition-delay: 1.5s;
+}
+
+/* 암전 트리거 발동 시 부드럽게 나타남 */
+.finale-overlay.blackout .wedding-invitation {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 🖼️ 왼쪽 컬럼: 이미지 영역 (50% 차지) */
+.invitation-left-col {
+  flex: 1; /* 너비 반반 */
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.invitation-left-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 💡 이미지를 꽉 차게 잘라서 배치 */
+  display: block;
+}
+
+/* ✍️ 오른쪽 컬럼: 문구 영역 (50% 차지 및 패딩 조절) */
+.invitation-right-col {
+  flex: 1; /* 너비 반반 */
+  width: 50%;
+  padding: 30px 20px 70px 20px; /* 버튼 그룹 공간 확보를 위해 하단 패딩 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 세공문구 중앙 정렬 */
+  text-align: center;
+}
+
+/* (기존 폰트 스타일은 유지) */
+.invitation-title {
+  font-size: 20px; /* 엽서 크기에 맞춰 살짝 조절 */
+  color: #8b6508;
+  font-weight: bold;
+  margin-bottom: 20px;
+  letter-spacing: 2px;
+  font-family: 'Gowun Batang', serif;
+}
+
+.invitation-text {
+  font-size: 14px; /* 엽서 크기에 맞춰 살짝 조절 */
+  color: #5d4037;
+  line-height: 1.7;
+  margin-bottom: 25px;
+}
+
+.invitation-names {
+  font-size: 17px; /* 엽서 크기에 맞춰 살짝 조절 */
+  font-weight: bold;
+  color: #3e2723;
+  margin-bottom: 0; /* 마지막 요소라 마진 제거 */
+  font-family: 'Gowun Batang', serif;
+}
+
+/* 💡 청첩장 하단 버튼 그룹 (우측 컬럼 하단에 절대 배치) */
+.finale-btn-group {
+  position: absolute;
+  bottom: 15px;
+  right: 15px; /* 우측 컬럼 하단에 배치 */
+  width: 50%; /* 우측 컬럼 너비에 맞춰 설정 */
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 10px;
+}
+
+.download-btn, .credit-btn {
+  flex: 1;
+  padding: 10px 5px; /* 좁은 공간을 고려해 패딩 조절 */
+  border-radius: 4px;
+  font-size: 13px; /* 좁은 공간을 고려해 폰트 크기 조절 */
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* (다운로드/크레딧 버튼 디자인 유지) */
+.download-btn { background: #8b6508; color: #ffffff; border: none; }
+.download-btn:hover { background: #5c4305; }
+.credit-btn { background: #fdfbf7; color: #8b6508; border: 2px solid #8b6508; }
+.credit-btn:hover { background: #f4ecd8; }
+
+/* 🚀 최종장: 엔딩 크레딧 연출 (위아래 페이드아웃 효과 적용) */
+.ending-credit-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #000000;
+  color: #ffffff;
+  z-index: 10000; 
+  display: flex;
+  align-items: center;     /* 창문을 세로 중앙에 배치 */
+  justify-content: center; /* 창문을 가로 중앙에 배치 */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 2s ease-in-out;
+}
+
+.ending-credit-overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* 💡 핵심: 텍스트가 스크롤 될 '창문' 영역 */
+.credit-window {
+  width: 80%;
+  max-width: 400px;
+  height: 60vh; /* 화면 높이의 60% 구간에서만 텍스트가 보임 */
+  position: relative;
+  overflow: hidden; /* 창문 밖으로 나가는 텍스트 숨김 */
+  
+  /* 💡 위아래 끝부분 15% 정도는 자연스럽게 까맣게 사라지도록 그라데이션 마스크 처리 */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+
+/* 크레딧 텍스트 덩어리 */
+.credit-content {
+  position: absolute;
+  top: 100%; 
+  width: 100%;
+  text-align: center;
+  line-height: 2;
+  /* 💡 핵심: 하단에 창문 높이의 절반(30vh)만큼 투명한 여백을 줍니다. 
+     이렇게 하면 애니메이션이 100% 올라갔을 때 텍스트가 날아가지 않고 화면 중앙에서 딱 멈춥니다! */
+  padding-bottom: 30vh; 
+}
+
+/* 마지막 문구 영역 */
+.credit-finale {
+  margin-top: 100px;
+}
+
+
+/* 타이틀 폰트 적용 */
+.credit-title {
+  color: #d4af37; 
+  margin-bottom: 50px; 
+  font-family: inherit;
+}
+
+/* 불러온 유저 이름 스타일 */
+.credit-name {
+  font-size: 16px;
+  color: #cfd8dc;
+  margin: 12px 0;
+  letter-spacing: 2px;
+}
+
+/* JS에서 이 클래스를 붙여주면 애니메이션 시작! */
+.credit-content.scroll-up {
+  /* 💡 1. 크레딧 속도 0.8배 느리게 (15초 -> 19초로 연장) */
+  animation: scrollCredits 19s linear forwards; 
+}
+
+/* 스크롤 애니메이션 키프레임 */
+@keyframes scrollCredits {
+  0% { transform: translateY(0); }
+  /* 💡 2. 범인이었던 top: 0; 을 제거! 이제 화면 밖으로 날아가지 않고 중앙에서 딱 멈춥니다. */
+  100% { transform: translateY(-100%); } 
+}
+
+/* 처음으로 돌아가기 버튼 (반투명 검정) */
+.restart-btn {
+  background: rgba(0, 0, 0, 0.5);
+  color: #cfd8dc;
+  border: 1px solid #78909c;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  position: relative;
+  z-index: 10001; 
+  
+  /* 💡 3. 처음에는 완전히 투명하게 숨기고 클릭도 안 되게 막아둠 */
+  opacity: 0;
+  pointer-events: none; 
+}
+
+.restart-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: #cfd8dc;
+}
+
+/* 💡 4. 크레딧 스크롤이 끝날 때쯤(19초 뒤) 버튼이 스르륵 나타나는 애니메이션 추가 */
+.credit-content.scroll-up .restart-btn {
+  animation: fadeInRestart 2s ease-in-out forwards;
+  animation-delay: 19s; /* 스크롤 끝나는 시간에 맞춤! */
+}
+
+@keyframes fadeInRestart {
+  0% { opacity: 0; pointer-events: none; }
+  100% { opacity: 1; pointer-events: all; }
 }

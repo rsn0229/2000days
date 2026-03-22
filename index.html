@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Color+Emoji&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -51,5 +52,47 @@
   <script src="puzzles.js"></script>
   <script src="api.js"></script>
   <script src="app.js"></script>
-</body>
+<div class="finale-overlay" id="finale-overlay">
+    <div class="wedding-invitation">
+        
+        <div class="invitation-left-col">
+          <img src="assets/wedding.png" alt="웨딩 이미지">
+        </div>
+
+        <div class="invitation-right-col">
+          <div class="invitation-title">Wedding Invitation</div>
+          <div class="invitation-text">
+            "시간이 허락하는 한,<br>내게로 밀려오는 파도를<br>영원히 곁에 두고 싶어졌어."<br><br>
+            <strong id="finale-player-name">소중한 분</strong> 님을<br>약속의 자리에<br>초대합니다.
+          </div>
+          <div class="invitation-names">
+            Rosanna de Medici & Maya Schmitt
+          </div>
+        </div>
+
+        <div class="finale-btn-group" id="finale-btn-group">
+          <button class="download-btn" id="download-btn">💌 저장하기</button>
+          <button class="credit-btn" id="credit-btn">🎬 엔딩 크레딧</button>
+        </div>
+      </div>
+<div class="ending-credit-overlay" id="ending-credit-overlay">
+    <div class="credit-window">
+      <div class="credit-content" id="credit-content">
+        <h2 class="credit-title">- 함께해 주신 분들 -</h2>
+        
+        <div id="player-names-list">
+          <p style="color: #888;">항해 기록을 불러오는 중...</p>
+        </div>
+        
+<div class="credit-finale">
+          <h2 style="color: #fff; margin-bottom: 15px;">플레이해주셔서 감사합니다!</h2>
+          <p style="font-size: 12px; color: #757575; font-family: 'Courier New', monospace; margin-bottom: 40px;">
+            Copyright 2026. R. All rights reserved.
+          </p>
+          <button id="restart-btn" class="restart-btn">처음으로 돌아가기</button>
+        </div>
+
+      </div>
+    </div>
+  </div></body>
 </html>

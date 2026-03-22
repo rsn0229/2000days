@@ -830,83 +830,381 @@ const PuzzleHandlers = {
     return { ui, init };
   },
 
-// 9. 축제의 밤 : 불꽃놀이 (별자리 회전하기)
-  constellation: (puzzle, onComplete) => {
-    // 초기 각도: 정답(0도)이 되지 않도록 90, 270, 180도로 섞어둠
-    let angles = [90, 270, 180];
-    
-    // CSS 없이 그리는 순수 SVG 별자리 3개 (카시오페이아, 백조, 북두칠성 모티브)
-    const svgs = [
-      // 1번: W 모양 별자리
-      `<svg viewBox="0 0 100 100"><polyline points="15,25 35,65 50,40 65,65 85,25" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/><circle cx="15" cy="25" r="5" fill="#fff9c4"/><circle cx="35" cy="65" r="5" fill="#fff9c4"/><circle cx="50" cy="40" r="5" fill="#fff9c4"/><circle cx="65" cy="65" r="5" fill="#fff9c4"/><circle cx="85" cy="25" r="5" fill="#fff9c4"/></svg>`,
-      // 2번: 십자가 모양 별자리
-      `<svg viewBox="0 0 100 100"><polyline points="50,15 50,85" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/><polyline points="20,40 80,40" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/><circle cx="50" cy="15" r="5" fill="#fff9c4"/><circle cx="50" cy="40" r="5" fill="#fff9c4"/><circle cx="50" cy="85" r="5" fill="#fff9c4"/><circle cx="20" cy="40" r="5" fill="#fff9c4"/><circle cx="80" cy="40" r="5" fill="#fff9c4"/></svg>`,
-      // 3번: 국자 모양 별자리
-      `<svg viewBox="0 0 100 100"><polyline points="10,80 40,70 60,40 90,20" stroke="rgba(255,255,255,0.6)" stroke-width="2" fill="none"/><circle cx="10" cy="80" r="5" fill="#fff9c4"/><circle cx="40" cy="70" r="5" fill="#fff9c4"/><circle cx="60" cy="40" r="5" fill="#fff9c4"/><circle cx="90" cy="20" r="5" fill="#fff9c4"/></svg>`
+// 9. 축제의 밤 : 인파 속 길 찾기 (파이프라인)
+  pipeline: (puzzle, onComplete) => {
+    const svgI = `<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="100" stroke="#fff9c4" stroke-width="14" stroke-linecap="square"/></svg>`;
+    const svgL = `<svg viewBox="0 0 100 100"><path d="M 50 0 L 50 50 L 100 50" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
+    const svgT = `<svg viewBox="0 0 100 100"><path d="M 0 50 L 100 50 M 50 50 L 50 100" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
+
+    // 💡 타일 배치 (어떻게 돌리든 입구부터 출구까지 이어지기만 하면 정답!)
+    const tiles = [
+      { type: 'T' }, { type: 'T' }, { type: 'L' }, { type: 'I' },
+      { type: 'L' }, { type: 'T' }, { type: 'L' }, { type: 'T' },
+      { type: 'L' }, { type: 'I' }, { type: 'L' }, { type: 'T' },
+      { type: 'T' }, { type: 'L' }, { type: 'I' }, { type: 'L' }
     ];
+
+    let currentAngles = tiles.map(() => Math.floor(Math.random() * 4) * 90);
 
     const ui = `
       <div class="night-sky-box" id="night-sky">
-        <div style="font-size: 13px; color: #cfd8dc; margin-bottom: 5px;">밤하늘의 별자리를 터치해 수평을 맞추세요</div>
-        <div class="constellation-wrapper">
-          ${svgs.map((svg, i) => `
-            <div class="constellation-item" id="const-${i}" data-idx="${i}" style="transform: rotate(${angles[i]}deg);">
-              ${svg}
-            </div>
-          `).join('')}
+        <div style="font-size: 13px; color: #cfd8dc; margin-bottom: 5px;">타일을 돌려 인파를 벗어날 길을 연결하세요</div>
+        <div class="path-puzzle-wrapper">
+          <div class="path-entrance">&#8680;</div>
+          <div class="path-board">
+            ${tiles.map((t, i) => {
+              let svg = svgI;
+              if (t.type === 'L') svg = svgL;
+              if (t.type === 'T') svg = svgT;
+              return `<div class="path-tile" data-idx="${i}" style="transform: rotate(${currentAngles[i]}deg);">${svg}</div>`;
+            }).join('')}
+          </div>
+          <div class="path-exit">&#8680;</div>
         </div>
       </div>
     `;
 
     const init = () => {
-      const items = document.querySelectorAll('.constellation-item');
-      const sky = document.getElementById('night-sky');
+      const domTiles = document.querySelectorAll('.path-tile');
       const submitBtn = document.getElementById('submit-puzzle');
 
-      // 별자리 터치 시 90도 회전
-      items.forEach(item => {
-        item.addEventListener('click', (e) => {
+      domTiles.forEach(tile => {
+        tile.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
-          angles[idx] += 90; // 시계 방향으로 90도 누적 회전
-          e.currentTarget.style.transform = `rotate(${angles[idx]}deg)`;
+          currentAngles[idx] += 90; 
+          e.currentTarget.style.transform = `rotate(${currentAngles[idx]}deg)`;
+        });
+      });
+
+      // 💡 핵심: 어떤 길을 만들었든 입구에서 출구까지 이어지는지 확인하는 경로 탐색기!
+      const checkPath = () => {
+        // 각 타일이 0도일 때 뚫린 방향 [상, 우, 하, 좌] (1=뚫림, 0=막힘)
+        const getPorts = (type, angle) => {
+          let base = type === 'I' ? [1, 0, 1, 0] : type === 'L' ? [1, 1, 0, 0] : [0, 1, 1, 1];
+          const rotations = ((angle % 360) + 360) % 360 / 90;
+          for (let i = 0; i < rotations; i++) {
+            base.unshift(base.pop()); // 90도 돌 때마다 배열을 우측으로 밀어줌
+          }
+          return base;
+        };
+
+        const board = tiles.map((t, i) => getPorts(t.type, currentAngles[i]));
+
+        // 시작점(0번 타일)의 '왼쪽(입구)'이 뚫려있지 않으면 무조건 실패
+        if (!board[0][3]) return false;
+
+        let visited = new Set([0]);
+        let queue = [0]; // 물이 퍼져나갈 타일 목록
+
+        while (queue.length > 0) {
+          let curr = queue.shift();
+          let r = Math.floor(curr / 4);
+          let c = curr % 4;
+          let ports = board[curr]; // 현재 타일의 [상, 우, 하, 좌]
+
+          // 1. 위쪽 연결 확인 (내 위쪽이 뚫림 & 윗칸의 아래쪽이 뚫림)
+          if (ports[0] && r > 0) {
+            let next = curr - 4;
+            if (board[next][2] && !visited.has(next)) { visited.add(next); queue.push(next); }
+          }
+          // 2. 오른쪽 연결 확인
+          if (ports[1]) {
+            if (c < 3) {
+              let next = curr + 1;
+              if (board[next][3] && !visited.has(next)) { visited.add(next); queue.push(next); }
+            } else if (c === 3 && curr === 15) {
+              // 💡 15번 타일(도착점)의 오른쪽(출구)이 뚫려있고 여기까지 물이 닿았다면 정답!
+              return true;
+            }
+          }
+          // 3. 아래쪽 연결 확인
+          if (ports[2] && r < 3) {
+            let next = curr + 4;
+            if (board[next][0] && !visited.has(next)) { visited.add(next); queue.push(next); }
+          }
+          // 4. 왼쪽 연결 확인
+          if (ports[3] && c > 0) {
+            let next = curr - 1;
+            if (board[next][1] && !visited.has(next)) { visited.add(next); queue.push(next); }
+          }
+        }
+        return false; // 다 찾아봤는데 출구에 못 닿았으면 실패
+      };
+
+      submitBtn.addEventListener('click', () => {
+        if (checkPath()) {
+          submitBtn.disabled = true; 
+          // 완성된 길을 0.8초간 예쁘게 보여준 뒤 다음 챕터로!
+          setTimeout(() => {
+            onComplete();
+          }, 500);
+        } else {
+          showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 출발해 오른쪽 화살표로 빠져나가야 합니다.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+        }
+      });
+    };
+
+    return { ui, init };
+  },
+
+// 10. 청혼 : 영원을 약속하며 (영문 자물쇠)
+  letter_lock: (puzzle, onComplete) => {
+    // 4개의 다이얼 초기 상태 (0 = 'A')
+    let dials = [0, 0, 0, 0]; 
+
+    // 인덱스를 알파벳 대문자로 변환해주는 함수 (0 -> A, 25 -> Z)
+    const getChar = (idx) => String.fromCharCode(65 + idx);
+
+    const ui = `
+      <div class="metal-plate">
+        <div class="metal-text">ANCHOR AND</div>
+        <div class="dial-group">
+          ${[0, 1, 2, 3].map(i => `
+            <div class="dial-column">
+              <button class="dial-btn btn-up" data-idx="${i}">▲</button>
+              <div class="dial-letter" id="dial-${i}">A</div>
+              <button class="dial-btn btn-down" data-idx="${i}">▼</button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #8d6e63; margin-top: 15px;">다이얼을 돌려 단어를 맞추세요</div>
+    `;
+
+    const init = () => {
+      const updateUI = () => {
+        dials.forEach((val, i) => {
+          document.getElementById(`dial-${i}`).innerText = getChar(val);
+        });
+      };
+
+      // 위로 돌리기 (A -> B -> C ... Z -> A)
+      document.querySelectorAll('.btn-up').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.currentTarget.dataset.idx);
+          dials[idx] = (dials[idx] + 1) % 26;
+          updateUI();
+        });
+      });
+
+      // 아래로 돌리기 (A -> Z -> Y ...)
+      document.querySelectorAll('.btn-down').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.currentTarget.dataset.idx);
+          dials[idx] = (dials[idx] - 1 + 26) % 26;
+          updateUI();
         });
       });
 
       // 정답 확인
-      submitBtn.addEventListener('click', () => {
-        // 모든 각도가 360으로 나누어 떨어지면(0도, 360도, 720도...) 정답
-        const isCorrect = angles.every(a => a % 360 === 0);
+      document.getElementById('submit-puzzle').addEventListener('click', () => {
+        const userAnswer = dials.map(val => getChar(val)).join('');
 
-        if (isCorrect) {
-          // 중복 클릭 방지
-          submitBtn.disabled = true; 
-          
-          // 폭죽 생성기 함수
-          const createFirework = (emoji, left, top, delay) => {
-            setTimeout(() => {
-              const fw = document.createElement('div');
-              fw.className = 'firework-emoji';
-              fw.innerText = emoji;
-              fw.style.left = left;
-              fw.style.top = top;
-              sky.appendChild(fw);
-            }, delay);
-          };
-
-          // 시간차를 두고 펑! 펑! 터지는 연출
-          createFirework('🎇', '15%', '30%', 0);
-          createFirework('🎆', '65%', '40%', 300);
-          createFirework('🎇', '40%', '10%', 600);
-          createFirework('🎆', '25%', '50%', 900);
-          createFirework('✨', '70%', '20%', 1200);
-
-          // 불꽃놀이 감상 후 2.2초 뒤에 클리어 및 다음 챕터 이동
-          setTimeout(() => {
-            onComplete();
-          }, 2200);
-
+        if (userAnswer === puzzle.answer) {
+          onComplete();
         } else {
-          showModal("<p>별자리들이 아직 제자리를 찾지 못한 것 같습니다.<br>수평과 수직이 바르게 맞는지 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>자물쇠가 열리지 않습니다.<br>우리가 영원히 함께할 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          document.getElementById('retry-btn').addEventListener('click', () => hideModal());
+        }
+      });
+    };
+
+    return { ui, init };
+  },
+// 11. 반지 : 보석 세공 (패턴 기억 퍼즐)
+  memory_gem: (puzzle, onComplete) => {
+    let currentRound = 1;
+    const maxRounds = 3; 
+    let sequence = [];   
+    let playerStep = 0;  
+    let isPlaying = false;    
+    let isPlayerTurn = false; 
+
+    const ui = `
+      <div class="gem-container">
+        <div class="gem-status" id="gem-status">아래의 '세공 시작' 버튼을 눌러주세요</div>
+        <div class="gem-board">
+          <div class="gem-btn gem-blue" data-idx="0"></div>
+          <div class="gem-btn gem-yellow" data-idx="1"></div>
+          <div class="gem-btn gem-white" data-idx="2"></div>
+          <div class="gem-btn gem-purple" data-idx="3"></div>
+        </div>
+      </div>
+    `;
+
+    const init = () => {
+      const submitBtn = document.getElementById('submit-puzzle');
+      submitBtn.innerText = "세공 시작 (1라운드)";
+      const status = document.getElementById('gem-status');
+      const gems = document.querySelectorAll('.gem-btn');
+
+      // 💡 알고리즘 수정: 선택된 보석들이 무조건 1번 이상 포함되도록 보장
+      const generateSequence = () => {
+        sequence = [];
+        const seqLength = currentRound + 2; // 깜빡이는 총 횟수 (1R:3번, 2R:4번, 3R:5번)
+        const poolSize = currentRound + 1;  // 문제에 쓸 보석 가짓수 (1R:2개, 2R:3개, 3R:4개)
+
+        // 1. 0~3번(파,노,흰,보) 보석 중, 이번 라운드에 사용할 보석 무작위 뽑기
+        let allGems = [0, 1, 2, 3];
+        for (let i = allGems.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allGems[i], allGems[j]] = [allGems[j], allGems[i]];
+        }
+        const activePool = allGems.slice(0, poolSize);
+
+        // 2. 💡 뽑힌 보석들이 '최소 한 번씩은' 무조건 들어가도록 배열 초기화!
+        sequence = [...activePool];
+
+        // 3. 남은 횟수만큼은 풀(Pool) 안에서 무작위로 추가
+        const remaining = seqLength - poolSize;
+        for(let i = 0; i < remaining; i++) {
+          const randomPick = activePool[Math.floor(Math.random() * activePool.length)];
+          sequence.push(randomPick);
+        }
+
+        // 4. 순서가 예측되지 않도록 완성된 배열을 다시 마구 섞기(Shuffle)
+        for (let i = sequence.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
+        }
+      };
+
+      // 컴퓨터가 보석의 빛을 차례대로 보여주는 함수
+      const playSequence = async () => {
+        isPlaying = true;
+        isPlayerTurn = false;
+        
+        status.style.color = '#8b6508';
+        status.style.background = 'rgba(139, 101, 8, 0.1)';
+        status.innerText = `[라운드 ${currentRound}/${maxRounds}] 보석의 빛을 기억하세요...`;
+
+        await new Promise(r => setTimeout(r, 600)); 
+
+        for (let i = 0; i < sequence.length; i++) {
+          const gemIdx = sequence[i];
+          const gemEl = document.querySelector(`.gem-btn[data-idx="${gemIdx}"]`);
+
+          gemEl.classList.add('active');
+          await new Promise(r => setTimeout(r, 450)); 
+          
+          gemEl.classList.remove('active');
+          await new Promise(r => setTimeout(r, 250)); 
+        }
+
+        isPlaying = false;
+        isPlayerTurn = true;
+        playerStep = 0;
+        
+        status.style.color = '#388e3c';
+        status.style.background = 'rgba(76, 175, 80, 0.1)';
+        status.innerText = "✨ 기억한 순서대로 보석을 터치하세요!";
+      };
+
+      submitBtn.addEventListener('click', () => {
+        if (isPlaying || isPlayerTurn) return; 
+        
+        submitBtn.style.display = 'none'; 
+        generateSequence();
+        playSequence();
+      });
+
+      gems.forEach(gem => {
+        gem.addEventListener('click', (e) => {
+          if (!isPlayerTurn) return; 
+
+          const idx = parseInt(e.currentTarget.dataset.idx);
+
+          gem.classList.add('active');
+          setTimeout(() => gem.classList.remove('active'), 200);
+
+          if (idx === sequence[playerStep]) {
+            playerStep++;
+            
+            if (playerStep === sequence.length) {
+              isPlayerTurn = false;
+              
+              if (currentRound === maxRounds) {
+                status.innerText = "💍 세공 완성! 반지가 찬란하게 빛납니다.";
+                setTimeout(() => onComplete(), 1200);
+              } else {
+                currentRound++;
+                status.innerText = "성공! 다음 세공을 준비합니다...";
+                setTimeout(() => {
+                  generateSequence();
+                  playSequence();
+                }, 1500);
+              }
+            }
+          } else {
+            isPlayerTurn = false;
+            status.style.color = '#d32f2f';
+            status.style.background = 'rgba(244, 67, 54, 0.1)';
+            status.innerText = "순서가 틀렸습니다. 다시 시도하세요.";
+            
+            showModal("<p>보석의 빛이 흐려졌습니다.<br>집중해서 순서를 다시 기억해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 보기</button>", false);
+            document.getElementById('retry-btn').addEventListener('click', () => {
+              hideModal();
+              playSequence(); 
+            });
+          }
+        });
+      });
+    };
+
+    return { ui, init };
+  },
+
+// 12. 최종장 : 바다 앞의 서약 (구글 맵 우편번호 찾기)
+  finale_map: (puzzle, onComplete) => {
+    const ui = `
+      <div class="map-container">
+        <iframe src="https://maps.google.com/maps?q=Sardinia,Italy&t=&z=8&ie=UTF8&iwloc=&output=embed" frameborder="0" allowfullscreen></iframe>
+      </div>
+      
+      <div class="address-note">
+        <div style="color:#8b6508; font-weight:bold; margin-bottom:5px;">📍 예식 장소: Porto Flavia</div>
+        
+        <div style="font-size: 12px; color: #795548; margin-bottom: 15px; line-height: 1.4;">
+          * 지도 앱이나 브라우저를 열어 직접 장소를 검색해 보세요!<br>
+          <a href="https://www.google.com/maps/search/Porto+Flavia" target="_blank" style="color: #bf360c; text-decoration: underline; font-weight: bold;">[구글 맵 열기 🔍]</a>
+        </div>
+
+        Frazione Masua,<br>
+        <div class="postal-group">
+          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
+          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
+          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
+          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
+          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
+        </div>
+        Masua CI, 이탈리아
+      </div>
+      <div style="font-size: 12px; color: #8d6e63; text-align: center;">쪽지에 누락된 5자리 우편번호(Postal Code)를 지도에서 찾아 입력하세요.</div>
+    `;
+
+    const init = () => {
+      const inputs = document.querySelectorAll('.postal-input');
+      const submitBtn = document.getElementById('submit-puzzle');
+      submitBtn.innerText = "서약 장소로 향하기"; 
+
+      inputs.forEach((input, index) => {
+        input.addEventListener('input', function() {
+          if (this.value.length === 1 && index < inputs.length - 1) inputs[index + 1].focus();
+        });
+        input.addEventListener('keydown', function(e) {
+          if (e.key === 'Backspace' && this.value === '' && index > 0) inputs[index - 1].focus();
+        });
+      });
+
+      submitBtn.addEventListener('click', () => {
+        const userAnswer = Array.from(inputs).map(i => i.value).join('');
+
+        if (userAnswer === puzzle.answer) {
+          // 💡 정답을 맞추면 모달이 닫히고 다음 스크립트로 넘어감!
+          onComplete(); 
+        } else {
+          showModal("<p>우편번호가 맞지 않습니다.<br>구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => hideModal());
         }
       });
@@ -914,4 +1212,5 @@ const PuzzleHandlers = {
 
     return { ui, init };
   }
+
 };
