@@ -201,11 +201,34 @@ if (userNickname !== "") {
   });
 }
 
-// 2. 챕터 로드 (💡 중앙 타이틀 연출 추가)
+// ⭕ TO-BE (수정 후)
 function loadChapter(idx) {
   const chapterData = STORY_DATA[idx];
-  if(!chapterData) {
-    showModal("<p>모든 항해를 마쳤습니다.</p><button class='custom-btn' onclick='hideModal()'>엔딩 보기</button>");
+  
+  // 💡 13장에 도달한(클리어한) 유저가 재접속했을 때의 처리
+  if(!chapterData) { 
+    const endHtml = `
+      <h3 class="tt-title">모든 항해 완료</h3>
+      <p style="font-size: 14px; margin: 20px 0;">이미 모든 기록을 읽었습니다.<br>어디로 이동할까요?</p>
+      <button id="go-finale-btn" class="custom-btn">청첩장 화면으로</button>
+      <button id="go-reset-btn" class="custom-btn" style="margin-left: 10px;">처음부터 다시</button>
+    `;
+    showModal(endHtml, false);
+    
+    // '청첩장 화면으로' 클릭 시 12장 퍼즐 없이 다이렉트로 엔딩 화면 띄우기!
+    document.getElementById('go-finale-btn').addEventListener('click', () => {
+      hideModal();
+      document.querySelector('.header-group').style.display = 'none';
+      document.querySelector('.text-area-wrapper').style.display = 'none';
+      showFinale();
+    });
+
+    // '처음부터 다시' 클릭 시 기록 초기화 후 새로고침
+    document.getElementById('go-reset-btn').addEventListener('click', () => {
+      localStorage.removeItem("chapter");
+      localStorage.removeItem("nickname");
+      location.reload(); 
+    });
     return;
   }
   
@@ -267,51 +290,13 @@ function showScript() {
 
   // 💡 2) 챕터가 끝났을 때의 처리
   if (currentScriptIdx >= scripts.length) {
-    // 최종장(12장)의 마지막 스크립트까지 모두 읽었다면?
+// ⭕ TO-BE (수정 후)
     if (currentChapterIdx === 12) {
-      // 💡 1. 극적인 BGM 전환! (페이드 효과 적용)
-      changeBGM("assets/bgm7.mp3");
-
-      // 💡 2. 암전 및 청첩장 연출 트리거 발동!
-      const overlay = document.getElementById('finale-overlay');
-      if (overlay) overlay.classList.add('blackout');
-
-      // 청첩장에 유저 이름 넣기
-      const finaleNameEl = document.getElementById('finale-player-name');
-      if (finaleNameEl) finaleNameEl.innerText = userNickname || '소중한 분';
-
-      // 💡 3. 실제 다운로드 버튼 기능 연결
-      const downloadBtn = document.getElementById('download-btn');
-      if (downloadBtn) {
-        downloadBtn.onclick = () => {
-          const inviteCard = document.querySelector('.wedding-invitation');
-          const btnGroup = document.getElementById('finale-btn-group');
-          
-          btnGroup.style.display = 'none';
-
-          // 💡 html2canvas 옵션에 useCORS와 allowTaint 추가
-          html2canvas(inviteCard, {
-            scale: 2, 
-            backgroundColor: "#ffffff",
-            useCORS: true,   // 💡 교차 출처 이미지 사용 허용
-            allowTaint: true // 💡 오염된 캔버스라도 렌더링 허용
-          }).then(canvas => {
-            try {
-              const imageUrl = canvas.toDataURL('image/png');
-              const link = document.createElement('a');
-              link.download = '로잔나_마야_청첩장.png'; 
-              link.href = imageUrl;
-              link.click(); 
-            } catch (err) {
-              console.error("이미지 추출 중 보안 에러 발생:", err);
-              alert("로컬 환경(file://)에서는 보안 정책상 다운로드가 제한될 수 있습니다. 서버(Live Server 등)를 통해 실행해 주세요.");
-            }
-
-            btnGroup.style.display = 'flex';
-          });
-        };
-      }
-      return; // 일반 챕터처럼 다음으로 넘어가지 않고 여기서 진행을 멈춤!
+      // 💡 핵심: 12장 대사가 끝나고 청첩장이 뜨는 순간, '클리어(13장)' 상태로 덮어씌워 저장합니다!
+      localStorage.setItem("chapter", 13);
+      
+      showFinale(); // 분리해둔 피날레 함수 호출
+      return; 
     }
 
     // 일반 챕터일 경우 평소처럼 다음 챕터로 넘어감
@@ -471,3 +456,43 @@ document.addEventListener('click', (e) => {
     }, 50); // 약 1초에 걸쳐 부드럽게 페이드 아웃
   }
 });
+
+// 💡 [신규] 피날레(청첩장) 연출 및 캡처 전용 함수
+function showFinale() {
+  changeBGM("assets/bgm7.mp3");
+
+  const overlay = document.getElementById('finale-overlay');
+  if (overlay) overlay.classList.add('blackout');
+
+  const finaleNameEl = document.getElementById('finale-player-name');
+  if (finaleNameEl) finaleNameEl.innerText = userNickname || '소중한 분';
+
+  const downloadBtn = document.getElementById('download-btn');
+  if (downloadBtn) {
+    downloadBtn.onclick = () => {
+      const inviteCard = document.querySelector('.wedding-invitation');
+      const btnGroup = document.getElementById('finale-btn-group');
+      
+      btnGroup.style.display = 'none'; // 캡처 시 버튼 숨김
+
+      html2canvas(inviteCard, {
+        scale: 2, 
+        backgroundColor: "#ffffff",
+        useCORS: true,   
+        allowTaint: true 
+      }).then(canvas => {
+        try {
+          const imageUrl = canvas.toDataURL('image/png');
+          const link = document.createElement('a');
+          link.download = '로잔나_마야_청첩장.png'; 
+          link.href = imageUrl;
+          link.click(); 
+        } catch (err) {
+          console.error("이미지 추출 중 보안 에러 발생:", err);
+          alert("로컬 환경에서는 다운로드가 제한될 수 있습니다.");
+        }
+        btnGroup.style.display = 'flex'; // 캡처 후 버튼 복구
+      });
+    };
+  }
+}
