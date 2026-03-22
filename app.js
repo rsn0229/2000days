@@ -215,16 +215,18 @@ function loadChapter(idx) {
   currentScriptIdx = 0;
   changeBGM(chapterData.bgm); // 안전한 BGM 교체
   
-  // 💡 연출을 위한 요소들 가져오기
+  // app.js 안의 loadChapter(idx) 함수 내부 로직 수정
+  
+  // 💡 연출을 위한 요소들 가져오기 (넓은 영역으로 타겟 변경!)
   const headerGroup = document.querySelector('.header-group');
-  const textWrapper = document.getElementById('text-wrapper');
+  const textAreaWrapper = document.querySelector('.text-area-wrapper'); // 👈 여기 변경!
   const transitionBox = document.getElementById('chapter-transition');
   const transitionTitle = document.getElementById('transition-title');
 
-  // 1. 기존 상단 제목과 텍스트 영역을 투명하게 숨기고 클릭 방지
+  // 1. 기존 상단 제목과 거대한 텍스트 영역을 투명하게 숨기고 클릭 방지
   headerGroup.style.opacity = '0';
-  textWrapper.style.opacity = '0';
-  textWrapper.style.pointerEvents = 'none';
+  textAreaWrapper.style.opacity = '0';
+  textAreaWrapper.style.pointerEvents = 'none';
 
   // 2. 중앙 타이틀 텍스트 설정 및 나타나기 준비
   transitionTitle.innerText = chapterData.title;
@@ -239,14 +241,14 @@ function loadChapter(idx) {
   setTimeout(() => {
     transitionBox.classList.remove('show');
 
-    // 5. 1초 뒤(중앙 타이틀이 완전히 사라지면), 상단 제목과 본편을 띄우고 텍스트 타이핑 시작!
+    // 5. 1초 뒤, 상단 제목과 본편을 띄우고 텍스트 타이핑 시작!
     setTimeout(() => {
       transitionBox.classList.add('hidden');
       document.getElementById('chapter-title').innerText = chapterData.title;
       
       headerGroup.style.opacity = '1';
-      textWrapper.style.opacity = '1';
-      textWrapper.style.pointerEvents = 'auto'; // 클릭 다시 허용
+      textAreaWrapper.style.opacity = '1';
+      textAreaWrapper.style.pointerEvents = 'auto'; // 💡 클릭 다시 허용
       
       showScript();
     }, 1000); 
@@ -348,8 +350,8 @@ function showScript() {
   currentScriptIdx++;
 }
 
-// 💡 텍스트 본문이나 ▼ 버튼 중 아무 곳이나 클릭해도 showScript 실행
-DOM.textWrapper.addEventListener('click', showScript);
+// 💡 텍스트 본문이나 주변 넓은 여백 중 아무 곳이나 클릭해도 showScript 실행!
+document.querySelector('.text-area-wrapper').addEventListener('click', showScript);
 
 // 4. 퍼즐 렌더링 (puzzles.js의 핸들러를 호출)
 function renderPuzzle() {

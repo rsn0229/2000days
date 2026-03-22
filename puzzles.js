@@ -44,12 +44,12 @@ const PuzzleHandlers = {
     // 💡 다이얼에 들어갈 기호 배열 (오답용 더미 데이터 포함)
     const symbols = [
       { id: '빈칸', icon: '❔' },
-      { id: '태양', icon: '☀️' },
+      { id: '닻', icon: '⚓' },
+      { id: '갈매기', icon: '🕊️' },
       { id: '물결', icon: '🌊' },
       { id: '달', icon: '🌙' },
-      { id: '갈매기', icon: '🕊️' },
-      { id: '닻', icon: '⚓' },
-      { id: '해파리', icon: '🪼' },
+      { id: '태양', icon: '☀️' },
+      { id: '해파리', icon: '🪼' }
     ];
 
     let currentSelections = [0, 0, 0]; // 3개의 버튼 상태(인덱스) 저장
@@ -912,7 +912,6 @@ const ui = `
           `).join('')}
         </div>
       </div>
-      <div style="font-size: 12px; color: #8d6e63; margin-top: 15px;">다이얼을 돌려 단어를 맞추세요</div>
     `;
 
     const init = () => {
