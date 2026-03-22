@@ -81,7 +81,7 @@ const STORY_DATA = [
   },
   {
     chapter: 4,
-    title: "스며든 시간 속 애정", // [cite: 30]
+    title: "4. 스며든 시간 속 애정", // [cite: 30]
     bgm: "assets/bgm4.mp3",
     scripts: [
       "시간이 흐르며 마야는 로잔나의 보좌관으로서 집무실에 자리를 잡았다.", // [cite: 30]
