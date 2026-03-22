@@ -441,7 +441,12 @@ function showFinale() {
       const inviteCard = document.querySelector('.wedding-invitation');
       const btnGroup = document.getElementById('finale-btn-group');
       
-      btnGroup.style.display = 'none';
+      btnGroup.style.display = 'none'; 
+.
+      const originalWidth = inviteCard.style.width;
+      const originalMaxWidth = inviteCard.style.maxWidth;
+      inviteCard.style.width = '600px';
+      inviteCard.style.maxWidth = '600px';
 
       html2canvas(inviteCard, {
         scale: 2, 
@@ -449,6 +454,10 @@ function showFinale() {
         useCORS: true,   
         allowTaint: true 
       }).then(canvas => {
+
+        inviteCard.style.width = originalWidth;
+        inviteCard.style.maxWidth = originalMaxWidth;
+
         try {
           const imageUrl = canvas.toDataURL('image/png');
           const link = document.createElement('a');
@@ -459,7 +468,7 @@ function showFinale() {
           console.error("이미지 추출 중 보안 에러 발생:", err);
           alert("로컬 환경에서는 다운로드가 제한될 수 있습니다.");
         }
-        btnGroup.style.display = 'flex';
+        btnGroup.style.display = 'flex'; 
       });
     };
   }
