@@ -1399,7 +1399,7 @@ body {
   align-items: center;
   justify-content: center;
   /* 💡 추가: 이미지가 너무 벽에 딱 붙지 않도록 안전 여백을 살짝 줍니다 */
-  padding: 15px; 
+  padding: 5px; 
   box-sizing: border-box;
 }
 
