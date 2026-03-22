@@ -55,9 +55,8 @@ const DOM = {
   modalCloseBtn: document.getElementById('modal-close-btn')
 };
 
-// 💡 엔딩 크레딧 버튼 로직 (에러 방지를 위해 이벤트 위임 방식으로 변경!)
+// 💡 엔딩 크레딧 버튼 로직 (수정)
 document.addEventListener('click', async (e) => {
-  // 클릭한 요소의 ID가 'credit-btn'일 때만 아래 로직을 실행합니다.
   if (e.target && e.target.id === 'credit-btn') {
     const creditOverlay = document.getElementById('ending-credit-overlay');
     const nameListContainer = document.getElementById('player-names-list');
@@ -66,16 +65,9 @@ document.addEventListener('click', async (e) => {
     // 1. 화면을 완전히 까맣게 전환
     if (creditOverlay) creditOverlay.classList.add('show');
 
-    // 💡 2. 구글 앱스 스크립트(GAS) Web App URL (여기에 본인의 배포 URL을 넣으세요!)
-    const GAS_URL = "https://script.google.com/macros/s/본인의_GAS_URL/exec";
-
     try {
-       // GAS에서 데이터 불러오기 (배열 형태로 이름 목록을 리턴한다고 가정)
-       // const response = await fetch(GAS_URL);
-       // const data = await response.json(); 
-       
-       // 테스트용 더미 데이터 (실제 GAS 연동 시 이 부분 지우고 위 주석을 해제하세요!)
-       const data = ["헬가", "발터", "비앙카", "리카르도", "소중한 분", userNickname];
+       // 💡 [수정] 더미 데이터와 지저분한 URL을 지우고, api.js의 함수를 깔끔하게 호출합니다!
+       const data = await getCredits();
 
        // 3. 불러온 이름들을 HTML로 만들어서 삽입
        if (data && data.length > 0) {
@@ -197,6 +189,11 @@ if (userNickname !== "") {
     }
     userNickname = inputVal;
     localStorage.setItem("nickname", userNickname);
+    
+    // 💡 [추가] 닉네임을 입력하고 시작할 때, 백그라운드에서 구글 시트로 데이터를 전송!
+    if (typeof saveNickname === 'function') {
+      saveNickname(userNickname);
+    }
     
     DOM.startSection.classList.add('hidden');
     DOM.gameSection.classList.remove('hidden');

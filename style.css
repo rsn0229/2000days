@@ -1359,25 +1359,6 @@ body {
   box-shadow: 0 0 8px rgba(191,54,12,0.3);
 }
 
-/* 💡 최종 보상: 암전(Blackout) 및 청첩장 연출 */
-.finale-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0, 0, 0, 0); /* 처음엔 투명 */
-  pointer-events: none;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 2.5s ease-in-out; /* 2.5초 동안 서서히 완벽한 암전 */
-}
-
-/* 정답 시 JS에서 이 클래스를 붙여줍니다 */
-.finale-overlay.blackout {
-  background: rgba(0, 0, 0, 1);
-  pointer-events: all;
-}
-
 /* 🚀 최종장: 가로 직각 엽서 스타일 (청혼엽서) */
 .wedding-invitation {
   width: 90%;
@@ -1482,34 +1463,68 @@ body {
   margin-bottom: 25px;
 }
 
-/* 💡 청첩장 하단 버튼 그룹 (우측 컬럼 하단에 절대 배치) */
-.finale-btn-group {
-  position: absolute;
-  bottom: 15px;
-  right: 15px; /* 우측 컬럼 하단에 배치 */
-  width: 50%; /* 우측 컬럼 너비에 맞춰 설정 */
+/* 💡 암전 및 청첩장 컨테이너 (세로 정렬 추가) */
+.finale-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  z-index: 9999;
   display: flex;
+  flex-direction: column; /* 💡 엽서와 버튼이 세로로 쌓이도록 설정 */
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 10px;
+  gap: 15px; /* 💡 엽서와 아래 버튼 사이의 여유 간격 */
+  transition: background 2.5s ease-in-out;
 }
 
-/* 💡 청첩장 하단 버튼 개별 스타일 */
+/* 정답 시 암전 클래스 */
+.finale-overlay.blackout {
+  background: rgba(0, 0, 0, 1);
+  pointer-events: all;
+}
+
+/* 💡 엽서 밖으로 나온 하단 버튼 그룹 */
+.finale-btn-group {
+  position: relative; /* absolute에서 변경 */
+  width: 90%;
+  max-width: 600px; /* 엽서 너비와 똑같이 맞추어 우측 끝 정렬의 기준을 잡음 */
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 아래로 밀착 */
+  gap: 10px;
+  z-index: 10;
+  
+  /* 엽서와 함께 스르륵 나타나는 애니메이션 */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 2s ease-in-out;
+  transition-delay: 1.5s;
+}
+
+/* 암전 시 버튼도 같이 등장 */
+.finale-overlay.blackout .finale-btn-group {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 💡 살짝 투명한 회색 유리창 느낌의 버튼 */
 .download-btn, .credit-btn {
-  /* flex: 1; 💡 이 속성을 지워야 버튼이 무조건 꽉 차지 않고 내용물만큼만 커집니다! */
-  padding: 10px 15px; /* 💡 위아래 10px, 양옆 여백을 15px로 주어 컴팩트하게 조절 */
-  border-radius: 4px;
+  padding: 8px 14px;
   font-size: 13px; 
   font-weight: bold;
+  background: rgba(255, 255, 255, 0.15); /* 💡 어두운 배경에서 은은하게 보이는 반투명 회색 */
+  color: #eeeeee; /* 밝은 회색 텍스트 */
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-/* (다운로드/크레딧 버튼 디자인 유지) */
-.download-btn { background: #8b6508; color: #ffffff; border: none; }
-.download-btn:hover { background: #5c4305; }
-.credit-btn { background: #fdfbf7; color: #8b6508; border: 2px solid #8b6508; }
-.credit-btn:hover { background: #f4ecd8; }
+/* 마우스 호버 시 살짝 밝아지며 부드럽게 떠오름 */
+.download-btn:hover, .credit-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
 
 /* 🚀 최종장: 엔딩 크레딧 연출 (위아래 페이드아웃 효과 적용) */
 .ending-credit-overlay {
@@ -1670,18 +1685,14 @@ body {
   .invitation-names {
     font-size: 22px; /* 기존 40 -> 22 */
   }
-  
-  /* 하단 버튼 그룹 여백 및 크기 축소 */
+
   .finale-btn-group {
-    bottom: 8px;
-    right: 8px;
-    gap: 4px;
-    padding: 0 5px;
+    /* 기존에 있던 bottom, right 등은 지워줍니다 */
+    gap: 8px;
   }
-/* 💡 [반응형] 하단 버튼 쪽 코드만 아래처럼 수정해 주세요 */
   .download-btn, .credit-btn {
-    padding: 6px 10px; /* 💡 모바일에서도 좌우 패딩을 줄여 귀엽고 얄쌍하게! */
-    font-size: 10px; 
+    padding: 7px 10px; 
+    font-size: 11px; 
   }
 }
 
