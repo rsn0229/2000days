@@ -57,12 +57,11 @@ document.addEventListener('click', async (e) => {
     const creditBtn = e.target;
     const creditOverlay = document.getElementById('ending-credit-overlay');
     const nameListContainer = document.getElementById('player-names-list');
-    const creditContent = document.getElementById('credit-content');
-
+    
     creditBtn.disabled = true;
     let dotCount = 0;
     const loadingInterval = setInterval(() => {
-      dotCount = (dotCount + 1) % 4; // 0 -> 1 -> 2 -> 3 -> 0 반복
+      dotCount = (dotCount + 1) % 4;
       const dots = ".".repeat(dotCount);
       creditBtn.innerText = `준비하는 중${dots}`;
     }, 400); 
@@ -84,33 +83,53 @@ document.addEventListener('click', async (e) => {
 
     if (creditOverlay) creditOverlay.classList.add('show');
 
-    let isFast = false;
-    const updateSpeed = () => {
-      if (creditOverlay) {
-        creditOverlay.getAnimations({ subtree: true }).forEach(anim => anim.playbackRate = isFast ? 4.0 : 1.0);
-      }
-    };
-
-    creditOverlay.addEventListener('mousedown', () => { isFast = true; updateSpeed(); });
-    creditOverlay.addEventListener('mouseup', () => { isFast = false; updateSpeed(); });
-    creditOverlay.addEventListener('mouseleave', () => { isFast = false; updateSpeed(); });
-    
-    creditOverlay.addEventListener('touchstart', () => { isFast = true; updateSpeed(); }, { passive: true });
-    creditOverlay.addEventListener('touchend', () => { isFast = false; updateSpeed(); }, { passive: true });
-    creditOverlay.addEventListener('touchcancel', () => { isFast = false; updateSpeed(); }, { passive: true });
-
-    if (creditContent) {
-      creditContent.addEventListener('animationend', (event) => {
-        if (event.animationName === 'scrollCredits') {
-          bgmAudio.loop = false; 
-        }
-      });
-    }
-
     setTimeout(() => {
-      if (creditContent) {
-        creditContent.classList.add('scroll-up');
-        updateSpeed();
+      const creditContent = document.getElementById('credit-content');
+      const restartBtn = document.getElementById('restart-btn');
+      
+      if (creditContent && restartBtn) {
+        
+        const scrollAnim = creditContent.animate([
+          { transform: 'translateY(0)' },
+          { transform: 'translateY(-100%)' }
+        ], {
+          duration: 19000,
+          fill: 'forwards',
+          easing: 'linear'
+        });
+
+        const btnAnim = restartBtn.animate([
+          { opacity: 0 },
+          { opacity: 1 }
+        ], {
+          duration: 2000,
+          delay: 19000,
+          fill: 'forwards',
+          easing: 'ease-in-out'
+        });
+
+        btnAnim.finished.then(() => {
+          restartBtn.style.pointerEvents = 'all';
+        });
+
+        scrollAnim.finished.then(() => {
+          bgmAudio.loop = false;
+        });
+
+        let isFast = false;
+        const updateSpeed = () => {
+          const rate = isFast ? 4.0 : 1.0;
+          scrollAnim.playbackRate = rate;
+          btnAnim.playbackRate = rate;
+        };
+
+        creditOverlay.addEventListener('mousedown', () => { isFast = true; updateSpeed(); });
+        creditOverlay.addEventListener('mouseup', () => { isFast = false; updateSpeed(); });
+        creditOverlay.addEventListener('mouseleave', () => { isFast = false; updateSpeed(); });
+        
+        creditOverlay.addEventListener('touchstart', () => { isFast = true; updateSpeed(); }, { passive: true });
+        creditOverlay.addEventListener('touchend', () => { isFast = false; updateSpeed(); }, { passive: true });
+        creditOverlay.addEventListener('touchcancel', () => { isFast = false; updateSpeed(); }, { passive: true });
       }
     }, 1500);
   }
