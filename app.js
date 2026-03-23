@@ -68,15 +68,12 @@ document.addEventListener('click', async (e) => {
     }, 400); 
 
     try {
-
        const data = await getCredits();
-
        if (data && data.length > 0) {
          nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
        } else {
          nameListContainer.innerHTML = "<p style='color:#888;'>첫 번째 클리어가 되어주셔서 감사합니다.</p>";
        }
-
     } catch (error) {
        console.error(error);
        nameListContainer.innerHTML = "<p style='color:#888;'>기록을 불러오지 못했습니다.</p>";
@@ -87,8 +84,34 @@ document.addEventListener('click', async (e) => {
 
     if (creditOverlay) creditOverlay.classList.add('show');
 
+    let isFast = false;
+    const updateSpeed = () => {
+      if (creditOverlay) {
+        creditOverlay.getAnimations({ subtree: true }).forEach(anim => anim.playbackRate = isFast ? 4.0 : 1.0);
+      }
+    };
+
+    creditOverlay.addEventListener('mousedown', () => { isFast = true; updateSpeed(); });
+    creditOverlay.addEventListener('mouseup', () => { isFast = false; updateSpeed(); });
+    creditOverlay.addEventListener('mouseleave', () => { isFast = false; updateSpeed(); });
+    
+    creditOverlay.addEventListener('touchstart', () => { isFast = true; updateSpeed(); }, { passive: true });
+    creditOverlay.addEventListener('touchend', () => { isFast = false; updateSpeed(); }, { passive: true });
+    creditOverlay.addEventListener('touchcancel', () => { isFast = false; updateSpeed(); }, { passive: true });
+
+    if (creditContent) {
+      creditContent.addEventListener('animationend', (event) => {
+        if (event.animationName === 'scrollCredits') {
+          bgmAudio.loop = false; 
+        }
+      });
+    }
+
     setTimeout(() => {
-      if (creditContent) creditContent.classList.add('scroll-up');
+      if (creditContent) {
+        creditContent.classList.add('scroll-up');
+        updateSpeed();
+      }
     }, 1500);
   }
 });
