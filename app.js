@@ -439,27 +439,34 @@ function showFinale() {
 
   const downloadBtn = document.getElementById('download-btn');
   if (downloadBtn) {
-    downloadBtn.onclick = () => {
+    downloadBtn.onclick = async () => {
       const inviteCard = document.querySelector('.wedding-invitation');
       const btnGroup = document.getElementById('finale-btn-group');
-      
+
       btnGroup.style.display = 'none';
 
+      window.scrollTo(0, 0);
+
+      await document.fonts.ready;
+
       html2canvas(inviteCard, {
-        scale: 2, 
+        scale: window.devicePixelRatio > 1 ? window.devicePixelRatio : 2, 
         backgroundColor: "#ffffff",
         useCORS: true,   
-        allowTaint: true 
+        allowTaint: true,
+        scrollY: -window.scrollY, 
+        x: 0,
+        y: 0
       }).then(canvas => {
         try {
           const imageUrl = canvas.toDataURL('image/png');
           const link = document.createElement('a');
-          link.download = '로잔나_마야_청첩장.png'; 
+          link.download = '닻과_파도의_청첩장.png'; 
           link.href = imageUrl;
           link.click(); 
         } catch (err) {
           console.error("이미지 추출 중 보안 에러 발생:", err);
-          alert("로컬 환경에서는 다운로드가 제한될 수 있습니다.");
+          showToast("다운로드에 실패했습니다. 화면을 직접 캡처해 주세요!");
         }
         btnGroup.style.display = 'flex';
       });
