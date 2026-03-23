@@ -57,7 +57,7 @@ body {
 
 /* 모달용 종이는 회전각을 반대로 주어 입체감 부여 */
 .modal-size {
-  transform: rotate(1deg);
+  transform: rotate(-1.5deg);
   height: auto;
   min-height: 300px;
 }
