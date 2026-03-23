@@ -872,7 +872,7 @@ const ui = `
         if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>자물쇠가 열리지 않습니다.<br>우리가 영원히 함께할 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>상자가 열리지 않습니다.<br>다시 시도해 볼까요?</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
