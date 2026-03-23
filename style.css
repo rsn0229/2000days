@@ -1686,7 +1686,7 @@ body {
   }
   
   .invitation-title {
-    font-size: 32px; /* 💡 너무 작지 않게 살짝 키움 */
+    font-size: 30px; /* 💡 너무 작지 않게 살짝 키움 */
     margin-bottom: 5px;
   }
 
@@ -1701,7 +1701,7 @@ body {
   
   /* 커플 이름 크기 조절 */
   .name-eng {
-    font-size: 25px; 
+    font-size: 22px; 
   }
 
   /* 커플 이름 크기 조절 */
