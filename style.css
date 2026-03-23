@@ -1387,6 +1387,7 @@ body {
   transform: translateY(20px);
   transition: all 2s ease-in-out;
   transition-delay: 1.5s;
+  text-rendering: geometricPrecision; 
 }
 
 /* 암전 트리거 발동 시 부드럽게 나타남 */
@@ -1455,7 +1456,7 @@ body {
   font-size: 14px;
   color: #5d4037;
   /* 💡 줄간격을 1.8~2.0 정도로 넉넉하게 주어 감성적인 여운을 줍니다 */
-  line-height: 1.8; 
+  line-height: 180%; 
   margin-bottom: 0; /* 💡 마지막 요소이므로 하단 마진 제거 */
   word-break: keep-all;
 }
@@ -1696,7 +1697,7 @@ body {
 
   .invitation-text {
     font-size: 10px;
-    line-height: 1.5; /* 💡 모바일에서도 답답하지 않은 줄간격 유지 */
+    line-height: 150%; /* 💡 모바일에서도 답답하지 않은 줄간격 유지 */
   }
   
   /* 커플 이름 크기 조절 */
