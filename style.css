@@ -1715,6 +1715,11 @@ body {
     font-size: 22px; /* 기존 40 -> 22 */
   }
 
+  .couple-names-wrap {
+    gap: 10px; /* 기존 15px에서 8px로 확 줄임 */
+    margin-bottom: 20px; /* 하단 초대 문구와의 간격도 모바일에 맞게 살짝 축소 */
+  }
+   
   .finale-btn-group {
     /* 기존에 있던 bottom, right 등은 지워줍니다 */
     gap: 8px;
