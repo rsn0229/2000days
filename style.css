@@ -114,19 +114,20 @@ body {
   opacity: 0.8; /* 너무 튀지 않게 살짝 연하게 */
 }
 
-/* 🚀 자체 디자인 버튼 및 인풋 (강력한 클릭 방어막 추가!) */
+/* 🚀 자체 디자인 버튼 및 인풋 */
 .custom-input {
   background: transparent; border: none; border-bottom: 1px dashed #8d6e63;
   text-align: center; font-family: inherit; font-size: 16px; color: #3e2723;
   padding: 5px; margin-bottom: 20px; outline: none; width: 80%;
   
-  /* 💡 추가된 코드: 회전 버그 무시 및 선택 강제 활성화 */
-  position: relative !important;
-  z-index: 100 !important;
-  -webkit-user-select: text !important;
-  -moz-user-select: text !important;
-  -ms-user-select: text !important;
-  user-select: text !important;
+  /* 💡 커서(깜빡이) 색상을 포인트 컬러(붉은 갈색)로 강제 지정! */
+  caret-color: #bf360c; 
+}
+
+/* 💡 입력창을 터치(포커스)했을 때 사용자에게 '입력 중'임을 확실히 알려주는 효과 */
+.custom-input:focus {
+  border-bottom: 2px solid #bf360c; /* 밑줄을 실선으로 진하게 변경 */
+  background-color: rgba(191, 54, 12, 0.05); /* 배경색을 아주 살짝 물들임 */
 }
 
 .custom-btn {
