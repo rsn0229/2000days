@@ -70,7 +70,9 @@ try {
        const data = await getCredits();
 
        if (data && data.length > 0) {
-         data[data.length - 1] = "and " + data[data.length - 1];
+         const lastName = data[data.length - 1];
+         data[data.length - 1] = `and <span class="gold-name">${lastName}</span>`;
+         
          nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
        } else {
          nameListContainer.innerHTML = "<p style='color:#888;'>첫 번째 클리어가 되어주셔서 감사합니다.</p>";
