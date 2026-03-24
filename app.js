@@ -70,8 +70,22 @@ try {
        const data = await getCredits();
 
        if (data && data.length > 0) {
-         const lastName = data[data.length - 1];
-         data[data.length - 1] = `and <span class="gold-name">${lastName}</span>`;
+         let myIndex = -1;
+         
+         for (let i = data.length - 1; i >= 0; i--) {
+           if (data[i] === userNickname || data[i].startsWith(userNickname + " (")) {
+             myIndex = i;
+             break;
+           }
+         }
+
+         if (myIndex !== -1) {
+           const mySavedName = data[myIndex];
+           data.splice(myIndex, 1);
+           data.push(`and <span class="gold-name">${mySavedName}</span>`);
+         } else {
+           data.push(`and <span class="gold-name">${userNickname}</span>`);
+         }
          
          nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
        } else {
