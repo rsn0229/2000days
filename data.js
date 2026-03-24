@@ -57,9 +57,9 @@ const STORY_DATA = [
     ],
     hint: "나의 이명이 곧 열쇠야. 단어의 의미에 맞는 기호를 찾아 넣어봐.", 
     puzzle: {
-      type: "icon_slot",
+      type: "magic_seal",
       question: "닻을 지키는 파도에게.",
-      answer: "닻-방패-파도" 
+      answer: "anchor-shield-wave" 
     }
   },
   {
