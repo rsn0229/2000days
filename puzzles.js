@@ -280,7 +280,7 @@ const PuzzleHandlers = {
         if (currentOrder === "123456789") {
           onComplete();
         } else {
-          showModal("<p>서류의 내용이 아직 맞지 않습니다.<br>이미지를 잘 살펴보고 다시 시도해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>서류의 내용이 아직 맞지 않습니다.<br>이미지를 잘 살펴보고 다시 시도해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -378,7 +378,7 @@ const init = () => {
         if (loveAnswer === puzzle.answer) {
           onComplete(); 
         } else {
-          showModal("<p>의미가 완성되지 않았습니다.<br>조합한 단어가 맞는지 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>의미가 완성되지 않았습니다.<br>조합한 단어가 맞는지 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -454,7 +454,7 @@ const ui = `
         if (isAllLit) {
           onComplete(); 
         } else {
-          showModal("<p>아직 방이 완전히 밝아지지 않았습니다.<br>마음이 맞닿는 순간을 찾아보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>아직 방이 완전히 밝아지지 않았습니다.<br>마음이 맞닿는 순간을 찾아보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -502,7 +502,7 @@ const ui = `
         if (normalizedDeg === 270) {
           onComplete();
         } else {
-          showModal("<p>배가 엉뚱한 곳을 향하고 있습니다.<br>조준선(▲)을 정확한 방향으로 맞추세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>배가 엉뚱한 곳을 향하고 있습니다.<br>조준선(▲)을 정확한 방향으로 맞추세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -704,7 +704,7 @@ const ui = `
         if (currentH === 11 && currentM === 45) {
           onComplete();
         } else {
-          showModal("<p>시간이 맞지 않습니다.<br>저택의 시계가 가리키는 시간을 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>시간이 맞지 않습니다.<br>저택의 시계가 가리키는 시간을 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -813,7 +813,7 @@ const ui = `
             onComplete();
           }, 500);
         } else {
-          showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 출발해 오른쪽 화살표로 빠져나가야 합니다.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 출발해 오른쪽 화살표로 빠져나가야 합니다.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -872,7 +872,7 @@ const ui = `
         if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>상자가 열리지 않습니다.<br>다시 시도해 볼까요?</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>상자가 열리지 않습니다.<br>다시 시도해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -1057,7 +1057,7 @@ const ui = `
         if (userAnswer === puzzle.answer) {
           onComplete(); 
         } else {
-          showModal("<p>우편번호가 맞지 않습니다.<br>구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 확인</button>", false);
+          showModal("<p>우편번호가 맞지 않습니다.<br>구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => {
             renderPuzzle(); 
           });
