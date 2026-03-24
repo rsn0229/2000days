@@ -301,34 +301,39 @@ function showScript() {
 
   if (isTyping) {
     clearInterval(typingInterval);
-    DOM.textBox.innerText = scripts[currentScriptIdx - 1].trim(); 
+    let prevText = scripts[currentScriptIdx - 1].trim();
+
+    DOM.textBox.style.fontStyle = prevText.includes("<i>") ? 'italic' : 'normal';
+    DOM.textBox.innerText = prevText.replace(/<\/?i>/g, ""); 
+    
     DOM.nextBtn.style.display = 'inline-block';
     isTyping = false;
     return;
   }
 
   if (currentScriptIdx >= scripts.length) {
-
     if (currentChapterIdx === 12) {
-
       localStorage.setItem("chapter", 13);
-      
       showFinale();
       return; 
     }
-
     currentChapterIdx++;
     localStorage.setItem("chapter", currentChapterIdx);
     loadChapter(currentChapterIdx);
     return;
   }
+
+  let rawText = scripts[currentScriptIdx].trim(); 
   
-  let text = scripts[currentScriptIdx].trim(); 
-  
-  if (text === "[PUZZLE]") {
+  if (rawText === "[PUZZLE]") {
     renderPuzzle();
     return;
   }
+
+  let isItalic = rawText.includes("<i>");
+  let text = rawText.replace(/<\/?i>/g, ""); 
+
+  DOM.textBox.style.fontStyle = isItalic ? 'italic' : 'normal';
 
   DOM.textBox.innerText = ""; 
   DOM.nextBtn.style.display = 'none'; 
