@@ -86,86 +86,123 @@ const PuzzleHandlers = {
     return { ui, init };
   },
 
-// 2. 기사단 입단 : 마법 인장 패턴 연결
-  magic_seal: (puzzle, onComplete) => {
-    // 💡 6개의 기호와 마법진 위의 절대 좌표 (정확한 연결 선을 위해 세팅됨)
-    const nodes = [
-      { id: 'anchor', emoji: '⚓', x: 120, y: 24, top: '10%', left: '50%' },
-      { id: 'sun', emoji: '☀️', x: 204, y: 72, top: '30%', left: '85%' },
-      { id: 'wave', emoji: '🌊', x: 204, y: 168, top: '70%', left: '85%' },
-      { id: 'sword', emoji: '⚔️', x: 120, y: 216, top: '90%', left: '50%' },
-      { id: 'shield', emoji: '🛡️', x: 36, y: 168, top: '70%', left: '15%' },
-      { id: 'bird', emoji: '🕊️', x: 36, y: 72, top: '30%', left: '15%' }
-    ];
-
-    let currentPath = [];
-    let pointsString = "";
-
+// 2. 파도 기사단 입단 : 물의 마력 불어넣기 (스크래치 캔버스)
+  water_reveal: (puzzle, onComplete) => {
     const ui = `
-      <div style="font-size:13px; color:#5d4037; font-weight:bold; margin-bottom: 15px;">단어의 의미 순서대로 마법진을 이어주세요</div>
-      <div class="magic-seal-container">
-        <svg class="magic-lines-svg" viewBox="0 0 240 240">
-          <polyline id="magic-line" class="magic-line" points="" />
-        </svg>
-        
-        ${nodes.map(n => `
-          <button class="rune-node" data-id="${n.id}" data-x="${n.x}" data-y="${n.y}" style="top: ${n.top}; left: ${n.left}; transform: translate(-50%, -50%);">
-            ${n.emoji}
-          </button>
-        `).join('')}
+      <div style="font-size:12px; color:#8d6e63; font-weight:bold; margin-bottom: 10px;">
+        안개 낀 백지 위를 문질러 숨겨진 전언을 확인하세요
       </div>
-      <button id="reset-seal-btn" class="reset-btn" style="opacity: 1; margin-top: 0;">[ 연결 취소 ]</button>
+      <div class="water-reveal-container">
+        <div class="hidden-letter">
+          <div class="letter-text">가장 무거운 닻을 지키는 파도가 되길.</div>
+          <div class="letter-code">from. ANCHOR</div>
+        </div>
+        <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
+      </div>
+      <input type="text" id="magic-answer" class="magic-input" maxlength="10" placeholder="발신인 입력">
     `;
 
     const init = () => {
-      // 💡 기본 '풀기' 버튼은 숨김 (3개를 누르면 자동 채점되게 만듦)
-      const defaultSubmitBtn = document.getElementById('submit-puzzle');
-      if(defaultSubmitBtn) defaultSubmitBtn.style.display = 'none';
+      const canvas = document.getElementById('scratch-canvas');
+      const ctx = canvas.getContext('2d');
+      const input = document.getElementById('magic-answer');
+      const submitBtn = document.getElementById('submit-puzzle');
 
-      const polyline = document.getElementById('magic-line');
-      const runeBtns = document.querySelectorAll('.rune-node');
-      
-      // 연결선과 선택 초기화 함수
-      const resetSeal = () => {
-        currentPath = [];
-        pointsString = "";
-        polyline.setAttribute('points', pointsString);
-        runeBtns.forEach(btn => btn.classList.remove('active'));
+      // 캔버스 내부 픽셀 사이즈 강제 고정 (스크래치 좌표 정확도를 위해)
+      canvas.width = 280;
+      canvas.height = 160;
+
+      // 1. 사르디나의 푸른 바다 안개(그라데이션)로 캔버스를 덮어버림
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#1e3c72'); // 짙은 바다색
+      gradient.addColorStop(1, '#2a5298'); // 옅은 바다색
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 2. 안개 위에 안내 문구 각인
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.font = 'bold 15px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('✨ 화면을 문지르세요 ✨', canvas.width / 2, canvas.height / 2);
+
+      let isDrawing = false;
+
+      // 마우스 및 터치 좌표 계산기
+      const getPos = (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+
+        if (e.touches && e.touches.length > 0) {
+          clientX = e.touches[0].clientX;
+          clientY = e.touches[0].clientY;
+        }
+
+        return {
+          x: (clientX - rect.left) * scaleX,
+          y: (clientY - rect.top) * scaleY
+        };
       };
 
-      document.getElementById('reset-seal-btn').addEventListener('click', resetSeal);
+      // 💡 안개를 부드럽게 지워내는 핵심 로직 (에어브러시 효과)
+      const scratch = (e) => {
+        if (!isDrawing) return;
+        const pos = getPos(e);
+        
+        ctx.globalCompositeOperation = 'destination-out'; // 이 속성이 칠하는 게 아니라 '지우개' 역할을 하게 만듦
+        ctx.beginPath();
+        
+        // 딱딱하게 안 지워지고 안개가 걷히듯 가장자리가 부드럽게 지워지는 그라데이션 브러시
+        const radGrad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 25);
+        radGrad.addColorStop(0, 'rgba(0,0,0,1)');
+        radGrad.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = radGrad;
+        
+        ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+        ctx.fill();
+      };
 
-      runeBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = e.currentTarget.dataset.id;
-          const x = e.currentTarget.dataset.x;
-          const y = e.currentTarget.dataset.y;
+      // PC 마우스 이벤트 연결
+      canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+      canvas.addEventListener('mousemove', scratch);
+      canvas.addEventListener('mouseup', () => { isDrawing = false; });
+      canvas.addEventListener('mouseleave', () => { isDrawing = false; });
 
-          // 이미 누른 버튼은 무시
-          if (currentPath.includes(id)) return;
+      // 모바일 터치 이벤트 연결 (문지를 때 화면이 같이 스크롤되지 않도록 철저히 방어)
+      canvas.addEventListener('touchstart', (e) => {
+        isDrawing = true;
+        scratch(e);
+      }, { passive: false });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        if(isDrawing) {
+          e.preventDefault(); // 스크롤 방지!
+          scratch(e);
+        }
+      }, { passive: false });
+      
+      canvas.addEventListener('touchend', () => { isDrawing = false; });
 
-          // 버튼에 불을 켜고 좌표를 선(polyline)에 추가하여 그림
-          currentPath.push(id);
-          pointsString += `${x},${y} `;
-          polyline.setAttribute('points', pointsString.trim());
-          e.currentTarget.classList.add('active');
+      // 정답 입력칸은 영어 대문자로 자동 변환
+      input.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+      });
 
-          // 3개를 누르면 자동으로 정답 체크!
-          if (currentPath.length === 3) {
-              setTimeout(() => {
-                  // 닻 -> 방패 -> 파도 순서 확인
-                  if (currentPath.join('-') === puzzle.answer) {
-                      onComplete();
-                  } else {
-                      showModal("<p>인장의 빛이 흩어졌습니다.<br>이명의 의미(닻을 지키는 파도)를 차례대로 이어보세요.</p><button id='retry-btn' class='custom-btn'>다시 그리기</button>", false);
-                      document.getElementById('retry-btn').addEventListener('click', () => {
-                          hideModal();
-                          resetSeal();
-                      });
-                  }
-              }, 300); // 선이 그려지는 걸 보여주기 위해 0.3초 대기
-          }
-        });
+      // 제출 채점 로직
+      submitBtn.addEventListener('click', () => {
+        if (input.value === puzzle.answer) {
+          onComplete();
+        } else {
+          showModal("<p>단어가 맞지 않습니다.<br>편지를 꼼꼼히 문질러 숨겨진 내용을 정확히 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
+          document.getElementById('retry-btn').addEventListener('click', () => {
+              hideModal();
+              input.value = '';
+              input.focus();
+          });
+        }
       });
     };
 
