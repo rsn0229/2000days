@@ -86,135 +86,86 @@ const PuzzleHandlers = {
     return { ui, init };
   },
 
-// 2. 기사단 입단 : 아이콘 슬롯 맞추기
-  icon_slot: (puzzle, onComplete) => {
-    const iconData = [
-      { id: '파도', emoji: '🌊' },
-      { id: '검', emoji: '⚔️' },
-      { id: '닻', emoji: '⚓' },
-      { id: '별', emoji: '⭐' },
-      { id: '방패', emoji: '🛡️' },
-      { id: '연장', emoji: '🛠️' },
+// 2. 기사단 입단 : 마법 인장 패턴 연결
+  magic_seal: (puzzle, onComplete) => {
+    // 💡 6개의 기호와 마법진 위의 절대 좌표 (정확한 연결 선을 위해 세팅됨)
+    const nodes = [
+      { id: 'anchor', emoji: '⚓', x: 120, y: 24, top: '10%', left: '50%' },
+      { id: 'sun', emoji: '☀️', x: 204, y: 72, top: '30%', left: '85%' },
+      { id: 'wave', emoji: '🌊', x: 204, y: 168, top: '70%', left: '85%' },
+      { id: 'sword', emoji: '⚔️', x: 120, y: 216, top: '90%', left: '50%' },
+      { id: 'shield', emoji: '🛡️', x: 36, y: 168, top: '70%', left: '15%' },
+      { id: 'bird', emoji: '🕊️', x: 36, y: 72, top: '30%', left: '15%' }
     ];
 
-    let slots = [null, null, null]; 
-    let selected = null; 
+    let currentPath = [];
+    let pointsString = "";
 
     const ui = `
-      <div class="icon-slot-container">
-        <div class="icon-slot" data-slot="0"></div>
-        <div class="icon-slot" data-slot="1"></div>
-        <div class="icon-slot" data-slot="2"></div>
-      </div>
-      <div class="icon-pool" id="icon-pool">
-        ${iconData.map((item, idx) => `
-          <div class="pool-icon" data-id="${item.id}" data-emoji="${item.emoji}" data-idx="${idx}">${item.emoji}</div>
+      <div style="font-size:13px; color:#5d4037; font-weight:bold; margin-bottom: 15px;">단어의 의미 순서대로 마법진을 이어주세요</div>
+      <div class="magic-seal-container">
+        <svg class="magic-lines-svg" viewBox="0 0 240 240">
+          <polyline id="magic-line" class="magic-line" points="" />
+        </svg>
+        
+        ${nodes.map(n => `
+          <button class="rune-node" data-id="${n.id}" data-x="${n.x}" data-y="${n.y}" style="top: ${n.top}; left: ${n.left}; transform: translate(-50%, -50%);">
+            ${n.emoji}
+          </button>
         `).join('')}
       </div>
+      <button id="reset-seal-btn" class="reset-btn" style="opacity: 1; margin-top: 0;">[ 연결 취소 ]</button>
     `;
 
     const init = () => {
-      const slotEls = document.querySelectorAll('.icon-slot');
-      const poolEls = document.querySelectorAll('.pool-icon');
+      // 💡 기본 '풀기' 버튼은 숨김 (3개를 누르면 자동 채점되게 만듦)
+      const defaultSubmitBtn = document.getElementById('submit-puzzle');
+      if(defaultSubmitBtn) defaultSubmitBtn.style.display = 'none';
 
-      const updateUI = () => {
-        slotEls.forEach((slotEl, i) => {
-          if (slots[i]) {
-            slotEl.innerText = slots[i].emoji;
-            slotEl.classList.add('filled');
-          } else {
-            slotEl.innerText = '';
-            slotEl.classList.remove('filled');
-          }
-          slotEl.classList.remove('selected');
-        });
-
-        const usedIdxs = slots.filter(s => s !== null).map(s => parseInt(s.poolIdx));
-        poolEls.forEach((poolEl, i) => {
-          if (usedIdxs.includes(i)) {
-            poolEl.classList.add('invisible');
-          } else {
-            poolEl.classList.remove('invisible');
-          }
-          poolEl.classList.remove('selected');
-        });
-
-        if (selected) {
-          if (selected.type === 'slot') {
-            slotEls[selected.index].classList.add('selected');
-          } else if (selected.type === 'pool') {
-            poolEls[selected.index].classList.add('selected');
-          }
-        }
+      const polyline = document.getElementById('magic-line');
+      const runeBtns = document.querySelectorAll('.rune-node');
+      
+      // 연결선과 선택 초기화 함수
+      const resetSeal = () => {
+        currentPath = [];
+        pointsString = "";
+        polyline.setAttribute('points', pointsString);
+        runeBtns.forEach(btn => btn.classList.remove('active'));
       };
 
-      const clearSelection = () => {
-        selected = null;
-      };
+      document.getElementById('reset-seal-btn').addEventListener('click', resetSeal);
 
-      poolEls.forEach(iconEl => {
-        iconEl.addEventListener('click', (e) => {
-          const pIdx = parseInt(e.target.dataset.idx);
+      runeBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.id;
+          const x = e.currentTarget.dataset.x;
+          const y = e.currentTarget.dataset.y;
 
-          if (selected && selected.type === 'slot') {
-            const sIdx = selected.index;
-            slots[sIdx] = {
-              id: iconEl.dataset.id,
-              emoji: iconEl.dataset.emoji,
-              poolIdx: pIdx
-            };
-            clearSelection();
-          } else if (selected && selected.type === 'pool' && selected.index === pIdx) {
-            clearSelection();
-          } else {
-            selected = { type: 'pool', index: pIdx };
+          // 이미 누른 버튼은 무시
+          if (currentPath.includes(id)) return;
+
+          // 버튼에 불을 켜고 좌표를 선(polyline)에 추가하여 그림
+          currentPath.push(id);
+          pointsString += `${x},${y} `;
+          polyline.setAttribute('points', pointsString.trim());
+          e.currentTarget.classList.add('active');
+
+          // 3개를 누르면 자동으로 정답 체크!
+          if (currentPath.length === 3) {
+              setTimeout(() => {
+                  // 닻 -> 방패 -> 파도 순서 확인
+                  if (currentPath.join('-') === puzzle.answer) {
+                      onComplete();
+                  } else {
+                      showModal("<p>인장의 빛이 흩어졌습니다.<br>이명의 의미(닻을 지키는 파도)를 차례대로 이어보세요.</p><button id='retry-btn' class='custom-btn'>다시 그리기</button>", false);
+                      document.getElementById('retry-btn').addEventListener('click', () => {
+                          hideModal();
+                          resetSeal();
+                      });
+                  }
+              }, 300); // 선이 그려지는 걸 보여주기 위해 0.3초 대기
           }
-          updateUI();
         });
-      });
-
-      slotEls.forEach(slotEl => {
-        slotEl.addEventListener('click', (e) => {
-          const sIdx = parseInt(e.target.dataset.slot);
-
-          if (selected && selected.type === 'pool') {
-            const pIdx = selected.index;
-            const poolTarget = document.querySelector(`.pool-icon[data-idx="${pIdx}"]`);
-            slots[sIdx] = {
-              id: poolTarget.dataset.id,
-              emoji: poolTarget.dataset.emoji,
-              poolIdx: pIdx
-            };
-            clearSelection();
-          } else if (selected && selected.type === 'slot') {
-            const sIdx2 = selected.index;
-            if (sIdx === sIdx2) {
-              if (slots[sIdx]) {
-                slots[sIdx] = null;
-              }
-              clearSelection();
-            } else {
-              const temp = slots[sIdx];
-              slots[sIdx] = slots[sIdx2];
-              slots[sIdx2] = temp;
-              clearSelection();
-            }
-          } else {
-            selected = { type: 'slot', index: sIdx };
-          }
-          updateUI();
-        });
-      });
-
-      document.getElementById('submit-puzzle').addEventListener('click', () => {
-        const userAnswer = slots.map(s => s ? s.id : '').join('-');
-        
-        if (userAnswer === puzzle.answer) {
-          onComplete();
-        } else {
-          showModal("<p>인장이 맞춰지지 않았습니다.<br>의미와 순서를 다시 생각해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
-        }
       });
     };
 
