@@ -1094,6 +1094,28 @@ body {
   right: -5px;
 }
 
+/* 💡 고정된 파이프 (회전 불가) */
+.path-tile.fixed-pipe {
+  cursor: not-allowed;
+  background-color: #213042; /* 일반 파이프보다 살짝 어둡고 무거운 색상 */
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5); /* 바닥에 굳게 박힌 느낌 */
+}
+.path-tile.fixed-pipe:active {
+  filter: none; /* 클릭해도 번쩍이지 않음 */
+  transform: none;
+}
+
+/* 💡 아예 지나갈 수 없는 장애물 타일 */
+.path-tile.obstacle-tile {
+  cursor: not-allowed;
+  background-color: #111827; /* 확연하게 캄캄한 진입금지 구역 */
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+}
+.path-tile.obstacle-tile:active {
+  filter: none;
+  transform: none;
+}
+
 @keyframes pulse-arrow {
   0% { transform: translateX(0); opacity: 0.6; }
   100% { transform: translateX(5px); opacity: 1; }
