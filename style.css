@@ -357,7 +357,7 @@ body {
   position: relative;
   /* 💡 1. 부모 종이의 남은 여백에 딱 맞는 260px로 고정하여 완벽한 중앙 정렬 */
   width: 260px;
-  height: 160px;
+  height: 200px;
   /* margin을 auto 대신 0으로 주어 화면 틀어짐 방지 */
   margin: 10px 0 20px 0;
   
