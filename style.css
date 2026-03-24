@@ -357,7 +357,7 @@ body {
   position: relative;
   /* 💡 1. 부모 종이의 남은 여백에 딱 맞는 260px로 고정하여 완벽한 중앙 정렬 */
   width: 260px;
-  height: 200px;
+  height: 220px;
   /* margin을 auto 대신 0으로 주어 화면 틀어짐 방지 */
   margin: 10px 0 20px 0;
   
@@ -444,7 +444,6 @@ body {
 
 .magic-input:focus {
   border-bottom: 2px solid #bf360c;
-  background-color: #fbe9e7;
 }
 
 /* 🚀 3장: 직소 퍼즐 (단일 격자 맞바꾸기 방식) */
