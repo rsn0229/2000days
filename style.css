@@ -351,115 +351,81 @@ body {
   transform: translateY(2px); 
 }
 
-/* 🚀 2장: 파도 기사단 입단 (마법 인장 패턴 연결) UI */
+/* 🚀 2장: 사르디나 특수 서신 (마력 불어넣기 - 스크래치 캔버스) UI */
 
-/* 둥근 마법진 배경 */
-.magic-seal-container {
+.water-reveal-container {
   position: relative;
-  width: 240px;
-  height: 240px;
+  width: 280px;
+  height: 160px;
   margin: 10px auto 20px auto;
-  background: radial-gradient(circle at center, #2e1d16 0%, #1a110d 100%);
-  border-radius: 50%;
-  border: 4px solid #3e2723;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.3);
+  border: 2px solid #a1887f;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* 마법진 내부 장식 선 */
-.magic-seal-container::before {
-  content: '';
-  position: absolute;
-  top: 15%; left: 15%; width: 70%; height: 70%;
-  border: 1px dashed rgba(212, 175, 55, 0.2);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-/* 선이 그려질 투명 도화지 (SVG) */
-.magic-lines-svg {
+/* 안개가 걷히면 드러나는 실제 편지 내용 */
+.hidden-letter {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  pointer-events: none; /* 클릭을 방해하지 않게 투과시킴 */
+  background-color: #fdfbf7; /* 종이 색상 */
+  background-image: radial-gradient(circle at center, transparent 40%, rgba(62, 39, 35, 0.05) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  box-sizing: border-box;
   z-index: 1;
 }
 
-/* 빛나는 금빛 연결 선 */
-.magic-line {
-  fill: none;
-  stroke: #d4af37; /* 영롱한 금색 */
-  stroke-width: 4;
-  stroke-dasharray: 6, 6; /* 점선 효과 */
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 5px #d4af37); /* 자체 발광 효과 */
+.letter-text {
+  font-size: 13px;
+  color: #5d4037;
+  line-height: 1.6;
+  text-align: center;
+  font-weight: bold;
+}
+
+.letter-code {
+  font-family: 'Courier New', monospace;
+  font-size: 24px;
+  font-weight: bold;
+  color: #bf360c;
+  margin-top: 10px;
+  letter-spacing: 3px;
+}
+
+/* 덮여있는 마력의 안개 (스크래치 될 영역) */
+.scratch-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 2;
+  cursor: crosshair;
+}
+
+/* 정답 입력용 언더라인 인풋 */
+.magic-input {
+  width: 160px;
+  text-align: center;
+  font-size: 20px;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  border: none;
+  border-bottom: 2px dashed #a1887f;
+  background: transparent;
+  outline: none;
+  color: #3e2723;
+  font-weight: bold;
+  margin-bottom: 15px;
   transition: all 0.3s;
 }
 
-/* 6개의 마법 기호 노드(버튼) */
-.rune-node {
-  position: absolute;
-  width: 45px; height: 45px;
-  background: #3e2723;
-  border: 2px solid #8b6508;
-  border-radius: 50%;
-  font-size: 20px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  z-index: 2;
-  transition: all 0.2s;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
-  padding: 0;
-}
-
-.rune-node:active {
-  transform: translate(-50%, -50%) scale(0.9) !important;
-}
-
-/* 클릭되어 불이 켜진 노드 */
-.rune-node.active {
-  background: #fdfbf7;
-  border-color: #d4af37;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
-  text-shadow: 0 0 5px #d4af37;
-}
-
-/* 🚀 3장: 찢어진 서류 (3x3 직소 퍼즐) UI */
-.jigsaw-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  margin-top: 10px;
-}
-
-/* 3x3 빈 격자판 */
-.jigsaw-board {
-  display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-template-rows: repeat(3, 50px);
-  gap: 2px;
-  background-color: #d7ccc8; /* 격자 선 색상 역할 */
-  border: 2px solid #a1887f;
-  padding: 2px;
-}
-
-.jigsaw-slot {
-  width: 50px;
-  height: 50px;
-  background-color: rgba(242, 238, 229, 0.5); /* 빈 칸은 반투명 */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-/* 하단 흩어진 조각 풀 */
-.jigsaw-pool {
-  display: grid;
-  grid-template-columns: repeat(5, 40px); /* 5칸씩 2줄 배치 */
-  gap: 8px;
-  min-height: 90px;
-  justify-content: center;
+.magic-input:focus {
+  border-bottom: 2px solid #bf360c;
+  background-color: #fbe9e7;
 }
 
 /* 🚀 3장: 직소 퍼즐 (단일 격자 맞바꾸기 방식) */
