@@ -66,13 +66,16 @@ document.addEventListener('click', async (e) => {
       creditBtn.innerText = `준비하는 중${dots}`;
     }, 400); 
 
-    try {
+try {
        const data = await getCredits();
+
        if (data && data.length > 0) {
+         data[data.length - 1] = "and " + data[data.length - 1];
          nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
        } else {
          nameListContainer.innerHTML = "<p style='color:#888;'>첫 번째 클리어가 되어주셔서 감사합니다.</p>";
        }
+
     } catch (error) {
        console.error(error);
        nameListContainer.innerHTML = "<p style='color:#888;'>기록을 불러오지 못했습니다.</p>";
