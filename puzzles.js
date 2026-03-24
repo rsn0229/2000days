@@ -89,9 +89,6 @@ const PuzzleHandlers = {
 // 2. 파도 기사단 입단 : 물의 마력 불어넣기 (스크래치 캔버스)
   water_reveal: (puzzle, onComplete) => {
     const ui = `
-      <div style="font-size:12px; color:#8d6e63; font-weight:bold; margin-bottom: 10px;">
-        안개 낀 백지 위를 문질러 숨겨진 전언을 확인하세요
-      </div>
       <div class="water-reveal-container">
         <div class="hidden-letter">
           <div class="letter-text">가장 무거운 닻을 지키는 파도가 되길.</div>
@@ -114,19 +111,10 @@ const PuzzleHandlers = {
 
       // 1. 사르디나의 푸른 바다 안개(그라데이션)로 캔버스를 덮어버림
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#1e3c72'); // 짙은 바다색
-      gradient.addColorStop(1, '#2a5298'); // 옅은 바다색
+      gradient.addColorStop(0, '#cad7eb'); // 짙은 바다색
+      gradient.addColorStop(1, '#e1e9f0'); // 옅은 바다색
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // 2. 안개 위에 안내 문구 각인
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.font = 'bold 15px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('✨ 화면을 문지르세요 ✨', canvas.width / 2, canvas.height / 2);
-
-      let isDrawing = false;
 
       // 마우스 및 터치 좌표 계산기
       const getPos = (e) => {
@@ -198,7 +186,7 @@ const PuzzleHandlers = {
         } else {
           showModal("<p>단어가 맞지 않습니다.<br>편지를 꼼꼼히 문질러 숨겨진 내용을 정확히 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => {
-              hideModal();
+              renderPuzzle();
               input.value = '';
               input.focus();
           });
