@@ -828,17 +828,17 @@ const ui = `
 
     const getChar = (idx) => String.fromCharCode(65 + idx);
 
-    // 🚀 핵심 수정: 측면 틀어진 반지 케이스(velvet-box-slanted)와 납작한 자물쇠(flat-slanted-lock) 구조 적용!
+    // 🚀 수정된 UI: 정방향 상자, 금박 텍스트, 하나의 판으로 된 자물쇠
     const ui = `
-      <div class="velvet-box-slanted">
-        <div class="flat-slanted-lock">
-          <div class="engraved-hint-text">ANCHOR AND</div>
-          <div class="dial-group">
+      <div class="velvet-box-new">
+        <div class="gold-foil-text">ANCHOR AND</div>
+        <div class="flat-brass-panel">
+          <div class="brass-dial-group">
             ${[0, 1, 2, 3].map(i => `
-              <div class="slanted-dial-column">
-                <button class="slanted-dial-btn slanted-btn-up" data-idx="${i}">▲</button>
-                <div class="slanted-dial-value" id="dial-${i}">A</div>
-                <button class="slanted-dial-btn slanted-btn-down" data-idx="${i}">▼</button>
+              <div class="brass-dial-column">
+                <button class="brass-dial-btn brass-btn-up" data-idx="${i}">▲</button>
+                <div class="brass-dial-value" id="dial-${i}">A</div>
+                <button class="brass-dial-btn brass-btn-down" data-idx="${i}">▼</button>
               </div>
             `).join('')}
           </div>
@@ -853,8 +853,7 @@ const ui = `
         });
       };
 
-      // 🚀 핵심 수정: 바뀐 화살표 버튼 클래스명에 맞춰 이벤트 연결 (slanted-btn-up, slanted-btn-down)
-      document.querySelectorAll('.slanted-btn-up').forEach(btn => {
+      document.querySelectorAll('.brass-btn-up').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
           dials[idx] = (dials[idx] + 1) % 26;
@@ -862,7 +861,7 @@ const ui = `
         });
       });
 
-      document.querySelectorAll('.slanted-btn-down').forEach(btn => {
+      document.querySelectorAll('.brass-btn-down').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
           dials[idx] = (dials[idx] - 1 + 26) % 26;
@@ -876,7 +875,7 @@ const ui = `
         if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>자물쇠가 열리지 않습니다.<br>우리가 영원히 함께할 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
+          showModal("<p>자물쇠가 열리지 않습니다.<br>우리를 상징하는 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
