@@ -384,19 +384,37 @@ body {
   z-index: 1;
 }
 
+/* 💡 안개가 걷히면 드러나는 실제 편지 내용 */
 .letter-text {
   font-size: 13px;
   color: #5d4037;
   line-height: 1.6;
-  text-align: center;
+  /* 💡 중앙 정렬에서 왼쪽 정렬로 변경 */
+  text-align: left; 
+  width: 100%; /* 글씨가 공간을 꽉 채우도록 너비 확보 */
+  word-break: keep-all; 
+}
+
+/* 💡 <p> 태그(문단)마다 들여쓰기와 여백 적용 */
+.letter-text p {
+  /* 💡 1em = 딱 현재 폰트 크기의 1글자(한 음절)만큼 들여쓰기 하라는 뜻! */
+  text-indent: 1em; 
+  margin: 0 0 10px 0; /* 문단과 문단 사이의 아래쪽 여백(10px) */
+}
+
+/* 마지막 문단은 아래 여백을 없애서 깔끔하게 마감 */
+.letter-text p:last-child {
+  margin-bottom: 0;
 }
 
 .letter-code {
   font-family: 'Courier New', monospace;
   font-size: 12px;
   color: #5d4037;
-  margin-top: 10px;
+  margin-top: 15px;
   letter-spacing: 3px;
+  text-align: right; /* 💡 from. ANCHOR는 편지답게 우측 하단 정렬! (가운데가 좋으시면 center로 두셔도 됩니다) */
+  width: 100%;
 }
 
 /* 덮여있는 마력의 안개 (스크래치 될 영역) */
