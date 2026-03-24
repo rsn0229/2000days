@@ -351,76 +351,76 @@ body {
   transform: translateY(2px); 
 }
 
-/* 2장: 기사단 인장 슬롯 퍼즐 UI */
-.icon-slot-container {
-  display: flex; 
-  justify-content: center; 
-  gap: 15px; 
-  margin: 15px 0 25px 0;
-}
+/* 🚀 2장: 파도 기사단 입단 (마법 인장 패턴 연결) UI */
 
-.icon-slot {
-  width: 50px; 
-  height: 50px;
-  border: 2px dashed #a1887f;
-  border-radius: 8px;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  font-size: 26px; 
-  font-family: 'Noto Color Emoji', sans-serif;
-  background-color: rgba(161, 136, 127, 0.1);
-  cursor: pointer; 
-  transition: all 0.2s;
-}
-
-.icon-slot.filled {
-  border: 2px solid #8d6e63;
-  background-color: #fdfbf7;
-}
-
-/* 선택되었을 때의 테두리와 배경색 강조 */
-.icon-slot.selected {
-  border-color: #bf360c;
-  background-color: #fbe9e7;
-}
-
-.icon-pool {
-  display: flex; 
-  justify-content: center; 
-  gap: 12px; 
-  flex-wrap: wrap;
-  min-height: 50px; /* 조각이 사라져도 컨테이너 높이를 유지하여 덜컹거림 방지 */
-  margin-bottom: 20px;
-}
-
-.pool-icon {
-  width: 45px; 
-  height: 45px;
-  border: 1px solid #d7ccc8; 
+/* 둥근 마법진 배경 */
+.magic-seal-container {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 10px auto 20px auto;
+  background: radial-gradient(circle at center, #2e1d16 0%, #1a110d 100%);
   border-radius: 50%;
-  background-color: #fffaf0;
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  font-size: 24px; 
-  font-family: 'Noto Color Emoji', sans-serif;
-  cursor: pointer; 
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.1s;
-  user-select: none;
+  border: 4px solid #3e2723;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 5px 15px rgba(0,0,0,0.3);
 }
 
-.pool-icon:hover { transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-.pool-icon:active { transform: translateY(0); }
-/* 💡 2장: 조각이 보드에 올라가면 투명해지되 공간은 유지! */
-.pool-icon.invisible { visibility: hidden; pointer-events: none; }
+/* 마법진 내부 장식 선 */
+.magic-seal-container::before {
+  content: '';
+  position: absolute;
+  top: 15%; left: 15%; width: 70%; height: 70%;
+  border: 1px dashed rgba(212, 175, 55, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+}
 
-/* 선택되었을 때 살짝 떠오르며 강조 */
-.pool-icon.selected {
-  border-color: #bf360c;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(191,54,12,0.3);
+/* 선이 그려질 투명 도화지 (SVG) */
+.magic-lines-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; /* 클릭을 방해하지 않게 투과시킴 */
+  z-index: 1;
+}
+
+/* 빛나는 금빛 연결 선 */
+.magic-line {
+  fill: none;
+  stroke: #d4af37; /* 영롱한 금색 */
+  stroke-width: 4;
+  stroke-dasharray: 6, 6; /* 점선 효과 */
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 5px #d4af37); /* 자체 발광 효과 */
+  transition: all 0.3s;
+}
+
+/* 6개의 마법 기호 노드(버튼) */
+.rune-node {
+  position: absolute;
+  width: 45px; height: 45px;
+  background: #3e2723;
+  border: 2px solid #8b6508;
+  border-radius: 50%;
+  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+  padding: 0;
+}
+
+.rune-node:active {
+  transform: translate(-50%, -50%) scale(0.9) !important;
+}
+
+/* 클릭되어 불이 켜진 노드 */
+.rune-node.active {
+  background: #fdfbf7;
+  border-color: #d4af37;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+  text-shadow: 0 0 5px #d4af37;
 }
 
 /* 🚀 3장: 찢어진 서류 (3x3 직소 퍼즐) UI */
