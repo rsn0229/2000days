@@ -355,21 +355,25 @@ body {
 
 .water-reveal-container {
   position: relative;
-  width: 280px;
+  /* 💡 1. 부모 종이의 남은 여백에 딱 맞는 260px로 고정하여 완벽한 중앙 정렬 */
+  width: 260px;
   height: 160px;
-  margin: 10px auto 20px auto;
-  border: 2px solid #a1887f;
-  border-radius: 8px;
+  /* margin을 auto 대신 0으로 주어 화면 틀어짐 방지 */
+  margin: 10px 0 20px 0;
+  
+  /* 💡 2. 테두리와 둥근 모서리를 없애 진짜 뾰족한 종이처럼 연출 */
+  border: none;
+  border-radius: 0;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* 안개가 걷히면 드러나는 실제 편지 내용 */
+/* 안개가 걷히면 드러나는 실제 편지 내용 (고객님 커스텀 폰트/색상 완벽 보존) */
 .hidden-letter {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background-color: #fdfbf7; /* 종이 색상 */
+  background-color: #fdfbf7; 
   background-image: radial-gradient(circle at center, transparent 40%, rgba(62, 39, 35, 0.05) 100%);
   display: flex;
   flex-direction: column;
@@ -404,7 +408,7 @@ body {
   cursor: crosshair;
 }
 
-/* 정답 입력용 언더라인 인풋 */
+/* 정답 입력용 언더라인 인풋 (고객님 세팅 완벽 보존) */
 .magic-input {
   width: 160px;
   text-align: center;
