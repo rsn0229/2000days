@@ -602,7 +602,7 @@ const ui = `
           } else {
              orderBoard.style.background = 'rgba(76, 175, 80, 0.1)';
              orderBoard.style.color = '#388e3c';
-             orderBoard.innerHTML = `<strong>"✨<br>와, 정말 맛있어요!"</strong>`;
+             orderBoard.innerHTML = `<strong>"✨<br>정말 맛있어요, 한 잔 더 주문할래요!"</strong>`;
              
              submitBtn.disabled = true;
 
