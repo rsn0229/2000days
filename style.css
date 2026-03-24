@@ -1703,6 +1703,13 @@ body {
   letter-spacing: 2px;
 }
 
+/* 💡 엔딩 크레딧의 마지막 플레이어 이름 전용 금빛 스타일 */
+.gold-name {
+  color: #d4af37; /* 영롱한 금색 */
+  font-weight: bold;
+  text-shadow: 0 0 5px rgba(212, 175, 55, 0.5); /* 어둠 속에서 은은하게 빛나는 효과 */
+}
+
 /* JS에서 이 클래스를 붙여주면 애니메이션 시작! */
 .credit-content.scroll-up {
   /* 💡 1. 크레딧 속도 0.8배 느리게 (15초 -> 19초로 연장) */
