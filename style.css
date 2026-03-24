@@ -1099,122 +1099,111 @@ body {
   100% { transform: translateX(5px); opacity: 1; }
 }
 
-/* 🚀 10장: 청혼 (푸른 벨벳 반지 케이스 & 측면 틀어진 자물쇠) UI */
+/* 🚀 10장: 청혼 (정방향 푸른 벨벳 & 납작한 일체형 자물쇠) UI */
 
-/* 💡 1. 푸른색 고급 벨벳 상자 질감 & 측면 틀어짐 연출 */
-.velvet-box-slanted {
-  /* 깊이감 있는 네이비 블루 radial 그라데이션으로 벨벳 질감 표현 */
+/* 💡 1. 푸른색 고급 벨벳 상자 (정방향, 중앙 정렬) */
+.velvet-box-new {
   background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
   border: 2px solid #000033;
   border-radius: 12px;
-  padding: 40px 20px;
+  padding: 35px 20px 45px 20px;
   text-align: center;
   box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
-  margin-top: 15px;
+  margin: 15px auto;
   position: relative;
-  
-  /* 💡 핵심: 측면 틀어진 입체감 연출 (원근감 + Y축 회전) */
-  perspective: 1000px;
-  transform: rotateY(20deg); 
-  transform-style: preserve-3d;
+  width: 280px; /* 상자 크기를 단정하게 고정 */
+  box-sizing: border-box;
 }
 
-/* 💡 2. 상자 입구 느낌의 가로 음영 선 추가 */
-.velvet-box-slanted::after {
+/* 💡 2. 상자 입구의 가로 음영 선 */
+.velvet-box-new::after {
   content: '';
   position: absolute;
-  top: 60%; /* 상자의 60% 높이쯤에 위치 */
+  top: 50%;
   left: 0;
   width: 100%;
   height: 2px;
-  /* 어두운 그림자 레이어로 입구 선 구현 */
-  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%);
-  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
+  box-shadow: 0 1px 1px rgba(255,255,255,0.1);
   pointer-events: none;
 }
 
-/* 💡 3. 상자 중앙에 달린 납작한 측면 자물쇠 패널 */
-.flat-slanted-lock {
-  /* 자물쇠 판도 상자와 함께 틀어져 배치됨 */
-  background: linear-gradient(to bottom, #f8e5a2, #d4af37 20%, #a67c00 80%, #8b6508);
-  padding: 20px;
-  border-radius: 8px;
-  display: inline-block;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.9);
-  border: 1px solid #5c4000;
-  transform: translateZ(2px); /* 상자 위에 살짝 떠있게 함 */
-}
-
-/* 💡 4. 자물쇠 위에 음각으로 새겨진 고동색 힌트 글씨 */
-.engraved-hint-text {
+/* 💡 3. 벨벳 상자 위에 박힌 금박 힌트 글씨 */
+.gold-foil-text {
   font-family: 'Courier New', monospace;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
-  
-  /* 💡 핵심 수정: 판의 영문도 다이얼처럼 고동색으로 변경 */
-  color: #3e2723;
-  
-  /* 💡 핵심: 고동색 텍스트에 음각 효과 부여 (밝은 빛 + 어두운 그림자) */
-  text-shadow: 1px 1px 0px rgba(255,255,255,0.4), -1px -1px 1px rgba(0,0,0,0.3);
-  
-  letter-spacing: 2px;
-  margin-bottom: 15px;
+  color: #d4af37; /* 영롱한 금색 */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 8px rgba(212, 175, 55, 0.4);
+  letter-spacing: 3px;
+  margin-bottom: 25px; /* 자물쇠와의 간격 넉넉하게 */
+  position: relative;
+  z-index: 2; /* 입구 선보다 위에 오도록 */
 }
 
-/* 다이얼 가로 정렬 그룹 */
-.dial-group {
+/* 💡 4. 하나의 판으로 연결된 납작한 황동 자물쇠 */
+.flat-brass-panel {
+  background: linear-gradient(135deg, #f8e5a2, #d4af37 30%, #a67c00 70%, #8b6508);
+  padding: 10px; /* 판 크기를 아담하게 조절 */
+  border-radius: 6px;
+  display: inline-block;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.8);
+  border: 1px solid #5c4000;
+  position: relative;
+  z-index: 2;
+}
+
+/* 💡 5. 자물쇠 내부의 깊게 파인 하나의 홈 (4개 다이얼이 공유) */
+.brass-dial-group {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  background: #2e1d16; /* 다이얼 배경 (어두운 고동색) */
+  border: 2px solid #5c4000;
+  border-radius: 4px;
+  box-shadow: inset 0 4px 10px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.4);
+  padding: 5px;
+  gap: 2px; /* 다이얼 사이의 좁은 간격 */
 }
 
-/* 💡 5. 납작한 다이얼 홈 (측면 슬롯) */
-.slanted-dial-column {
+/* 개별 다이얼 열 */
+.brass-dial-column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #3e2723; /* 자물쇠 안쪽 어두운 그림자 공간 */
-  border: 2px solid #5c4000;
-  border-radius: 4px;
-  box-shadow: inset 0 3px 6px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.5);
-  padding: 3px;
+  /* 다이얼 사이를 구분하는 얇은 선 */
+  border-right: 1px solid rgba(0,0,0,0.5);
+  padding: 0 5px;
+}
+.brass-dial-column:last-child {
+  border-right: none;
 }
 
-/* 납작한 금속 조작 버튼 (위/아래 화살표) */
-.slanted-dial-btn {
+/* 조작 화살표 버튼 */
+.brass-dial-btn {
   background: transparent;
   border: none;
-  color: #d4af37;
+  color: #a67c00;
   font-size: 14px;
   cursor: pointer;
-  padding: 4px 10px;
+  padding: 4px 8px;
   transition: transform 0.1s, color 0.2s;
 }
-
-.slanted-dial-btn:active {
+.brass-dial-btn:active {
   transform: scale(0.8);
   color: #f8e5a2;
 }
 
-/* 💡 6. 가운데 알파벳 (밝게 음각된 다이얼 면) */
-.slanted-dial-value {
-  font-family: 'Gowun Dodum', sans-serif; /* 💡 더 굵고 각진 폰트로 변경 */
-  font-size: 24px;
+/* 💡 6. 바뀌는 글자판 (배경은 고동색, 글자는 금빛 음각) */
+.brass-dial-value {
+  font-family: 'Courier New', monospace;
+  font-size: 26px;
   font-weight: bold;
-  
-  /* 💡 핵심 수정: 가운데 알파벳은 밝은 색으로 변경 */
-  background-color: #fdfbf7;
-  color: #fffaf0; /* 밝은 아이보리색 */
-  
-  /* 💡 핵심: 밝은 알파벳에 음각 효과 부여 (고동색 그림자 사용) */
-  text-shadow: 1px 1px 1px rgba(62, 39, 35, 0.4), -1px -1px 1px rgba(62, 39, 35, 0.3);
-  
-  margin: 2px 0;
-  padding: 4px 0;
-  width: 30px;
+  background-color: transparent; /* 💡 배경을 지워서 부모의 고동색이 그대로 보이게 함! */
+  color: #f8e5a2; /* 밝은 금빛 텍스트 */
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.2); /* 금속에 새겨진 음각 효과 */
+  margin: 4px 0;
+  width: 25px;
   text-align: center;
-  border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.5); 
   user-select: none;
 }
 
