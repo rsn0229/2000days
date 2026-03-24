@@ -1097,12 +1097,11 @@ body {
 /* 💡 고정된 파이프 (회전 불가) */
 .path-tile.fixed-pipe {
   cursor: not-allowed;
-  background-color: #213042; /* 일반 파이프보다 살짝 어둡고 무거운 색상 */
+  background-color: #1e2a3a; /* 일반 파이프보다 살짝 어둡고 무거운 색상 */
   box-shadow: inset 0 0 8px rgba(0,0,0,0.5); /* 바닥에 굳게 박힌 느낌 */
 }
 .path-tile.fixed-pipe:active {
   filter: none; /* 클릭해도 번쩍이지 않음 */
-  transform: none;
 }
 
 /* 💡 아예 지나갈 수 없는 장애물 타일 */
