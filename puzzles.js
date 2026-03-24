@@ -58,7 +58,6 @@ const PuzzleHandlers = {
         <button class="symbol-btn" data-slot="1">${symbols[0].icon}</button>
         <button class="symbol-btn" data-slot="2">${symbols[0].icon}</button>
       </div>
-      <p style="font-size: 12px; color: #8d6e63; margin-top: 5px;">버튼을 눌러 그림을 맞추세요</p>
     `;
 
     const init = () => {
