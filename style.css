@@ -1706,7 +1706,6 @@ body {
 /* 💡 엔딩 크레딧의 마지막 플레이어 이름 전용 금빛 스타일 */
 .gold-name {
   color: #d4af37; /* 영롱한 금색 */
-  font-weight: bold;
   text-shadow: 0 0 5px rgba(212, 175, 55, 0.5); /* 어둠 속에서 은은하게 빛나는 효과 */
 }
 
@@ -1745,7 +1744,7 @@ body {
 .restart-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  border-color: #cfd8dc;
+  border-color: #e6cf87
 }
 
 /* 💡 4. 크레딧 스크롤이 끝날 때쯤(19초 뒤) 버튼이 스르륵 나타나는 애니메이션 추가 */
