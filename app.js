@@ -136,8 +136,14 @@ try {
         let isFast = false;
         const updateSpeed = () => {
           const rate = isFast ? 4.0 : 1.0;
-          scrollAnim.playbackRate = rate;
-          btnAnim.playbackRate = rate;
+          
+          if (typeof scrollAnim.updatePlaybackRate === 'function') {
+            scrollAnim.updatePlaybackRate(rate);
+            btnAnim.updatePlaybackRate(rate);
+          } else {
+            scrollAnim.playbackRate = rate;
+            btnAnim.playbackRate = rate;
+          }
         };
 
         creditOverlay.addEventListener('mousedown', () => { isFast = true; updateSpeed(); });
