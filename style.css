@@ -1104,18 +1104,28 @@ body {
   left: -10px;
 }
 .path-exit {
-  bottom: 35px; 
+  bottom: 25px; 
   right: -5px;
 }
 
 /* 💡 고정된 파이프 (회전 불가) */
 .path-tile.fixed-pipe {
   cursor: not-allowed;
-  background-color: #1e2a3a; /* 일반 파이프보다 살짝 어둡고 무거운 색상 */
-  box-shadow: inset 0 0 8px rgba(0,0,0,0.5); /* 바닥에 굳게 박힌 느낌 */
+  background-color: #1e2a3a; /* 타일 배경색 */
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
 }
+
+/* 🔥 핵심: 고정 파이프 내부의 도로(SVG 선) 색상 변경 */
+.path-tile.fixed-pipe svg line,
+.path-tile.fixed-pipe svg path {
+  /* 기존 #fff9c4 보다 살짝 어둡고 탁한 황금색/회갈색 계열로 변경 */
+  stroke: #9c9977; 
+  /* (선택사항) 고정되어 굳어버린 느낌을 주려면 선 굵기를 미세하게 줄일 수도 있습니다 */
+  /* stroke-width: 12; */
+}
+
 .path-tile.fixed-pipe:active {
-  filter: none; /* 클릭해도 번쩍이지 않음 */
+  filter: none;
 }
 
 /* 💡 아예 지나갈 수 없는 장애물 타일 */

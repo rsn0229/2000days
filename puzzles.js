@@ -105,7 +105,7 @@ const PuzzleHandlers = {
       <div class="water-reveal-container">
         <div class="hidden-letter">
           <div class="letter-text">
-            <p>사관학교를 무사히 졸업하고 <span class="magic-ink m-1">파</span>도 <span class="magic-ink m-4">기</span>사단에 정식으로 발을 들이게 되다니 감회가 새롭구나.</p>
+            <p>사관학교를 무사히 졸업하고 <span class="magic-ink m-1">파</span>도 <span class="magic-ink m-4">기</span>사단에 정식으로 발을 들이는 것을 보니 감회가 새롭구나.</p>
             <p>기<span class="magic-ink m-5">사</span>단에 몸담는다는 건 네 짐작보다 훨씬 무겁고 험난한 일일 테지. 하지만 스스로 맹세한 길이니, 거침없이 나아가 사르디나<span class="magic-ink m-3">의</span> 가장 무거운 닻을 지키는 파<span class="magic-ink m-2">도</span>가 되길 바란다.</p>
           </div>
           <div class="letter-code">로잔나 데 메디치로부터</div>
@@ -745,38 +745,55 @@ const PuzzleHandlers = {
 
 // 9. 축제의 밤 : 인파 속 길 찾기 (파이프라인)
   pipeline: (puzzle, onComplete) => {
-    const svgI = `<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="100" stroke="#fff9c4" stroke-width="14" stroke-linecap="square"/></svg>`;
-    const svgL = `<svg viewBox="0 0 100 100"><path d="M 50 0 L 50 50 L 100 50" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
-    const svgT = `<svg viewBox="0 0 100 100"><path d="M 0 50 L 100 50 M 50 50 L 50 100" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
+    const svgI = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%; display: block;"><line x1="50" y1="0" x2="50" y2="100" stroke="#fff9c4" stroke-width="14" stroke-linecap="square"/></svg>`;
+    const svgL = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%; display: block;"><path d="M 50 0 L 50 50 L 100 50" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
+    const svgT = `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%; display: block;"><path d="M 0 50 L 100 50 M 50 50 L 50 100" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
 
-    // 🚀 전략적인 루트 설계를 위한 맵 배치 (fixed: true는 굳어버린 파이프)
+    // 🚀 [지름길 차단 5x5 설계]
+    // 5번(입구 바로 아래)을 좌우(90도)로 고정하여 수직 낙하를 막고, 
+    // 23번(출구 바로 왼쪽)을 상좌(270도)로 고정하여 직진을 막았습니다.
     const tiles = [
-      { type: 'L' }, { type: 'I', fixed: true, angle: 0 }, { type: 'T' }, { type: 'L' },
-      { type: 'I' }, { type: 'T', fixed: true, angle: 90 }, { type: 'L', fixed: true, angle: 90 }, { type: 'L' },
-      { type: 'L' }, { type: 'I', fixed: true, angle: 90 }, { type: 'L' }, { type: 'I' },
-      { type: 'L', fixed: true, angle: 90 }, { type: 'L' }, { type: 'L', fixed: true, angle: 0 }, { type: 'L' }
+      { type: 'L' }, { type: 'I' }, { type: 'L' }, { type: 'I' }, { type: 'L' }, // 0~4
+      { type: 'I', fixed: true, angle: 0 }, { type: 'L' }, { type: 'L', fixed: true, angle: 270 }, { type: 'T' }, { type: 'L' }, // 5~9 (5번: 가로 고정 - 수직 차단)
+      { type: 'L' }, { type: 'L', fixed: true, angle: 270 }, { type: 'L' }, { type: 'L' }, { type: 'T' }, // 10~14 (11번: 상하좌우 조절용)
+      { type: 'I', fixed: true, angle: 0 }, { type: 'L' }, { type: 'T', fixed: true, angle: 0 }, { type: 'I' }, { type: 'L' }, // 15~19
+      { type: 'L' }, { type: 'I' }, { type: 'L' }, { type: 'I' }, { type: 'T' }  // 20~24 (23번: 상좌 고정 - 우측 직진 차단)
     ];
 
-    // 고정된 파이프는 정해진 각도를 유지하고, 나머지만 랜덤으로 섞음
-    let currentAngles = tiles.map(t => t.fixed && t.angle !== undefined ? t.angle : Math.floor(Math.random() * 4) * 90);
+    let currentAngles = tiles.map(t => t.fixed ? t.angle : Math.floor(Math.random() * 4) * 90);
 
     const ui = `
       <div class="night-sky-box" id="night-sky">
-        <div class="path-puzzle-wrapper">
-          <div class="path-entrance">➔</div>
-          <div class="path-board">
+        <div class="path-puzzle-wrapper" style="display: flex; align-items: center; justify-content: center; width: 100%;">
+          <div class="path-entrance" style="margin-right: 5px;">➔</div>
+          
+          <div class="path-board" style="
+            display: grid; 
+            grid-template-columns: repeat(5, 45px); 
+            grid-template-rows: repeat(5, 45px); 
+            width: 225px; height: 225px;
+            background: #1a1a24; 
+            border: 2px solid #2a2a3a;
+            overflow: hidden;
+            line-height: 0;
+          ">
             ${tiles.map((t, i) => {
-              let svg = svgI;
-              if (t.type === 'L') svg = svgL;
-              if (t.type === 'T') svg = svgT;
-              
-              // 💡 굳어있는 파이프에는 특별한 CSS 클래스 추가
+              let svg = (t.type === 'L') ? svgL : (t.type === 'T') ? svgT : svgI;
               let extraClass = t.fixed ? 'fixed-pipe' : '';
               
-              return `<div class="path-tile ${extraClass}" data-idx="${i}" style="transform: rotate(${currentAngles[i]}deg);">${svg}</div>`;
+              return `
+                <div class="path-tile ${extraClass}" data-idx="${i}" style="
+                  width: 45px; height: 45px; 
+                  transform: rotate(${currentAngles[i]}deg); 
+                  display: block; box-sizing: border-box; 
+                  border: 0.1px solid rgba(255,255,255,0.05);
+                ">
+                  ${svg}
+                </div>`;
             }).join('')}
           </div>
-          <div class="path-exit">➔</div>
+          
+          <div class="path-exit" style="margin-left: 5px;">➔</div>
         </div>
       </div>
     `;
@@ -788,18 +805,14 @@ const PuzzleHandlers = {
       domTiles.forEach(tile => {
         tile.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
-          
-          // 💡 고정된 파이프를 누르면 회전하지 않고 살짝 덜컹! 거리는 애니메이션
           if (tiles[idx].fixed) {
             e.currentTarget.animate([
-              { transform: `rotate(${currentAngles[idx]}deg) translateX(0)` },
-              { transform: `rotate(${currentAngles[idx]}deg) translateX(2px)` },
-              { transform: `rotate(${currentAngles[idx]}deg) translateX(-2px)` },
-              { transform: `rotate(${currentAngles[idx]}deg) translateX(0)` }
-            ], { duration: 200 });
+              { transform: `rotate(${currentAngles[idx]}deg) scale(1)` },
+              { transform: `rotate(${currentAngles[idx]}deg) scale(0.9)` },
+              { transform: `rotate(${currentAngles[idx]}deg) scale(1)` }
+            ], { duration: 150 });
             return;
           }
-          
           currentAngles[idx] += 90; 
           e.currentTarget.style.transform = `rotate(${currentAngles[idx]}deg)`;
         });
@@ -809,42 +822,37 @@ const PuzzleHandlers = {
         const getPorts = (type, angle) => {
           let base = type === 'I' ? [1, 0, 1, 0] : type === 'L' ? [1, 1, 0, 0] : [0, 1, 1, 1];
           const rotations = ((angle % 360) + 360) % 360 / 90;
-          for (let i = 0; i < rotations; i++) {
-            base.unshift(base.pop()); 
-          }
+          for (let i = 0; i < rotations; i++) { base.unshift(base.pop()); }
           return base;
         };
 
         const board = tiles.map((t, i) => getPorts(t.type, currentAngles[i]));
-
-        if (!board[0][3]) return false;
+        if (!board[0][3]) return false; 
 
         let visited = new Set([0]);
         let queue = [0]; 
 
         while (queue.length > 0) {
           let curr = queue.shift();
-          let r = Math.floor(curr / 4);
-          let c = curr % 4;
+          let r = Math.floor(curr / 5); 
+          let c = curr % 5;             
           let ports = board[curr]; 
 
-          if (ports[0] && r > 0) {
-            let next = curr - 4;
+          if (ports[0] && r > 0) { // Up
+            let next = curr - 5;
             if (board[next][2] && !visited.has(next)) { visited.add(next); queue.push(next); }
           }
-          if (ports[1]) {
-            if (c < 3) {
+          if (ports[1]) { // Right
+            if (c < 4) {
               let next = curr + 1;
               if (board[next][3] && !visited.has(next)) { visited.add(next); queue.push(next); }
-            } else if (c === 3 && curr === 15) {
-              return true;
-            }
+            } else if (c === 4 && curr === 24) return true; 
           }
-          if (ports[2] && r < 3) {
-            let next = curr + 4;
+          if (ports[2] && r < 4) { // Down
+            let next = curr + 5;
             if (board[next][0] && !visited.has(next)) { visited.add(next); queue.push(next); }
           }
-          if (ports[3] && c > 0) {
+          if (ports[3] && c > 0) { // Left
             let next = curr - 1;
             if (board[next][1] && !visited.has(next)) { visited.add(next); queue.push(next); }
           }
@@ -855,11 +863,9 @@ const PuzzleHandlers = {
       submitBtn.addEventListener('click', () => {
         if (checkPath()) {
           submitBtn.disabled = true; 
-          setTimeout(() => {
-            onComplete();
-          }, 500);
+          setTimeout(() => { onComplete(); }, 500);
         } else {
-          showWrongAnswer("길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 오른쪽 화살표로 빠져나가야 합니다.");
+          showWrongAnswer("길이 어딘가 끊어져 있습니다.<br>왼쪽 위에서 출발해 오른쪽 아래로 빠져나가야 합니다.");
         }
       });
     };
