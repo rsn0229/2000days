@@ -29,8 +29,7 @@ const PuzzleHandlers = {
         if (dialValues.join('') === puzzle.answer) {
           onComplete(); 
         } else {
-          showModal("<p>비밀번호가 맞지 않습니다.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("비밀번호가 맞지 않습니다.");
         }
       });
     };
@@ -77,8 +76,7 @@ const PuzzleHandlers = {
         if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>상자가 열리지 않습니다.<br>기호의 종류와 순서가 맞을까요?</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("상자가 열리지 않습니다.<br>기호의 종류와 순서를 확인하세요.");
         }
       });
     };
@@ -88,41 +86,65 @@ const PuzzleHandlers = {
 
 // 2. 파도 기사단 입단 : 물의 마력 불어넣기 (스크래치 캔버스)
   water_reveal: (puzzle, onComplete) => {
-    // 💡 고객님의 문구와 구조가 100% 보존된 UI
-const ui = `
+    
+    // 💡 깜빡이는 가짜 커서 애니메이션을 위한 스타일 추가!
+    const ui = `
+      <style>
+        @keyframes fake-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .fake-cursor {
+          display: inline-block;
+          width: 2px;
+          height: 18px;
+          background-color: #bf360c; /* 포인트 색상 */
+          vertical-align: middle;
+          animation: fake-blink 1s step-end infinite;
+          margin-left: 2px;
+        }
+      </style>
+
       <div class="water-reveal-container">
         <div class="hidden-letter">
           <div class="letter-text">
-            <p>사관학교를 무사히 졸업하고 파도 기사단에 정식으로 발을 들이게 되다니 감회가 새롭구나.</p>
-            <p>기사단에 몸담는다는 건 네 짐작보다 훨씬 무겁고 험난한 일일 테지. 하지만 스스로 맹세한 길이니, 거침없이 나아가 사르디나의 가장 무거운 닻을 지키는 파도가 되길 바란다.</p>
+            <p>사관학교를 무사히 졸업하고 <span class="magic-ink m-1">파</span>도 <span class="magic-ink m-4">기</span>사단에 정식으로 발을 들이게 되다니 감회가 새롭구나.</p>
+            <p>기<span class="magic-ink m-5">사</span>단에 몸담는다는 건 네 짐작보다 훨씬 무겁고 험난한 일일 테지. 하지만 스스로 맹세한 길이니, 거침없이 나아가 사르디나<span class="magic-ink m-3">의</span> 가장 무거운 닻을 지키는 파<span class="magic-ink m-2">도</span>가 되길 바란다.</p>
           </div>
-          <div class="letter-code">from. ANCHOR</div>
+          <div class="letter-code">로잔나 데 메디치로부터</div>
         </div>
         <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
       </div>
-      <input type="text" id="magic-answer" class="magic-input" maxlength="10" placeholder="from. ???">
+      
+      <div class="magic-slot-group" style="position: relative;">
+        <input type="text" id="hidden-magic-input" maxlength="5" autocomplete="off" spellcheck="false"
+               style="position: absolute; top:0; left:0; width: 100%; height: 100%; color: transparent; background: transparent; border: none; outline: none; caret-color: transparent; z-index: 10; font-size: 20px; cursor: pointer;">
+        
+        <div class="magic-slot fake-slot" style="line-height: 40px; pointer-events: none;"></div>
+        <div class="magic-slot fake-slot" style="line-height: 40px; pointer-events: none;"></div>
+        <div class="magic-slot fake-slot" style="line-height: 40px; pointer-events: none;"></div>
+        <span class="magic-space"></span>
+        <div class="magic-slot fake-slot" style="line-height: 40px; pointer-events: none;"></div>
+        <div class="magic-slot fake-slot" style="line-height: 40px; pointer-events: none;"></div>
+      </div>
     `;
 
     const init = () => {
       const canvas = document.getElementById('scratch-canvas');
       const ctx = canvas.getContext('2d');
-      const input = document.getElementById('magic-answer');
+      
+      const hiddenInput = document.getElementById('hidden-magic-input');
+      const fakeSlots = document.querySelectorAll('.fake-slot');
       const submitBtn = document.getElementById('submit-puzzle');
 
-      // 💡 캔버스 픽셀 사이즈를 부모 박스와 똑같이 260으로 고정!
       canvas.width = 260;
       canvas.height = 160;
 
-      // 1. 사르디나의 푸른 바다 안개(그라데이션)로 캔버스를 덮어버림
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      gradient.addColorStop(0, '#cad7eb'); // 짙은 바다색
-      gradient.addColorStop(1, '#e1e9f0'); // 옅은 바다색
+      gradient.addColorStop(0, '#ebe8e4'); 
+      gradient.addColorStop(1, '#d9d5cc'); 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      let isDrawing = false; // 상태 변수 선언
+      let isDrawing = false;
 
-      // 마우스 및 터치 좌표 계산기
       const getPos = (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -141,7 +163,6 @@ const ui = `
         };
       };
 
-      // 안개를 부드럽게 지워내는 로직
       const scratch = (e) => {
         if (!isDrawing) return;
         const pos = getPos(e);
@@ -158,7 +179,6 @@ const ui = `
         ctx.fill();
       };
 
-      // 💡 3. 과감한 드래그 지원: PC에서 캔버스 밖으로 나가도 계속 지워지게 설정
       const startMouseScratch = (e) => {
         isDrawing = true;
         scratch(e);
@@ -174,7 +194,6 @@ const ui = `
 
       canvas.addEventListener('mousedown', startMouseScratch);
 
-      // 모바일 터치 이벤트 연결 (모바일은 기본적으로 터치 시작 지점을 기억하므로 밖으로 나가도 인식됨)
       canvas.addEventListener('touchstart', (e) => {
         isDrawing = true;
         scratch(e);
@@ -182,7 +201,7 @@ const ui = `
       
       canvas.addEventListener('touchmove', (e) => {
         if(isDrawing) {
-          if (e.cancelable) e.preventDefault(); // 스크롤 튀는 현상 방어
+          if (e.cancelable) e.preventDefault();
           scratch(e);
         }
       }, { passive: false });
@@ -190,23 +209,48 @@ const ui = `
       canvas.addEventListener('touchend', () => { isDrawing = false; });
       canvas.addEventListener('touchcancel', () => { isDrawing = false; });
 
-      // 정답 입력칸은 영어 대문자로 자동 변환
-      input.addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
-      });
+      // 💡 가짜 슬롯과 깜빡이는 커서 업데이트 로직
+      const updateSlots = () => {
+        hiddenInput.value = hiddenInput.value.replace(/\s/g, ''); 
+        const val = hiddenInput.value;
+        const isFocused = document.activeElement === hiddenInput; // 현재 입력창이 선택되었는지 확인
+        
+        fakeSlots.forEach((slot, index) => {
+          let content = val[index] || '';
+          
+          // 커서가 위치할 칸 판별 (글자가 채워질 다음 칸, 또는 다 찼을 땐 마지막 칸)
+          let isCursorHere = false;
+          if (isFocused) {
+            if (val.length === index) isCursorHere = true;
+            if (val.length === 5 && index === 4) isCursorHere = true;
+          }
 
-      // 제출 채점 로직 (문구 보존)
+          // 커서가 있는 칸이면 내용물 뒤에 깜빡이는 span 막대기를 붙여줌!
+          if (isCursorHere) {
+            slot.innerHTML = content + '<span class="fake-cursor"></span>';
+            slot.style.borderBottom = '3px solid #bf360c';
+            slot.style.backgroundColor = '#fbe9e7';
+          } else {
+            // 커서가 없으면 그냥 글자만 보여줌
+            slot.innerText = content;
+            slot.style.borderBottom = '2px solid #a1887f';
+            slot.style.backgroundColor = 'transparent';
+          }
+        });
+      };
+
+      // 상태 변화에 맞춰 즉각적으로 커서를 그려줍니다
+      hiddenInput.addEventListener('input', updateSlots);
+      hiddenInput.addEventListener('focus', updateSlots);
+      hiddenInput.addEventListener('blur', updateSlots);
+
       submitBtn.addEventListener('click', () => {
-        if (input.value === puzzle.answer) {
+        const userAnswer = hiddenInput.value; 
+
+        if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>발신인이 정확하지 않습니다.<br>편지를 꼼꼼히 문질러 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => {
-              hideModal(); // 모달 닫기 추가
-              renderPuzzle();
-              input.value = '';
-              input.focus();
-          });
+          showWrongAnswer("글자를 다시 조합해 보세요.");
         }
       });
     };
@@ -235,8 +279,8 @@ const ui = `
       const updateUI = () => {
         pieceEls.forEach((el, i) => {
           const pieceId = parseInt(pieces[i].id) - 1;
-          const x = (pieceId % 3) * -50;
-          const y = Math.floor(pieceId / 3) * -50;
+          const x = (pieceId % 3) * -60;
+          const y = Math.floor(pieceId / 3) * -60;
           
           el.style.backgroundPosition = `${x}px ${y}px`;
 
@@ -272,8 +316,7 @@ const ui = `
         if (currentOrder === "123456789") {
           onComplete();
         } else {
-          showModal("<p>서류의 내용이 아직 맞지 않습니다.<br>이미지를 잘 살펴보고 다시 시도해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("서류의 내용이 아직 맞지 않습니다.<br>이미지를 잘 살펴보고 다시 시도해 보세요.");
         }
       });
 
@@ -288,13 +331,13 @@ const ui = `
     const cells = [
       { r: 0, c: 3, char: 'O', num: 1, circle: true }, 
       { r: 1, c: 3, char: 'C', prefilled: true },      
-      { r: 2, c: 0, char: 'B', num: 2 },               
+      { r: 2, c: 0, char: 'B', num: 2 },                
       { r: 2, c: 1, char: 'L', circle: true },
       { r: 2, c: 2, char: 'U' },
-      { r: 2, c: 3, char: 'E' },                       
-      { r: 2, c: 5, char: 'S', num: 3 },               
+      { r: 2, c: 3, char: 'E' },                        
+      { r: 2, c: 5, char: 'S', num: 3 },                
       { r: 3, c: 2, char: 'W', num: 4, prefilled: true },
-      { r: 3, c: 3, char: 'A' },                       
+      { r: 3, c: 3, char: 'A' },                        
       { r: 3, c: 4, char: 'V', circle: true },
       { r: 3, c: 5, char: 'E', circle: true },         
       { r: 4, c: 3, char: 'N' },
@@ -331,7 +374,7 @@ const ui = `
       </div>
     `;
 
-const init = () => {
+    const init = () => {
       const cwInputs = Array.from(document.querySelectorAll('.cw-input:not(.prefilled)'));
       cwInputs.forEach((input, index) => {
         input.addEventListener('input', function() {
@@ -370,8 +413,7 @@ const init = () => {
         if (loveAnswer === puzzle.answer) {
           onComplete(); 
         } else {
-          showModal("<p>의미가 완성되지 않았습니다.<br>조합한 단어가 맞는지 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("의미가 완성되지 않았습니다.<br>조합한 단어가 맞는지 확인해 보세요.");
         }
       });
     };
@@ -382,25 +424,25 @@ const init = () => {
   switch_light: (puzzle, onComplete) => {
     let candles = [true, false, true, true, false]; 
 
-const ui = `
-  <div class="shadow-wall shadow-blackout" id="shadow-wall">
-    <div class="shadow-silhouette">
-      <img src="assets/red_heart_3d.png" alt="heart" style="width: 50px; height: 50px; object-fit: contain;" onerror="this.outerHTML='♥️'">
-    </div>
-    <div id="dark-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.5s ease-in-out; z-index: 2;"></div>
-  </div>
-  <div style="font-size: 12px; color: #8d6e63; margin-bottom: 15px;">촛불을 하나 켜면 주변의 불꽃도 함께 흔들립니다</div>
-  <div class="candle-container">
-    ${[0, 1, 2, 3, 4].map(i => `
-      <button class="candle-btn" data-idx="${i}">
-        <div class="candle-flame" style="top: -22px;">
-          <img src="assets/fire_3d.png" alt="fire" style="width: 28px; height: 28px; object-fit: contain;" onerror="this.outerHTML='🔥'">
+    const ui = `
+      <div class="shadow-wall shadow-blackout" id="shadow-wall">
+        <div class="shadow-silhouette">
+          <img src="assets/red_heart_3d.png" alt="heart" style="width: 50px; height: 50px; object-fit: contain;" onerror="this.outerHTML='♥️'">
         </div>
-        <img src="assets/candle_3d.png" alt="candle" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.outerHTML='🕯️'">
-      </button>
-    `).join('')}
-  </div>
-`;
+        <div id="dark-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; transition: opacity 0.5s ease-in-out; z-index: 2;"></div>
+      </div>
+      <div style="font-size: 12px; color: #8d6e63; margin-bottom: 15px;">촛불을 하나 켜면 주변의 불꽃도 함께 흔들립니다</div>
+      <div class="candle-container">
+        ${[0, 1, 2, 3, 4].map(i => `
+          <button class="candle-btn" data-idx="${i}">
+            <div class="candle-flame" style="top: -22px;">
+              <img src="assets/fire_3d.png" alt="fire" style="width: 28px; height: 28px; object-fit: contain;" onerror="this.outerHTML='🔥'">
+            </div>
+            <img src="assets/candle_3d.png" alt="candle" style="width: 32px; height: 32px; object-fit: contain;" onerror="this.outerHTML='🕯️'">
+          </button>
+        `).join('')}
+      </div>
+    `;
 
     const init = () => {
       const candleBtns = document.querySelectorAll('.candle-btn');
@@ -446,8 +488,7 @@ const ui = `
         if (isAllLit) {
           onComplete(); 
         } else {
-          showModal("<p>아직 방이 완전히 밝아지지 않았습니다.<br>마음이 맞닿는 순간을 찾아보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("아직 방이 완전히 밝아지지 않았습니다.<br>마음이 맞닿는 순간을 찾아보세요.");
         }
       });
     };
@@ -494,8 +535,7 @@ const ui = `
         if (normalizedDeg === 270) {
           onComplete();
         } else {
-          showModal("<p>배가 엉뚱한 곳을 향하고 있습니다.<br>조준선(▲)을 정확한 방향으로 맞추세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("배가 엉뚱한 곳을 향하고 있습니다.<br>조준선(▲)을 정확한 방향으로 맞추세요.");
         }
       });
     };
@@ -519,32 +559,32 @@ const ui = `
     let currentRound = 0; 
     let currentMix = [];  
 
-const ui = `
-  <div class="cocktail-container">
-    <div class="recipe-note">
-      <strong>바텐더의 레시피</strong>
-      <ul style="list-style: none; padding-left: 0; margin-top: 5px; font-size: 11px;">
-        ${recipes.map(r => `<li>• <strong>${r.name}</strong> : ${r.seq.map(s => s === 'base' ? '🍾' : s === 'syrup' ? '🍯' : '🫧').join('➔')}</li>`).join('')}
-      </ul>
-    </div>
-    
-    <div class="order-board" id="order-board"></div>
+    const ui = `
+      <div class="cocktail-container">
+        <div class="recipe-note">
+          <strong>바텐더의 레시피</strong>
+          <ul style="list-style: none; padding-left: 0; margin-top: 5px; font-size: 11px;">
+            ${recipes.map(r => `<li>• <strong>${r.name}</strong> : ${r.seq.map(s => s === 'base' ? '🍾' : s === 'syrup' ? '🍯' : '🫧').join('➔')}</li>`).join('')}
+          </ul>
+        </div>
+        
+        <div class="order-board" id="order-board"></div>
 
-    <div class="cocktail-main-area" style="display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: 15px;">
-      
-<div class="glass-station" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <div class="cocktail-glass" id="cocktail-glass"></div>
-        <button id="clear-glass-btn">[잔 비우기]</button> </div>
+        <div class="cocktail-main-area" style="display: flex; justify-content: space-around; align-items: center; width: 100%; margin-top: 15px;">
+          
+          <div class="glass-station" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div class="cocktail-glass" id="cocktail-glass"></div>
+            <button id="clear-glass-btn">[잔 비우기]</button> </div>
 
-      <div class="bottle-group" style="display: flex; flex-direction: column; gap: 8px;">
-        <button class="bottle-btn" data-type="base">🍾 베이스</button>
-        <button class="bottle-btn" data-type="syrup">🍯 시럽</button>
-        <button class="bottle-btn" data-type="soda">🫧 탄산</button>
+          <div class="bottle-group" style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="bottle-btn" data-type="base">🍾 베이스</button>
+            <button class="bottle-btn" data-type="syrup">🍯 시럽</button>
+            <button class="bottle-btn" data-type="soda">🫧 탄산</button>
+          </div>
+          
+        </div>
       </div>
-      
-    </div>
-  </div>
-`;
+    `;
 
     const init = () => {
       const submitBtn = document.getElementById('submit-puzzle');
@@ -669,7 +709,6 @@ const ui = `
       const minuteSlider = document.getElementById('minute-slider');
       const handHour = document.getElementById('hand-hour');
       const handMinute = document.getElementById('hand-minute');
-      const digitalTime = document.getElementById('digital-time');
       const updateWatch = () => {
         const minuteDeg = currentM * 6;
 
@@ -696,8 +735,7 @@ const ui = `
         if (currentH === 11 && currentM === 45) {
           onComplete();
         } else {
-          showModal("<p>시간이 맞지 않습니다.<br>저택의 시계가 가리키는 시간을 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("시각을 다시 확인해 보세요.");
         }
       });
     };
@@ -821,8 +859,7 @@ const ui = `
             onComplete();
           }, 500);
         } else {
-          showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 오른쪽 화살표로 빠져나가야 합니다.<br><span style='font-size:12px; color:#8d6e63; margin-top:10px; display:block;'>특정 도로는 회전할 수 없습니다.</span></p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 오른쪽 화살표로 빠져나가야 합니다.");
         }
       });
     };
@@ -880,11 +917,10 @@ const ui = `
       document.getElementById('submit-puzzle').addEventListener('click', () => {
         const userAnswer = dials.map(val => getChar(val)).join('');
 
-        if (userAnswer === puzzle.answer) {
+if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>자물쇠가 열리지 않습니다.<br>우리를 상징하는 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
+          showWrongAnswer("자물쇠가 열리지 않습니다.<br>우리를 상징하는 단어를 떠올려 보세요.");
         }
       });
     };
@@ -892,6 +928,7 @@ const ui = `
     return { ui, init };
   },
   
+// 11. 보석 세공
   memory_gem: (puzzle, onComplete) => {
     let currentRound = 1;
     const maxRounds = 3; 
@@ -914,7 +951,8 @@ const ui = `
 
     const init = () => {
       const submitBtn = document.getElementById('submit-puzzle');
-      submitBtn.innerText = "세공 시작 (1라운드)";
+      // 💡 라운드 표시를 빼고 심플하게 변경했습니다.
+      submitBtn.innerText = "세공 시작"; 
       const status = document.getElementById('gem-status');
       const gems = document.querySelectorAll('.gem-btn');
 
@@ -950,7 +988,7 @@ const ui = `
         
         status.style.color = '#8b6508';
         status.style.background = 'rgba(139, 101, 8, 0.1)';
-        status.innerText = `[라운드 ${currentRound}/${maxRounds}] 보석의 빛을 기억하세요...`;
+        status.innerText = `보석의 빛을 기억하세요...`; // 💡 여기도 라운드 표시 제거!
 
         await new Promise(r => setTimeout(r, 600)); 
 
@@ -1009,17 +1047,18 @@ const ui = `
                 }, 1500);
               }
             }
-} else {
-  isPlayerTurn = false;
-  status.style.color = '#d32f2f';
-  status.style.background = 'rgba(244, 67, 54, 0.1)';
-  status.innerText = "순서가 틀렸습니다. 다시 시도하세요.";
+          } else {
+            isPlayerTurn = false;
+            status.style.color = '#d32f2f';
+            status.style.background = 'rgba(244, 67, 54, 0.1)';
+            status.innerText = "아래의 '세공 시작' 버튼을 눌러주세요";
+            
+// 💡 오답 시 버튼을 다시 살려내고 라운드를 1로 초기화합니다!
+            currentRound = 1; 
+            submitBtn.style.display = 'inline-block'; // ✨ inline-block으로 바꿔주세요!
 
-  showModal("<p>보석의 빛이 흐려졌습니다.<br>집중해서 순서를 다시 기억해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 시도</button>", false);
-  document.getElementById('retry-btn').addEventListener('click', () => {
-    renderPuzzle(); 
-  });
-}
+            showWrongAnswer("보석의 빛이 흐려졌습니다.<br>집중해서 순서를 다시 기억해 볼까요?");
+          }
         });
       });
     };
@@ -1039,11 +1078,11 @@ const ui = `
 
         Frazione Masua,<br>
         <div class="postal-group">
-          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
-          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
-          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
-          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
-          <input type="number" class="postal-input" maxlength="1" oninput="if(this.value.length>1) this.value=this.value.slice(0,1);">
+          <input type="number" class="postal-input" maxlength="1">
+          <input type="number" class="postal-input" maxlength="1">
+          <input type="number" class="postal-input" maxlength="1">
+          <input type="number" class="postal-input" maxlength="1">
+          <input type="number" class="postal-input" maxlength="1">
         </div>
         Masua CI, Italy
       </div>
@@ -1055,9 +1094,20 @@ const ui = `
       submitBtn.innerText = "식장으로 향하기"; 
 
       inputs.forEach((input, index) => {
-        input.addEventListener('input', function() {
-          if (this.value.length === 1 && index < inputs.length - 1) inputs[index + 1].focus();
+        // 💡 12장도 'keyup' 이벤트로 넘어가게 통일!
+        input.addEventListener('keyup', function(e) {
+          if (e.key === 'Backspace') return;
+          if (this.value.length >= 1 && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
         });
+        
+        input.addEventListener('input', function(e) {
+          if (this.value.length > 1) {
+             this.value = this.value.slice(0, 1);
+          }
+        });
+
         input.addEventListener('keydown', function(e) {
           if (e.key === 'Backspace' && this.value === '' && index > 0) inputs[index - 1].focus();
         });
@@ -1069,10 +1119,7 @@ const ui = `
         if (userAnswer === puzzle.answer) {
           onComplete(); 
         } else {
-          showModal("<p>우편번호가 맞지 않습니다.<br>구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => {
-            renderPuzzle(); 
-          });
+          showWrongAnswer("구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요."); 
         }
       });
     };

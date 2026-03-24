@@ -172,6 +172,51 @@ function showModal(htmlContent, showCloseBtn = true) {
   DOM.modalCloseBtn.style.display = showCloseBtn ? 'block' : 'none';
   DOM.modalOverlay.classList.add('open');
 }
+
+// 💡 퍼즐 상태를 유지하면서 오답을 알려주는 미니 모달창 함수
+function showWrongAnswer(textHtml) {
+  // 혹시 이미 떠있다면 중복 방지를 위해 제거
+  const existing = document.getElementById('wrong-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'wrong-overlay';
+  
+  // 💡 1. 화면 전체를 완벽하게 덮는 고정(fixed) 배경! (z-index 극강으로 높임)
+  overlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.6); /* 메인 모달창과의 구분을 위해 조금 더 어둡게 */
+    backdrop-filter: blur(5px); 
+    -webkit-backdrop-filter: blur(5px);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 999999; /* 모든 것을 씹어먹는 최상단 Z-index */
+  `;
+  
+  // 💡 2. 화면 정중앙에 뜨는 우아한 메시지 상자
+  overlay.innerHTML = `
+    <div style="
+      width: 80%; max-width: 320px; 
+      background: rgba(253, 251, 247, 0.98);
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      border-radius: 12px; text-align: center; padding: 40px 20px; box-sizing: border-box;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    ">
+      <div style="color: #5d4037; font-size: 15px; margin-bottom: 25px; font-weight: bold; line-height: 1.5;">
+        ${textHtml}
+      </div>
+      <button id="close-wrong-btn" class="custom-btn">다시 풀기</button>
+    </div>
+  `;
+  
+  // 💡 3. 쪽지 내부가 아니라 HTML 문서의 뼈대(body)에 직접 붙여서 Z-index 충돌 완전 방지!
+  document.body.appendChild(overlay);
+
+  // '다시 풀기'를 누르면 미니 모달만 싹 지워지고 퍼즐은 입력하던 상태 그대로 유지됨
+  document.getElementById('close-wrong-btn').addEventListener('click', () => {
+    overlay.remove();
+  });
+}
+
 function hideModal() {
   DOM.modalOverlay.classList.remove('open');
 }
@@ -429,7 +474,7 @@ function renderPuzzle() {
     </div>
     ${clueHtml}
     <div id="puzzle-body">${ui}</div> <br>
-    <button id="submit-puzzle" class="custom-btn">풀기</button>
+    <button id="submit-puzzle" class="custom-btn">확인</button>
   `;
   
   showModal(html, false);
