@@ -1099,68 +1099,124 @@ body {
   100% { transform: translateX(5px); opacity: 1; }
 }
 
-// 10. 청혼 : 영원을 약속하며 (영문 자물쇠)
-  letter_lock: (puzzle, onComplete) => {
-    let dials = [0, 0, 0, 0]; 
+/* 🚀 10장: 청혼 (푸른 벨벳 반지 케이스 & 측면 틀어진 자물쇠) UI */
 
-    const getChar = (idx) => String.fromCharCode(65 + idx);
+/* 💡 1. 푸른색 고급 벨벳 상자 질감 & 측면 틀어짐 연출 */
+.velvet-box-slanted {
+  /* 깊이감 있는 네이비 블루 radial 그라데이션으로 벨벳 질감 표현 */
+  background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
+  border: 2px solid #000033;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+  margin-top: 15px;
+  position: relative;
+  
+  /* 💡 핵심: 측면 틀어진 입체감 연출 (원근감 + Y축 회전) */
+  perspective: 1000px;
+  transform: rotateY(20deg); 
+  transform-style: preserve-3d;
+}
 
-    // 🚀 핵심 수정: 측면 틀어진 반지 케이스(velvet-box-slanted)와 납작한 자물쇠(flat-slanted-lock) 구조 적용!
-    const ui = `
-      <div class="velvet-box-slanted">
-        <div class="flat-slanted-lock">
-          <div class="engraved-hint-text">ANCHOR AND</div>
-          <div class="dial-group">
-            ${[0, 1, 2, 3].map(i => `
-              <div class="slanted-dial-column">
-                <button class="slanted-dial-btn slanted-btn-up" data-idx="${i}">▲</button>
-                <div class="slanted-dial-value" id="dial-${i}">A</div>
-                <button class="slanted-dial-btn slanted-btn-down" data-idx="${i}">▼</button>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      </div>
-    `;
+/* 💡 2. 상자 입구 느낌의 가로 음영 선 추가 */
+.velvet-box-slanted::after {
+  content: '';
+  position: absolute;
+  top: 60%; /* 상자의 60% 높이쯤에 위치 */
+  left: 0;
+  width: 100%;
+  height: 2px;
+  /* 어두운 그림자 레이어로 입구 선 구현 */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.9) 100%);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
 
-    const init = () => {
-      const updateUI = () => {
-        dials.forEach((val, i) => {
-          document.getElementById(`dial-${i}`).innerText = getChar(val);
-        });
-      };
+/* 💡 3. 상자 중앙에 달린 납작한 측면 자물쇠 패널 */
+.flat-slanted-lock {
+  /* 자물쇠 판도 상자와 함께 틀어져 배치됨 */
+  background: linear-gradient(to bottom, #f8e5a2, #d4af37 20%, #a67c00 80%, #8b6508);
+  padding: 20px;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.9);
+  border: 1px solid #5c4000;
+  transform: translateZ(2px); /* 상자 위에 살짝 떠있게 함 */
+}
 
-      // 🚀 핵심 수정: 바뀐 화살표 버튼 클래스명에 맞춰 이벤트 연결 (slanted-btn-up, slanted-btn-down)
-      document.querySelectorAll('.slanted-btn-up').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const idx = parseInt(e.currentTarget.dataset.idx);
-          dials[idx] = (dials[idx] + 1) % 26;
-          updateUI();
-        });
-      });
+/* 💡 4. 자물쇠 위에 음각으로 새겨진 고동색 힌트 글씨 */
+.engraved-hint-text {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  
+  /* 💡 핵심 수정: 판의 영문도 다이얼처럼 고동색으로 변경 */
+  color: #3e2723;
+  
+  /* 💡 핵심: 고동색 텍스트에 음각 효과 부여 (밝은 빛 + 어두운 그림자) */
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.4), -1px -1px 1px rgba(0,0,0,0.3);
+  
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+}
 
-      document.querySelectorAll('.slanted-btn-down').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const idx = parseInt(e.currentTarget.dataset.idx);
-          dials[idx] = (dials[idx] - 1 + 26) % 26;
-          updateUI();
-        });
-      });
+/* 다이얼 가로 정렬 그룹 */
+.dial-group {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 
-      document.getElementById('submit-puzzle').addEventListener('click', () => {
-        const userAnswer = dials.map(val => getChar(val)).join('');
+/* 💡 5. 납작한 다이얼 홈 (측면 슬롯) */
+.slanted-dial-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #3e2723; /* 자물쇠 안쪽 어두운 그림자 공간 */
+  border: 2px solid #5c4000;
+  border-radius: 4px;
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.8), 0 1px 1px rgba(255,255,255,0.5);
+  padding: 3px;
+}
 
-        if (userAnswer === puzzle.answer) {
-          onComplete();
-        } else {
-          showModal("<p>자물쇠가 열리지 않습니다.<br>우리가 영원히 함께할 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>확인</button>", false);
-          document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
-        }
-      });
-    };
+/* 납작한 금속 조작 버튼 (위/아래 화살표) */
+.slanted-dial-btn {
+  background: transparent;
+  border: none;
+  color: #d4af37;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 10px;
+  transition: transform 0.1s, color 0.2s;
+}
 
-    return { ui, init };
-  },
+.slanted-dial-btn:active {
+  transform: scale(0.8);
+  color: #f8e5a2;
+}
+
+/* 💡 6. 가운데 알파벳 (밝게 음각된 다이얼 면) */
+.slanted-dial-value {
+  font-family: 'Gowun Dodum', sans-serif; /* 💡 더 굵고 각진 폰트로 변경 */
+  font-size: 24px;
+  font-weight: bold;
+  
+  /* 💡 핵심 수정: 가운데 알파벳은 밝은 색으로 변경 */
+  background-color: #fdfbf7;
+  color: #fffaf0; /* 밝은 아이보리색 */
+  
+  /* 💡 핵심: 밝은 알파벳에 음각 효과 부여 (고동색 그림자 사용) */
+  text-shadow: 1px 1px 1px rgba(62, 39, 35, 0.4), -1px -1px 1px rgba(62, 39, 35, 0.3);
+  
+  margin: 2px 0;
+  padding: 4px 0;
+  width: 30px;
+  text-align: center;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.5); 
+  user-select: none;
+}
 
 /* 🚀 11장: 보석 세공 (패턴 기억 퍼즐) UI - 측면 다이아몬드 컷팅(Brilliant Cut) 복원 버전 */
 .gem-container {
