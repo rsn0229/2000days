@@ -96,7 +96,7 @@ const PuzzleHandlers = {
         </div>
         <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
       </div>
-      <input type="text" id="magic-answer" class="magic-input" maxlength="10" placeholder="발신인 입력">
+      <input type="text" id="magic-answer" class="magic-input" maxlength="10" placeholder="from. ???">
     `;
 
     const init = () => {
@@ -184,7 +184,7 @@ const PuzzleHandlers = {
         if (input.value === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>단어가 맞지 않습니다.<br>편지를 꼼꼼히 문질러 숨겨진 내용을 정확히 확인해 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
+          showModal("<p>발신인이 정확하지 않습니다.<br>편지를 꼼꼼히 문질러 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => {
               renderPuzzle();
               input.value = '';
