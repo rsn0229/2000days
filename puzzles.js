@@ -92,7 +92,7 @@ const PuzzleHandlers = {
     const ui = `
       <div class="water-reveal-container">
         <div class="hidden-letter">
-          <div class="letter-text">고된 사관학교를 무사히 졸업하고 파도 기사단에 정식으로 발을 들이게 되다니, 감회가 참으로 새롭다. 기사단이라는 곳은 네 생각보다 훨씬 무겁고 거친 곳이지. 하지만 네가 스스로 맹세한 길이니, 거침없이 나아가 사르디나의 가장 무거운 닻을 지키는 파도가 되길 바란다.</div>
+          <div class="letter-text">고된 사관학교를 무사히 졸업하고 파도 기사단에 정식으로 발을 들이게 되다니 감회가 새롭구나. 기사단이라는 곳은 네 생각보다 훨씬 무겁고 거친 곳이지. 하지만 네가 스스로 맹세한 길이니, 거침없이 나아가 사르디나의 가장 무거운 닻을 지키는 파도가 되길 바란다.</div>
           <div class="letter-code">from. ANCHOR</div>
         </div>
         <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
