@@ -860,7 +860,7 @@ body {
 .cocktail-glass {
   width: 55px;
   height: 120px;
-  border: 3px solid #a1887f;
+  border: 3px solid #dee2e3;
   border-top: none; /* 위는 뚫려있음 */
   border-radius: 0 0 10px 10px;
   background: rgba(255, 255, 255, 0.5);
@@ -1154,8 +1154,10 @@ body {
   width: 100%; 
   height: calc(50% - 4px); /* 중앙에서 4px 띄워서 틈새 확보 */
   
-  background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
-  border: 2px solid #000033;
+  /* 💡 수정됨: 채도를 낮추고 깊이를 더한 딥 네이비/다크 틸 그라데이션 */
+  background: radial-gradient(circle at center, #2c3e50 0%, #1f2937 40%, #111827 80%, #030712 100%);
+  border: 2px solid #0f172a; /* 테두리도 상자 색에 맞춰 차분하게 변경 */
+  
   /* 💡 바깥쪽은 12px, 안쪽(틈)은 4px로 곡률 조절 */
   border-radius: 12px 12px 4px 4px; 
   
@@ -1177,8 +1179,10 @@ body {
   width: 100%; 
   height: calc(50% - 4px); /* 중앙에서 4px 띄워서 위쪽과 총 8px의 틈새 생성 */
   
-  background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
-  border: 2px solid #000033;
+  /* 💡 수정됨: 위쪽 뚜껑과 동일한 딥 네이비 그라데이션 적용 */
+  background: radial-gradient(circle at center, #2c3e50 0%, #1f2937 40%, #111827 80%, #030712 100%);
+  border: 2px solid #0f172a; /* 테두리도 차분하게 변경 */
+  
   /* 💡 안쪽(틈)은 4px, 바깥쪽은 12px로 곡률 조절 */
   border-radius: 5px 5px 13px 13px; 
   
