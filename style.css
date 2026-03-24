@@ -1135,7 +1135,6 @@ body {
   width: calc(100% + 4px);
   height: 3px;
   background-color: #000000; /* 까만 틈새 */
-  box-shadow: 0 1px 1px rgba(255,255,255,0.15); /* 아랫부분 벨벳에 맺힌 미세한 빛 반사 */
   pointer-events: none;
   z-index: 2;
 }
