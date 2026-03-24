@@ -718,19 +718,16 @@ const ui = `
     const svgI = `<svg viewBox="0 0 100 100"><line x1="50" y1="0" x2="50" y2="100" stroke="#fff9c4" stroke-width="14" stroke-linecap="square"/></svg>`;
     const svgL = `<svg viewBox="0 0 100 100"><path d="M 50 0 L 50 50 L 100 50" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
     const svgT = `<svg viewBox="0 0 100 100"><path d="M 0 50 L 100 50 M 50 50 L 50 100" fill="none" stroke="#fff9c4" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
-    
-    // 💡 장애물 SVG (어둡고 막혀있는 구조물 느낌)
-    const svgX = `<svg viewBox="0 0 100 100"><rect x="30" y="30" width="40" height="40" fill="#0d1b2a" rx="5"/><line x1="35" y1="35" x2="65" y2="65" stroke="#1b263b" stroke-width="4"/><line x1="65" y1="35" x2="35" y2="65" stroke="#1b263b" stroke-width="4"/></svg>`;
 
-    // 🚀 전략적인 루트 설계를 위한 맵 배치 (X는 장애물, fixed: true는 회전 불가)
+    // 🚀 전략적인 루트 설계를 위한 맵 배치 (fixed: true는 굳어버린 파이프)
     const tiles = [
-      { type: 'L' }, { type: 'X', fixed: true }, { type: 'T' }, { type: 'L' },
-      { type: 'I' }, { type: 'X', fixed: true }, { type: 'L', fixed: true, angle: 90 }, { type: 'L' },
-      { type: 'L' }, { type: 'I', fixed: true, angle: 90 }, { type: 'T' }, { type: 'I' },
-      { type: 'X', fixed: true }, { type: 'L' }, { type: 'X', fixed: true }, { type: 'L' }
+      { type: 'L' }, { type: 'I', fixed: true, angle: 0 }, { type: 'T' }, { type: 'L' },
+      { type: 'I' }, { type: 'T', fixed: true, angle: 90 }, { type: 'L', fixed: true, angle: 90 }, { type: 'L' },
+      { type: 'L' }, { type: 'I', fixed: true, angle: 90 }, { type: 'L' }, { type: 'I' },
+      { type: 'L', fixed: true, angle: 90 }, { type: 'L' }, { type: 'L', fixed: true, angle: 0 }, { type: 'L' }
     ];
 
-    // 고정된 각도가 있으면 그 각도를 유지하고, 나머지만 랜덤 각도 부여
+    // 고정된 파이프는 정해진 각도를 유지하고, 나머지만 랜덤으로 섞음
     let currentAngles = tiles.map(t => t.fixed && t.angle !== undefined ? t.angle : Math.floor(Math.random() * 4) * 90);
 
     const ui = `
@@ -742,10 +739,9 @@ const ui = `
               let svg = svgI;
               if (t.type === 'L') svg = svgL;
               if (t.type === 'T') svg = svgT;
-              if (t.type === 'X') svg = svgX; // 장애물 타일
               
-              // CSS 효과를 위해 고정 여부에 따라 클래스 추가
-              let extraClass = t.fixed ? (t.type === 'X' ? 'obstacle-tile' : 'fixed-pipe') : '';
+              // 💡 굳어있는 파이프에는 특별한 CSS 클래스 추가
+              let extraClass = t.fixed ? 'fixed-pipe' : '';
               
               return `<div class="path-tile ${extraClass}" data-idx="${i}" style="transform: rotate(${currentAngles[i]}deg);">${svg}</div>`;
             }).join('')}
@@ -763,7 +759,7 @@ const ui = `
         tile.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
           
-          // 💡 고정된 조각이거나 장애물이면 회전시키지 않고 가벼운 튕김 피드백만 줌!
+          // 💡 고정된 파이프를 누르면 회전하지 않고 살짝 덜컹! 거리는 애니메이션
           if (tiles[idx].fixed) {
             e.currentTarget.animate([
               { transform: `rotate(${currentAngles[idx]}deg) translateX(0)` },
@@ -781,7 +777,6 @@ const ui = `
 
       const checkPath = () => {
         const getPorts = (type, angle) => {
-          if (type === 'X') return [0, 0, 0, 0]; // 💡 장애물은 모든 구멍이 막힘
           let base = type === 'I' ? [1, 0, 1, 0] : type === 'L' ? [1, 1, 0, 0] : [0, 1, 1, 1];
           const rotations = ((angle % 360) + 360) % 360 / 90;
           for (let i = 0; i < rotations; i++) {
@@ -834,8 +829,7 @@ const ui = `
             onComplete();
           }, 500);
         } else {
-          // 모달 안내 문구도 방해물 힌트를 살짝 주도록 수정
-          showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 오른쪽 화살표로 빠져나가야 합니다.<br><span style='font-size:12px; color:#8d6e63; margin-top:10px; display:block;'>어두운 장애물이나 고정된 조각을 피해 가야 할지도 모릅니다.</span></p><button id='retry-btn' class='custom-btn'>확인</button>", false);
+          showModal("<p>길이 어딘가 끊어져 있습니다.<br>왼쪽 화살표에서 오른쪽 화살표로 빠져나가야 합니다.<br><span style='font-size:12px; color:#8d6e63; margin-top:10px; display:block;'>특정 도로는 회전할 수 없습니다.</span></p><button id='retry-btn' class='custom-btn'>확인</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
