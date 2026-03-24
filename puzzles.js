@@ -828,17 +828,20 @@ const ui = `
 
     const getChar = (idx) => String.fromCharCode(65 + idx);
 
+    // 🚀 바뀐 부분: 벨벳 상자(velvet-box)와 납작한 황동 자물쇠(flat-brass-lock) 적용!
     const ui = `
-      <div class="metal-plate">
-        <div class="metal-text">ANCHOR AND</div>
-        <div class="dial-group">
-          ${[0, 1, 2, 3].map(i => `
-            <div class="dial-column">
-              <button class="dial-btn btn-up" data-idx="${i}">▲</button>
-              <div class="dial-letter" id="dial-${i}">A</div>
-              <button class="dial-btn btn-down" data-idx="${i}">▼</button>
-            </div>
-          `).join('')}
+      <div class="velvet-box">
+        <div class="flat-brass-lock">
+          <div class="engraved-text">ANCHOR AND</div>
+          <div class="dial-group">
+            ${[0, 1, 2, 3].map(i => `
+              <div class="flat-dial-column">
+                <button class="flat-dial-btn btn-up" data-idx="${i}">▲</button>
+                <div class="flat-dial-letter" id="dial-${i}">A</div>
+                <button class="flat-dial-btn btn-down" data-idx="${i}">▼</button>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     `;
@@ -850,6 +853,7 @@ const ui = `
         });
       };
 
+      // 화살표 버튼 클래스명 변경에 따른 이벤트 연결 수정 (btn-up, btn-down)
       document.querySelectorAll('.btn-up').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const idx = parseInt(e.currentTarget.dataset.idx);
@@ -872,7 +876,7 @@ const ui = `
         if (userAnswer === puzzle.answer) {
           onComplete();
         } else {
-          showModal("<p>상자가 열리지 않습니다.<br>다시 시도해 볼까요?</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
+          showModal("<p>자물쇠가 열리지 않습니다.<br>우리를 상징하는 단어를 떠올려 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => renderPuzzle());
         }
       });
@@ -880,6 +884,7 @@ const ui = `
 
     return { ui, init };
   },
+  
   memory_gem: (puzzle, onComplete) => {
     let currentRound = 1;
     const maxRounds = 3; 
