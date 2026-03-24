@@ -1101,7 +1101,7 @@ body {
 
 /* 🚀 10장: 청혼 (정방향 푸른 벨벳 & 납작한 일체형 자물쇠) UI */
 
-/* 💡 1. 푸른색 고급 벨벳 상자 (정방향, 중앙 정렬) */
+/* 💡 1. 푸른색 고급 벨벳 상자 (정방향, 260px 너비로 완벽한 중앙 정렬) */
 .velvet-box-new {
   background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
   border: 2px solid #000033;
@@ -1109,23 +1109,35 @@ body {
   padding: 35px 20px 45px 20px;
   text-align: center;
   box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
-  margin: 15px auto;
-  position: relative;
-  width: 280px; /* 상자 크기를 단정하게 고정 */
+  margin: 15px 0; /* 💡 flex 환경에 맞춰 margin auto 대신 0으로 줘서 튀는 현상 방지 */
+  width: 260px;   /* 💡 메인 종이의 남은 여백에 딱 맞는 260px로 고정! */
   box-sizing: border-box;
+  position: relative;
 }
 
-/* 💡 2. 상자 입구의 가로 음영 선 */
+/* 💡 2. 상자 입구(열리는 부분)의 짙은 음영과 틈새 라인 강화 */
+.velvet-box-new::before {
+  /* 뚜껑(위쪽 절반) 아랫부분으로 짙게 깔리는 그림자 */
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 50%;
+  border-radius: 10px 10px 0 0;
+  box-shadow: inset 0 -20px 25px rgba(0,0,0,0.7); 
+  pointer-events: none;
+  z-index: 1;
+}
 .velvet-box-new::after {
+  /* 실제 입구의 갈라진 틈과 하단 립 빛 반사 */
   content: '';
   position: absolute;
   top: 50%;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
-  box-shadow: 0 1px 1px rgba(255,255,255,0.1);
+  left: -2px; /* 테두리까지 덮도록 살짝 연장 */
+  width: calc(100% + 4px);
+  height: 3px;
+  background-color: #000000; /* 까만 틈새 */
+  box-shadow: 0 1px 1px rgba(255,255,255,0.15); /* 아랫부분 벨벳에 맺힌 미세한 빛 반사 */
   pointer-events: none;
+  z-index: 2;
 }
 
 /* 💡 3. 벨벳 상자 위에 박힌 금박 힌트 글씨 */
@@ -1133,34 +1145,33 @@ body {
   font-family: 'Courier New', monospace;
   font-size: 20px;
   font-weight: bold;
-  color: #d4af37; /* 영롱한 금색 */
+  color: #d4af37;
   text-shadow: 0 1px 2px rgba(0,0,0,0.9), 0 0 8px rgba(212, 175, 55, 0.4);
   letter-spacing: 3px;
-  margin-bottom: 25px; /* 자물쇠와의 간격 넉넉하게 */
+  margin-bottom: 25px;
   position: relative;
-  z-index: 2; /* 입구 선보다 위에 오도록 */
+  z-index: 3;
 }
 
-/* 💡 4. 하나의 판으로 연결된 납작한 황동 자물쇠 */
+/* 💡 4. 현란한 금 테두리 제거 -> 벨벳 안으로 깊숙이 파인 형태(음각)로 변경 */
 .flat-brass-panel {
-  background: linear-gradient(135deg, #f8e5a2, #d4af37 30%, #a67c00 70%, #8b6508);
-  padding: 10px; /* 판 크기를 아담하게 조절 */
+  /* 금빛 배경을 지우고, 다이얼보다 더 깊숙하고 어두운 동굴 느낌으로 변경 */
+  background: #1a110d; 
+  padding: 4px; /* 테두리를 아주 얇게 조절 */
   border-radius: 6px;
   display: inline-block;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.8);
-  border: 1px solid #5c4000;
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.2); /* 안으로 푹 파인 느낌 */
+  border: 1px solid #000;
   position: relative;
-  z-index: 2;
+  z-index: 3; 
 }
 
-/* 💡 5. 자물쇠 내부의 깊게 파인 하나의 홈 (4개 다이얼이 공유) */
+/* 💡 5. 자물쇠 내부의 다이얼 그룹 */
 .brass-dial-group {
   display: flex;
   justify-content: center;
-  background: #2e1d16; /* 다이얼 배경 (어두운 고동색) */
-  border: 2px solid #5c4000;
+  background: #2e1d16; /* 다이얼 바탕 (어두운 고동색) */
   border-radius: 4px;
-  box-shadow: inset 0 4px 10px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.4);
   padding: 5px;
   gap: 2px; /* 다이얼 사이의 좁은 간격 */
 }
@@ -1170,8 +1181,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* 다이얼 사이를 구분하는 얇은 선 */
-  border-right: 1px solid rgba(0,0,0,0.5);
+  border-right: 1px solid rgba(0,0,0,0.6); /* 다이얼 사이를 구분하는 얇은 선 */
   padding: 0 5px;
 }
 .brass-dial-column:last-child {
@@ -1182,7 +1192,7 @@ body {
 .brass-dial-btn {
   background: transparent;
   border: none;
-  color: #a67c00;
+  color: #8b6508; /* 너무 튀지 않는 차분한 금동색 */
   font-size: 14px;
   cursor: pointer;
   padding: 4px 8px;
@@ -1193,14 +1203,14 @@ body {
   color: #f8e5a2;
 }
 
-/* 💡 6. 바뀌는 글자판 (배경은 고동색, 글자는 금빛 음각) */
+/* 💡 6. 바뀌는 글자판 (배경은 투명, 글자는 금빛 음각) */
 .brass-dial-value {
   font-family: 'Courier New', monospace;
   font-size: 26px;
   font-weight: bold;
-  background-color: transparent; /* 💡 배경을 지워서 부모의 고동색이 그대로 보이게 함! */
-  color: #f8e5a2; /* 밝은 금빛 텍스트 */
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.2); /* 금속에 새겨진 음각 효과 */
+  background-color: transparent; 
+  color: #f8e5a2; 
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.9), -1px -1px 1px rgba(255,255,255,0.2); 
   margin: 4px 0;
   width: 25px;
   text-align: center;
