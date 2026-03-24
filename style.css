@@ -1103,43 +1103,72 @@ body {
 
 /* 💡 1. 푸른색 고급 벨벳 상자 (정방향, 260px 너비로 완벽한 중앙 정렬) */
 .velvet-box-new {
-  background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
-  border: 2px solid #000033;
-  border-radius: 12px;
+  /* 기존 배경과 테두리를 제거하고 투명하게 만듭니다. */
+  background-color: transparent;
+  
+  /* 💡 살짝 들어간 '검정 틈새'를 배경으로 구현합니다. */
+  /* 폭 246px(케이스보다 살짝 좁음), 높이 20px의 검은 줄을 중앙에 배치 */
+  background-image: linear-gradient(#050505, #000000);
+  background-size: 246px 20px; 
+  background-position: center;
+  background-repeat: no-repeat;
+  
   padding: 35px 20px 45px 20px;
   text-align: center;
-  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
-  margin: 15px 0; /* 💡 flex 환경에 맞춰 margin auto 대신 0으로 줘서 튀는 현상 방지 */
-  width: 260px;   /* 💡 메인 종이의 남은 여백에 딱 맞는 260px로 고정! */
+  margin: 15px 0;
+  width: 260px;
   box-sizing: border-box;
   position: relative;
+  
+  /* 💡 자식 요소들이 뒤로 숨지 않도록 새로운 쌓임 문맥(Stacking Context) 생성 */
+  z-index: 1; 
 }
 
-/* 💡 2. 상자 입구(열리는 부분)의 짙은 음영과 틈새 라인 강화 */
+/* 💡 2. 분할된 케이스: 위쪽 뚜껑 (Top Case) */
 .velvet-box-new::before {
-  /* 뚜껑(위쪽 절반) 아랫부분으로 짙게 깔리는 그림자 */
   content: '';
   position: absolute;
-  top: 0; left: 0; width: 100%; height: 50%;
-  border-radius: 10px 10px 0 0;
-  box-shadow: inset 0 -20px 25px rgba(0,0,0,0.7); 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: calc(50% - 4px); /* 중앙에서 4px 띄워서 틈새 확보 */
+  
+  background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
+  border: 2px solid #000033;
+  /* 💡 바깥쪽은 12px, 안쪽(틈)은 4px로 곡률 조절 */
+  border-radius: 12px 12px 4px 4px; 
+  
+  /* 기존 뚜껑 음영과 케이스 기본 그림자를 통합 */
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), inset 0 -20px 25px rgba(0,0,0,0.7), 0 5px 10px rgba(0,0,0,0.3);
+  box-sizing: border-box;
+  
+  /* 다이얼이나 글자 뒤에 깔리도록 음수 z-index 부여 */
+  z-index: -1; 
   pointer-events: none;
-  z-index: 1;
-}
-.velvet-box-new::after {
-  /* 실제 입구의 갈라진 틈과 하단 립 빛 반사 */
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: -2px; /* 테두리까지 덮도록 살짝 연장 */
-  width: calc(100% + 4px);
-  height: 3px;
-  background-color: #000000; /* 까만 틈새 */
-  pointer-events: none;
-  z-index: 2;
 }
 
-/* 💡 3. 벨벳 상자 위에 박힌 금박 힌트 글씨 */
+/* 💡 3. 분할된 케이스: 아래쪽 몸통 (Bottom Case) */
+.velvet-box-new::after {
+  content: '';
+  position: absolute;
+  bottom: 0; /* 아래에서부터 채움 */
+  left: 0; 
+  width: 100%; 
+  height: calc(50% - 4px); /* 중앙에서 4px 띄워서 위쪽과 총 8px의 틈새 생성 */
+  
+  background: radial-gradient(circle at center, #283593 0%, #1a237e 40%, #0d47a1 80%, #000051 100%);
+  border: 2px solid #000033;
+  /* 💡 안쪽(틈)은 4px, 바깥쪽은 12px로 곡률 조절 */
+  border-radius: 4px 4px 12px 12px; 
+  
+  box-shadow: inset 0 0 40px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+  box-sizing: border-box;
+  
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 💡 4. 벨벳 상자 위에 박힌 금박 힌트 글씨 (변경 없음) */
 .gold-foil-text {
   font-family: 'Courier New', monospace;
   font-size: 20px;
@@ -1152,27 +1181,26 @@ body {
   z-index: 3;
 }
 
-/* 💡 4. 현란한 금 테두리 제거 -> 벨벳 안으로 깊숙이 파인 형태(음각)로 변경 */
+/* 💡 5. 현란한 금 테두리 제거 -> 벨벳 안으로 깊숙이 파인 형태(음각)로 변경 (변경 없음) */
 .flat-brass-panel {
-  /* 금빛 배경을 지우고, 다이얼보다 더 깊숙하고 어두운 동굴 느낌으로 변경 */
   background: #1a110d; 
-  padding: 4px; /* 테두리를 아주 얇게 조절 */
+  padding: 4px; 
   border-radius: 6px;
   display: inline-block;
-  box-shadow: inset 0 5px 15px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.2); /* 안으로 푹 파인 느낌 */
+  box-shadow: inset 0 5px 15px rgba(0,0,0,0.9), 0 1px 1px rgba(255,255,255,0.2); 
   border: 1px solid #000;
   position: relative;
   z-index: 3; 
 }
 
-/* 💡 5. 자물쇠 내부의 다이얼 그룹 */
+/* 💡 6. 자물쇠 내부의 다이얼 그룹 (변경 없음) */
 .brass-dial-group {
   display: flex;
   justify-content: center;
-  background: #2e1d16; /* 다이얼 바탕 (어두운 고동색) */
+  background: #2e1d16; 
   border-radius: 4px;
   padding: 5px;
-  gap: 2px; /* 다이얼 사이의 좁은 간격 */
+  gap: 2px; 
 }
 
 /* 개별 다이얼 열 */
@@ -1180,7 +1208,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid rgba(0,0,0,0.6); /* 다이얼 사이를 구분하는 얇은 선 */
+  border-right: 1px solid rgba(0,0,0,0.6); 
   padding: 0 5px;
 }
 .brass-dial-column:last-child {
@@ -1191,7 +1219,7 @@ body {
 .brass-dial-btn {
   background: transparent;
   border: none;
-  color: #8b6508; /* 너무 튀지 않는 차분한 금동색 */
+  color: #8b6508; 
   font-size: 14px;
   cursor: pointer;
   padding: 4px 8px;
@@ -1202,7 +1230,7 @@ body {
   color: #f8e5a2;
 }
 
-/* 💡 6. 바뀌는 글자판 (배경은 투명, 글자는 금빛 음각) */
+/* 💡 7. 바뀌는 글자판 (변경 없음) */
 .brass-dial-value {
   font-family: 'Courier New', monospace;
   font-size: 26px;
