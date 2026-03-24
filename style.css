@@ -138,7 +138,7 @@ body {
 
 /* ▼ 진행 버튼 (인라인 밀착 및 애니메이션 방향 수정) */
 .bounce-btn {
-  background: none; border: none; font-size: 1.0rem; color: #5d4037;
+  background: none; border: none; font-size: 0.8rem; color: #5d4037;
   cursor: pointer; padding: 0 5px; 
   display: inline-block; /* 💡 블록이 아니라 글자처럼 취급되어 마지막 단어 옆에 붙음 */
   vertical-align: middle; /* 글자와 수직 중앙 정렬 */
