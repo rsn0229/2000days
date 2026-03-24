@@ -89,10 +89,13 @@ const PuzzleHandlers = {
 // 2. 파도 기사단 입단 : 물의 마력 불어넣기 (스크래치 캔버스)
   water_reveal: (puzzle, onComplete) => {
     // 💡 고객님의 문구와 구조가 100% 보존된 UI
-    const ui = `
+const ui = `
       <div class="water-reveal-container">
         <div class="hidden-letter">
-          <div class="letter-text">고된 사관학교를 무사히 졸업하고 파도 기사단에 정식으로 발을 들이게 되다니 감회가 새롭구나. 기사단이라는 곳은 네 생각보다 훨씬 무겁고 거친 곳이지. 하지만 네가 스스로 맹세한 길이니, 거침없이 나아가 사르디나의 가장 무거운 닻을 지키는 파도가 되길 바란다.</div>
+          <div class="letter-text">
+            <p>고된 사관학교를 무사히 졸업하고 파도 기사단에 정식으로 발을 들이게 되다니 감회가 새롭구나.</p>
+            <p>기사단이라는 곳은 네 생각보다 훨씬 무겁고 거친 곳이지. 하지만 네가 스스로 맹세한 길이니, 거침없이 나아가 사르디나의 가장 무거운 닻을 지키는 파도가 되길 바란다.</p>
+          </div>
           <div class="letter-code">from. ANCHOR</div>
         </div>
         <canvas id="scratch-canvas" class="scratch-canvas"></canvas>
