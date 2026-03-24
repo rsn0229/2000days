@@ -88,6 +88,7 @@ const PuzzleHandlers = {
 
 // 2. 파도 기사단 입단 : 물의 마력 불어넣기 (스크래치 캔버스)
   water_reveal: (puzzle, onComplete) => {
+    // 💡 고객님의 문구와 구조가 100% 보존된 UI
     const ui = `
       <div class="water-reveal-container">
         <div class="hidden-letter">
@@ -105,8 +106,8 @@ const PuzzleHandlers = {
       const input = document.getElementById('magic-answer');
       const submitBtn = document.getElementById('submit-puzzle');
 
-      // 캔버스 내부 픽셀 사이즈 강제 고정 (스크래치 좌표 정확도를 위해)
-      canvas.width = 280;
+      // 💡 캔버스 픽셀 사이즈를 부모 박스와 똑같이 260으로 고정!
+      canvas.width = 260;
       canvas.height = 160;
 
       // 1. 사르디나의 푸른 바다 안개(그라데이션)로 캔버스를 덮어버림
@@ -115,6 +116,8 @@ const PuzzleHandlers = {
       gradient.addColorStop(1, '#e1e9f0'); // 옅은 바다색
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      let isDrawing = false; // 상태 변수 선언
 
       // 마우스 및 터치 좌표 계산기
       const getPos = (e) => {
@@ -135,15 +138,14 @@ const PuzzleHandlers = {
         };
       };
 
-      // 💡 안개를 부드럽게 지워내는 핵심 로직 (에어브러시 효과)
+      // 안개를 부드럽게 지워내는 로직
       const scratch = (e) => {
         if (!isDrawing) return;
         const pos = getPos(e);
         
-        ctx.globalCompositeOperation = 'destination-out'; // 이 속성이 칠하는 게 아니라 '지우개' 역할을 하게 만듦
+        ctx.globalCompositeOperation = 'destination-out';
         ctx.beginPath();
         
-        // 딱딱하게 안 지워지고 안개가 걷히듯 가장자리가 부드럽게 지워지는 그라데이션 브러시
         const radGrad = ctx.createRadialGradient(pos.x, pos.y, 5, pos.x, pos.y, 25);
         radGrad.addColorStop(0, 'rgba(0,0,0,1)');
         radGrad.addColorStop(1, 'rgba(0,0,0,0)');
@@ -153,13 +155,23 @@ const PuzzleHandlers = {
         ctx.fill();
       };
 
-      // PC 마우스 이벤트 연결
-      canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
-      canvas.addEventListener('mousemove', scratch);
-      canvas.addEventListener('mouseup', () => { isDrawing = false; });
-      canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+      // 💡 3. 과감한 드래그 지원: PC에서 캔버스 밖으로 나가도 계속 지워지게 설정
+      const startMouseScratch = (e) => {
+        isDrawing = true;
+        scratch(e);
+        document.addEventListener('mousemove', scratch);
+        document.addEventListener('mouseup', stopMouseScratch);
+      };
 
-      // 모바일 터치 이벤트 연결 (문지를 때 화면이 같이 스크롤되지 않도록 철저히 방어)
+      const stopMouseScratch = () => {
+        isDrawing = false;
+        document.removeEventListener('mousemove', scratch);
+        document.removeEventListener('mouseup', stopMouseScratch);
+      };
+
+      canvas.addEventListener('mousedown', startMouseScratch);
+
+      // 모바일 터치 이벤트 연결 (모바일은 기본적으로 터치 시작 지점을 기억하므로 밖으로 나가도 인식됨)
       canvas.addEventListener('touchstart', (e) => {
         isDrawing = true;
         scratch(e);
@@ -167,25 +179,27 @@ const PuzzleHandlers = {
       
       canvas.addEventListener('touchmove', (e) => {
         if(isDrawing) {
-          e.preventDefault(); // 스크롤 방지!
+          if (e.cancelable) e.preventDefault(); // 스크롤 튀는 현상 방어
           scratch(e);
         }
       }, { passive: false });
       
       canvas.addEventListener('touchend', () => { isDrawing = false; });
+      canvas.addEventListener('touchcancel', () => { isDrawing = false; });
 
       // 정답 입력칸은 영어 대문자로 자동 변환
       input.addEventListener('input', function() {
         this.value = this.value.toUpperCase();
       });
 
-      // 제출 채점 로직
+      // 제출 채점 로직 (문구 보존)
       submitBtn.addEventListener('click', () => {
         if (input.value === puzzle.answer) {
           onComplete();
         } else {
           showModal("<p>발신인이 정확하지 않습니다.<br>편지를 꼼꼼히 문질러 보세요.</p><button id='retry-btn' class='custom-btn'>다시 풀기</button>", false);
           document.getElementById('retry-btn').addEventListener('click', () => {
+              hideModal(); // 모달 닫기 추가
               renderPuzzle();
               input.value = '';
               input.focus();
