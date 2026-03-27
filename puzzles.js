@@ -371,10 +371,11 @@ const PuzzleHandlers = {
         const cellData = cells.find(cell => cell.r === r && cell.c === c);
         if (cellData) {
           const isPrefilled = cellData.prefilled ? `value="${cellData.char}" readonly class="cw-input prefilled"` : `class="cw-input"`;
+          // 💡 HTML에 data-r(행), data-c(열) 좌표를 심어줍니다.
           gridHtml += `
             <div class="cw-cell-wrapper ${cellData.circle ? 'cw-circle' : ''}">
               ${cellData.num ? `<span class="cw-number">${cellData.num}</span>` : ''}
-              <input type="text" data-ans="${cellData.char}" maxlength="1" ${isPrefilled} />
+              <input type="text" data-ans="${cellData.char}" data-r="${r}" data-c="${c}" maxlength="1" ${isPrefilled} />
             </div>
           `;
         } else {
@@ -396,22 +397,94 @@ const PuzzleHandlers = {
     `;
 
     const init = () => {
-      const cwInputs = Array.from(document.querySelectorAll('.cw-input:not(.prefilled)'));
-      cwInputs.forEach((input, index) => {
-        input.addEventListener('input', function() {
-          this.value = this.value.toUpperCase();
-          if (this.value.length === 1 && index < cwInputs.length - 1) {
-            cwInputs[index + 1].focus();
-          }
-        });
+      const cwInputs = Array.from(document.querySelectorAll('.cw-input'));
+      let currentDir = 'right'; // 기본 입력 방향 (가로)
 
-        input.addEventListener('keydown', function(e) {
-          if (e.key === 'Backspace' && this.value === '' && index > 0) {
-            cwInputs[index - 1].focus();
-          }
-        });
+      // 💡 현재 방향을 기준으로 다음 빈칸을 찾아주는 영리한 함수
+      const getNext = (r, c, dir, step = 1) => {
+        if (step > 6) return null; // 무한루프 방지
+        let nr = dir === 'down' ? r + step : r;
+        let nc = dir === 'right' ? c + step : c;
+        let next = document.querySelector(`.cw-input[data-r="${nr}"][data-c="${nc}"]`);
+        if (next) {
+          // 이미 채워진 힌트 칸(prefilled)이면 그 너머의 다음 칸을 찾음!
+          if (next.classList.contains('prefilled')) return getNext(r, c, dir, step + 1);
+          return next;
+        }
+        return null;
+      };
+
+      const getPrev = (r, c, dir, step = 1) => {
+        if (step > 6) return null;
+        let nr = dir === 'down' ? r - step : r;
+        let nc = dir === 'right' ? c - step : c;
+        let prev = document.querySelector(`.cw-input[data-r="${nr}"][data-c="${nc}"]`);
+        if (prev) {
+          if (prev.classList.contains('prefilled')) return getPrev(r, c, dir, step + 1);
+          return prev;
+        }
+        return null;
+      };
+
+      cwInputs.forEach(input => {
+        if (!input.classList.contains('prefilled')) {
+          
+          // 💡 1. 겹치는 칸(예: A)을 클릭할 때 가로/세로 방향 토글
+          input.addEventListener('click', function() {
+            let r = parseInt(this.dataset.r);
+            let c = parseInt(this.dataset.c);
+            let hasRight = getNext(r, c, 'right');
+            let hasDown = getNext(r, c, 'down');
+            
+            if (hasRight && hasDown) {
+              currentDir = currentDir === 'right' ? 'down' : 'right';
+            } else if (hasRight) {
+              currentDir = 'right';
+            } else if (hasDown) {
+              currentDir = 'down';
+            }
+          });
+
+          // 💡 2. 키보드 방향키 및 백스페이스 지원!
+          input.addEventListener('keydown', function(e) {
+            let r = parseInt(this.dataset.r);
+            let c = parseInt(this.dataset.c);
+            
+            if (e.key === 'ArrowRight') { currentDir = 'right'; let n = getNext(r, c, 'right'); if(n) { n.focus(); e.preventDefault(); } }
+            else if (e.key === 'ArrowDown') { currentDir = 'down'; let n = getNext(r, c, 'down'); if(n) { n.focus(); e.preventDefault(); } }
+            else if (e.key === 'ArrowLeft') { currentDir = 'right'; let n = getPrev(r, c, 'right'); if(n) { n.focus(); e.preventDefault(); } }
+            else if (e.key === 'ArrowUp') { currentDir = 'down'; let n = getPrev(r, c, 'down'); if(n) { n.focus(); e.preventDefault(); } }
+            else if (e.key === 'Backspace' && this.value === '') {
+              let p = getPrev(r, c, currentDir);
+              if (p) { p.focus(); e.preventDefault(); }
+            }
+          });
+
+          // 💡 3. 타이핑 시 자동 넘어가기 (방향 유지)
+          input.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+            if (this.value.length === 1) {
+              let r = parseInt(this.dataset.r);
+              let c = parseInt(this.dataset.c);
+              
+              let n = getNext(r, c, currentDir);
+              
+              // 현재 방향에 다음 칸이 없으면 반대 방향(가로<->세로) 탐색
+              if (!n) {
+                let altDir = currentDir === 'right' ? 'down' : 'right';
+                let altN = getNext(r, c, altDir);
+                if (altN) {
+                  currentDir = altDir;
+                  n = altN;
+                }
+              }
+              if (n) n.focus();
+            }
+          });
+        }
       });
 
+      // 하단 LOVE 슬롯 로직 (변경 없음)
       const loveInputs = document.querySelectorAll('.love-input');
       loveInputs.forEach((input, index) => {
         input.addEventListener('input', function() {
