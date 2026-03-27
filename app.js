@@ -179,20 +179,27 @@ function showWrongAnswer(textHtml) {
   const existing = document.getElementById('wrong-overlay');
   if (existing) existing.remove();
 
+  // 💡 [도움말 로직 개선] 오답을 냈을 때 숨겨져 있던 도움말 버튼이 스르륵 나타남!
+  const hintBtn = document.getElementById('modal-hint-btn');
+  if (hintBtn) {
+    hintBtn.style.opacity = '1';
+    hintBtn.style.pointerEvents = 'auto';
+  }
+
   const overlay = document.createElement('div');
   overlay.id = 'wrong-overlay';
   
-  // 💡 1. 화면 전체를 완벽하게 덮는 고정(fixed) 배경! (z-index 극강으로 높임)
+  // 1. 화면 전체를 완벽하게 덮는 고정(fixed) 배경! (z-index 극강으로 높임)
   overlay.style.cssText = `
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0, 0, 0, 0.6); /* 메인 모달창과의 구분을 위해 조금 더 어둡게 */
+    background: rgba(0, 0, 0, 0.6); 
     backdrop-filter: blur(5px); 
     -webkit-backdrop-filter: blur(5px);
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    z-index: 999999; /* 모든 것을 씹어먹는 최상단 Z-index */
+    z-index: 999999; 
   `;
   
-  // 💡 2. 화면 정중앙에 뜨는 우아한 메시지 상자
+  // 2. 화면 정중앙에 뜨는 우아한 메시지 상자
   overlay.innerHTML = `
     <div style="
       width: 80%; max-width: 320px; 
@@ -208,10 +215,8 @@ function showWrongAnswer(textHtml) {
     </div>
   `;
   
-  // 💡 3. 쪽지 내부가 아니라 HTML 문서의 뼈대(body)에 직접 붙여서 Z-index 충돌 완전 방지!
   document.body.appendChild(overlay);
 
-  // '다시 풀기'를 누르면 미니 모달만 싹 지워지고 퍼즐은 입력하던 상태 그대로 유지됨
   document.getElementById('close-wrong-btn').addEventListener('click', () => {
     overlay.remove();
   });
@@ -454,9 +459,9 @@ function renderPuzzle() {
 
   const { ui, init } = handler(puzzle, onComplete);
 
-  const hintHtml = chapterData.hint ? `
+const hintHtml = chapterData.hint ? `
     <div style="position: relative;">
-      <button id="modal-hint-btn" style="background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[도움말]</button>
+      <button id="modal-hint-btn" style="opacity: 0; pointer-events: none; transition: opacity 0.8s ease-in-out; background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[도움말]</button>
       <div id="hint-text" class="hidden hint-bubble">
         <strong>도움말:</strong><br><span style="margin-top:5px; display:inline-block;">${chapterData.hint}</span>
       </div>
