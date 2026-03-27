@@ -39,8 +39,9 @@ const PuzzleHandlers = {
 
   //  1. 유년기 : 기호 맞추기 자물쇠
   symbol_lock: (puzzle, onComplete) => {
+    // 💡 '빈칸(❔)'을 없애고 훼이크용 '케이크(🍰)'를 추가했습니다!
     const symbols = [
-      { id: '빈칸', icon: '❔' },
+      { id: '케이크', icon: '🍰' },
       { id: '닻', icon: '⚓' },
       { id: '갈매기', icon: '🕊️' },
       { id: '물결', icon: '🌊' },
@@ -49,13 +50,32 @@ const PuzzleHandlers = {
       { id: '해파리', icon: '🪼' }
     ];
 
-    let currentSelections = [0, 0, 0]; 
+    let currentSelections = [0, 0, 0];
 
+    // 💡 초기 상태를 '중복 없고 정답이 아닌 랜덤 기호'로 세팅하는 함수
+    const setRandomInitialState = () => {
+      while (true) {
+        // 0부터 6까지의 인덱스를 무작위로 섞어서 앞의 3개를 가져옵니다.
+        let pool = [0, 1, 2, 3, 4, 5, 6].sort(() => Math.random() - 0.5);
+        currentSelections = [pool[0], pool[1], pool[2]];
+        
+        // 현재 뽑힌 랜덤 기호들이 혹시라도 정답과 우연히 일치하는지 확인합니다.
+        const currentAns = currentSelections.map(idx => symbols[idx].id).join('-');
+        if (currentAns !== puzzle.answer) {
+          break; // 정답이 아니라면 이 랜덤 배열로 확정! (루프 탈출)
+        }
+      }
+    };
+    
+    // UI를 그리기 전에 랜덤 초기값을 먼저 세팅합니다.
+    setRandomInitialState();
+
+    // 💡 하드코딩된 아이콘 대신, 위에서 뽑힌 랜덤 인덱스의 아이콘을 보여줍니다.
     const ui = `
       <div class="symbol-lock-container">
-        <button class="symbol-btn" data-slot="0">${symbols[0].icon}</button>
-        <button class="symbol-btn" data-slot="1">${symbols[0].icon}</button>
-        <button class="symbol-btn" data-slot="2">${symbols[0].icon}</button>
+        <button class="symbol-btn" data-slot="0">${symbols[currentSelections[0]].icon}</button>
+        <button class="symbol-btn" data-slot="1">${symbols[currentSelections[1]].icon}</button>
+        <button class="symbol-btn" data-slot="2">${symbols[currentSelections[2]].icon}</button>
       </div>
     `;
 
@@ -64,6 +84,7 @@ const PuzzleHandlers = {
         btn.addEventListener('click', (e) => {
           const slot = parseInt(e.target.dataset.slot);
           
+          // 클릭할 때마다 다음 기호로 넘어감
           currentSelections[slot] = (currentSelections[slot] + 1) % symbols.length;
           
           e.target.innerText = symbols[currentSelections[slot]].icon;
