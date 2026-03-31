@@ -46,7 +46,7 @@ const STORY_DATA = [
   {
     chapter: 2,
     title: "2. 기사단 입단식",
-    bgm: "assets/bgm2.mp3",
+    bgm: "assets/bgm2_2.mp3",
     scripts: [
       "시간이 흘러 사관학교를 졸업한 마야.",
       "파도를 다루는 능력과 더불어, 부단한 노력 끝에 파도 기사단에 입단하게 되었다.",
