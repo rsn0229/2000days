@@ -1174,9 +1174,11 @@ if (userAnswer === puzzle.answer) {
       </div>
       
       <div class="address-note">
-        <div style="color:#8b6508; font-weight:bold; margin-bottom:5px;">📍:  Porto Flavia</div>
+        <a href="https://www.google.com/maps?ll=40.1209,9.0129&z=8&t=m&hl=ko&gl=US&mapclient=embed" target="_blank" class="map-link-btn">
+          Porto Flavia <span class="search-icon-blink">🔍</span>
+        </a>
 
-        Frazione Masua,<br>
+        <br>Frazione Masua,<br>
         <div class="postal-group">
           <input type="number" class="postal-input" maxlength="1">
           <input type="number" class="postal-input" maxlength="1">
@@ -1187,14 +1189,15 @@ if (userAnswer === puzzle.answer) {
         Masua CI, Italy
       </div>
     `;
+    // ... 이하 init 로직은 동일 ...
 
     const init = () => {
+      // ... (기존 init 로직 동일하게 유지) ...
       const inputs = document.querySelectorAll('.postal-input');
       const submitBtn = document.getElementById('submit-puzzle');
       submitBtn.innerText = "식장으로 향하기"; 
 
       inputs.forEach((input, index) => {
-        // 💡 12장도 'keyup' 이벤트로 넘어가게 통일!
         input.addEventListener('keyup', function(e) {
           if (e.key === 'Backspace') return;
           if (this.value.length >= 1 && index < inputs.length - 1) {
