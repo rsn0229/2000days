@@ -1880,3 +1880,33 @@ body {
 .header-group, .text-area-wrapper {
   transition: opacity 1s ease-in-out;
 }
+
+/* 🚀 12장: 지도 링크 버튼 (텍스트는 고정, 아이콘만 강조) */
+.map-link-btn {
+  display: inline-block;
+  color: #3e2723; /* 기존 텍스트 색상과 통일 */
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 16px;
+  margin-bottom: 10px;
+  padding: 4px 8px;
+  border-bottom: 1px dashed rgba(141, 110, 99, 0.4); /* 아주 연한 밑줄로 클릭 가능성 암시 */
+  transition: color 0.2s;
+}
+
+.map-link-btn:hover {
+  color: #bf360c; /* 호버 시에만 포인트 색상 */
+}
+
+/* 💡 돋보기 아이콘에만 적용되는 깜빡이 효과 */
+.search-icon-blink {
+  display: inline-block;
+  margin-left: 4px;
+  animation: mini-blink 1.5s infinite ease-in-out;
+  font-family: 'Noto Color Emoji', sans-serif;
+}
+
+@keyframes mini-blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.1); } /* 살짝 커지면서 투명해짐 */
+}
