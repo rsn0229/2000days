@@ -1,3 +1,13 @@
+/* 💡 1. style.css 최상단에 추가: 예비용 감성 명조 웹폰트(마루부리) 및 산하엽체 등록 */
+@import url('https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css');
+
+@font-face {
+    font-family: 'Sanhayeop';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_JAMO@1.0/Diphylleia-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-display: swap;
+}
+
 /* 💡 전체 텍스트 선택(드래그) 방지 
    (단, input과 textarea는 제외하여 크롬 커서 실종 버그 완벽 차단!) */
 *:not(input):not(textarea) {
@@ -80,6 +90,186 @@ body {
   border-bottom: 2px solid rgba(62, 39, 35, 0.2);
   display: inline-block; padding-bottom: 5px; opacity: 0.9;
 }
+
+/* --------------------------------------------------- */
+/* ✨ 시작 화면 전용 타이포그래피 스타일 (선명도 & 물결 개선본) */
+/* --------------------------------------------------- */
+
+/* ✨ 시작 화면 전용 타이포그래피 스타일 (선명도 & 물결 개선본) */
+.typo-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+  margin-bottom: 12px; 
+  padding: 15px 12px 14px 10px;
+  z-index: 1;
+  
+  /* 💡 글자(text)와 파도(SVG) 전체를 하나의 덩어리로 인식하여 부드럽게 감싸는 그림자 추가! */
+  filter: drop-shadow(0px 5px 10px rgba(255, 255, 255, 0.9));
+}
+
+
+/* 배경에 깔리는 은은한 나침반 문양 */
+.typo-bg-emblem {
+  position: absolute;
+  top: 46%;
+  left: 18%;
+  transform: translate(-50%, -50%);
+  width: 125px;
+  height: 125px;
+  color: #3b7ca1;
+  opacity: 0.7; /* 💡 기존 0.4에서 0.2로 낮춰 훨씬 연하고 아련하게 변경 */
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 💡 글자 주변에 차르르 흩뿌려지는 별가루 레이어 */
+.typo-stardust {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: #5c7c9e; /* 나침반, 물결과 완벽하게 일치하는 푸른빛 */
+  opacity: 0.7;
+  pointer-events: none; /* 클릭을 방해하지 않도록 통과시킴 */
+  z-index: 2; /* 글자 위로 은은하게 겹치도록 설정 */
+}
+
+/* 💡 글자 아래 및 오른쪽을 감싸는 우아한 물결 문양 */
+.typo-wave-ornament {
+  position: absolute;
+  
+  --wave-x-offset: 8px;   
+  --wave-y-offset: -10px;  
+  
+  bottom: var(--wave-y-offset);
+  left: var(--wave-x-offset);
+  
+  width: 105%;
+  height: 75px; 
+  /* 💡 '파도' 글자 중간 톤의 그라데이션 색상과 완벽하게 일치시킴 */
+  color: #345175; 
+  z-index: -1;
+  opacity: 0.7;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* 메인 타이포그래피 컨테이너 */
+.tt-title.hero-typo {
+  font-family: 'Sanhayeop', 'MaruBuri', 'Gowun Dodum', serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -1px;
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  opacity: 1; /* 💡 기존 .tt-title의 0.9 반투명 속성을 해제하여 선명도 회복 */
+  
+  /* 💡 빛 번짐(6px)을 줄이고 얇고 또렷한 그림자로 변경하여 흐릿함 해결 */
+  filter: drop-shadow(0px 1.5px 1.5px rgba(20, 32, 54, 0.22)) 
+          drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.75));
+}
+
+/* 첫째 줄 & 둘째 줄 레이아웃 */
+.hero-typo .line-1 {
+  display: inline-flex;
+  align-items: baseline;
+  align-self: flex-start;
+  padding-right: 10px;
+  position: relative;
+}
+
+.hero-typo .line-2 {
+  display: inline-flex;
+  align-items: baseline;
+  align-self: flex-end;
+  padding-left: 35px;
+  margin-top: 0px;
+  position: relative;
+}
+
+/* 어절 사이 띄어쓰기 간격 */
+.hero-typo .space {
+  display: inline-block;
+  width: 5px; 
+}
+
+/* 🎨 개별 글자 공통 스타일 */
+.hero-typo .char {
+  display: inline-block;
+  position: relative;
+  margin: 0 -0.5px;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 💡 첫째 줄 글자 색감 (배경에 묻히지 않도록 상단 명도를 낮추고 채도를 보강) */
+.hero-typo .line-1 .char {
+  background-image: linear-gradient(
+    180deg, 
+    #81cedb 0%, 
+    #3b7ca1 60%, 
+    #263e5c 100%
+  );
+}
+
+/* 둘째 줄 글자 색감 (깊은 심해 톤 유지) */
+.hero-typo .line-2 .char {
+  background-image: linear-gradient(
+    180deg, 
+    #41698a 0%, 
+    #345175 50%, 
+    #3e2f69 100%
+  );
+}
+/* 조사('의', '는') 크기 살짝 작게 */
+.hero-typo .char.sm {
+  font-size: 0.76em;
+  margin-left: 0px;
+}
+
+/* 글자별 높낮이와 크기 리듬감 */
+.hero-typo .c-항 { transform: translateY(2px) scale(1.3); }
+.hero-typo .c-해 { transform: translateY(-3px) scale(1.03); }
+.hero-typo .c-의 { transform: translateY(2px); }
+.hero-typo .c-마 { transform: translateY(1px) scale(1.03); }
+.hero-typo .c-침 { transform: translateY(-3px) scale(1.03); }
+.hero-typo .c-표 { transform: translateY(2px) scale(1.03); }
+.hero-typo .c-는 { transform: translateY(-1px); }
+
+.hero-typo .c-파 { transform: translateY(1px) scale(1.2); }
+.hero-typo .c-도 { transform: translateY(3px) scale(1.03);}
+.hero-typo .c-위 { transform: translateY(-2px); }
+.hero-typo .c-에 { transform: translateY(2px); }
+
+/* 십자별 고정 밝기 (간격이 좁아진 것에 맞춰 위치 미세 조정) */
+.hero-typo .line-1::before {
+  content: '✦';
+  position: absolute;
+  top: -8px;
+  left: 34px;
+  font-size: 12px;
+  -webkit-text-fill-color: #6a8bad;
+  opacity: 0.85;
+}
+
+.hero-typo .line-2::after {
+  content: '✦';
+  position: absolute;
+  top: -6px;
+  right: 22px;
+  font-size: 10px;
+  -webkit-text-fill-color: #3d5a7c;
+  opacity: 0.8;
+}
+
 .text-sm { font-size: 16px; margin: 0;}
 .sub-title { font-size: 12px; color: #5d4037; font-weight: bold; margin-bottom: 30px;}
 
