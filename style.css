@@ -231,7 +231,7 @@ body {
 }
 /* 조사('의', '는') 크기 살짝 작게 */
 .hero-typo .char.sm {
-  font-size: 0.76em;
+  font-size: 0.7em;
   margin-left: 0px;
 }
 
