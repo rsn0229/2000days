@@ -284,8 +284,8 @@ body {
   right: 0;
   color: #5088ad; 
   --x: 8px;
-  --y: 3.5px;
-  --rot: -5deg;
+  --y: 3px;
+  --rot: -0deg;
   --scale: 1;
 }
 
