@@ -140,7 +140,7 @@ body {
 .typo-wave-ornament {
   position: absolute;
   
-  --wave-x-offset: 8px;   
+  --wave-x-offset: 18px;   
   --wave-y-offset: -10px;  
   
   bottom: var(--wave-y-offset);
