@@ -135,7 +135,7 @@ body {
   transform: translate(-50%, -50%);
   width: 125px;
   height: 125px;
-  color: #3b7ca1;
+  color: #5f99ba;
   opacity: 0.7; /* 💡 기존 0.4에서 0.2로 낮춰 훨씬 연하고 아련하게 변경 */
   z-index: -1;
   pointer-events: none;
@@ -232,9 +232,9 @@ body {
 .hero-typo .line-1 .char {
   background-image: linear-gradient(
     180deg, 
-    #81cedb 0%, 
-    #3b7ca1 60%, 
-    #263e5c 100%
+    #7bdded 0%, 
+    #5f99ba 60%, 
+    #4d78a1 100%
   );
 }
 
@@ -242,8 +242,8 @@ body {
 .hero-typo .line-2 .char {
   background-image: linear-gradient(
     180deg, 
-    #41698a 0%, 
-    #345175 50%, 
+    #5d98ba 0%, 
+    #4d78a1 50%, 
     #3e2f69 100%
   );
 }
@@ -296,14 +296,14 @@ body {
 }
 
 .swash-파 {
-  width: 30px;
-  height: 30px;
+  width: 29px;
+  height: 33px;
   bottom: 0;
   left: 0;
   color: #282c54; 
-  --x: 39px;  
-  --y: 15px;
-  --rot: -5deg;
+  --x: 41px;  
+  --y: 16px;
+  --rot: -10deg;
   --scale: 1;
 }
 
@@ -314,7 +314,7 @@ body {
   top: 0px;
   right: 108px;
   font-size: 12px;
-  -webkit-text-fill-color: #6a8bad;
+  -webkit-text-fill-color: #5f99ba;
   opacity: 0.85;
 }
 
