@@ -249,12 +249,62 @@ body {
 .hero-typo .c-위 { transform: translateY(-2px); }
 .hero-typo .c-에 { transform: translateY(2px); }
 
+/* --------------------------------------------------- */
+/* ✨ 글자 획 연장 장식선 (Character Swash) 컨트롤러 */
+/* --------------------------------------------------- */
+.char-swash {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+  z-index: -1; /* 글자 획 뒤에서 자연스럽게 이어지도록 배치 */
+  transform-origin: center;
+  transform: translate(var(--x, 0px), var(--y, 0px)) 
+             rotate(var(--rot, 0deg)) 
+             scale(var(--scale, 1));
+}
+
+.swash-항 {
+  width: 34px;
+  height: 32px;
+  top: 0;
+  left: 0;
+  color: #62b0c4; 
+  --x: -24px;     
+  --y: -3px;  
+  --rot: -20deg;
+  --scale: 1.1;  
+}
+
+.swash-표 {
+  width: 48px;
+  height: 28px;
+  bottom: 0;
+  right: 0;
+  color: #5088ad; 
+  --x: 10px;
+  --y: 1px;
+  --rot: 1deg;
+  --scale: 1;
+}
+
+.swash-파 {
+  width: 30px;
+  height: 30px;
+  bottom: 0;
+  left: 0;
+  color: #282c54; 
+  --x: 40px;  
+  --y: 15px;
+  --rot: -5deg;
+  --scale: 1;
+}
+
 /* 십자별 고정 밝기 (간격이 좁아진 것에 맞춰 위치 미세 조정) */
 .hero-typo .line-1::before {
   content: '✦';
   position: absolute;
-  top: -8px;
-  left: 34px;
+  top: 0px;
+  right: 108px;
   font-size: 12px;
   -webkit-text-fill-color: #6a8bad;
   opacity: 0.85;
