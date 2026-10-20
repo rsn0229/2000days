@@ -39,44 +39,72 @@
   <svg class="typo-bg-emblem" viewBox="0 0 100 100">
     <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="0.6" stroke-dasharray="1 3"/>
     <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="0.5"/>
+    <!-- 상하좌우 메인 바늘 -->
     <path d="M50 2 L53 47 L98 50 L53 53 L50 98 L47 53 L2 50 L47 47 Z" fill="none" stroke="currentColor" stroke-width="0.5"/>
-    <path d="M18 18 L48 48 L82 18 L52 48 L82 82 L52 52 L18 82 L48 52 Z" fill="none" stroke="currentColor" stroke-width="0.4"/>
+    <!-- 💡 대각선 보조 바늘: 길이를 살짝 줄이고(18/82 -> 23/77), 안쪽 모서리를 십자 축(45.5/54.5)으로 벌려 메인 바늘만큼 폭 확보 -->
+    <path d="M23 23 L50 45.5 L77 23 L54.5 50 L77 77 L50 54.5 L23 77 L45.5 50 Z" fill="none" stroke="currentColor" stroke-width="0.45"/>
   </svg>
 
-  <!-- 💡 글자별 리듬감과 크기 조절을 위해 세분화된 타이틀 -->
+<!-- 💡 글자별 리듬감 및 획 연장 장식선(Swash)이 포함된 타이틀 -->
   <h1 class="tt-title hero-typo">
     <span class="line-1">
       <span class="char c-항">항</span><span class="char c-해">해</span><span class="char sm c-의">의</span>
       <span class="space"></span>
       <span class="char c-마">마</span><span class="char c-침">침</span><span class="char c-표">표</span><span class="char sm c-는">는</span>
+
+      <!-- ✨ 1. [좌상단 말림] '항' 왼쪽 위 가로획에서 말려 올라가는 장식선 (레퍼런스 '타' 상단 스타일) -->
+      <svg class="char-swash swash-항" viewBox="0 0 40 30">
+        <path d="M 35 21.5 C 25 22, 13 21, 10 14 C 7 7, 15 3, 20 8 C 22 10, 21 14, 18.5 13.5 C 19.5 12, 20.5 9.5, 19 7.8 C 15 4.5, 9 8, 11.8 13.5 C 14.5 19, 25 19.5, 35 19 Z" fill="currentColor"/>
+        <circle cx="18.2" cy="12.5" r="1.4" fill="currentColor"/>
+      </svg>
+
+      <!-- ✨ 2. [가로획 연장] '표' 아랫획에서 오른쪽으로 뻗으며 감기는 장식선 (레퍼런스 '포' 우측 스타일) -->
+      <svg class="char-swash swash-표" viewBox="0 0 60 35">
+        <path d="M 2 14.8 C 18 14.8, 34 19, 46 12 C 51 9, 52 3, 47 3 C 43 3, 42 8, 45 10 C 41 8.5, 42 2, 47.5 1.8 C 54 1.8, 53 10.5, 47 14 C 35 21.5, 18 17.5, 2 17.5 Z" fill="currentColor"/>
+        <circle cx="45.2" cy="9.2" r="1.3" fill="currentColor"/>
+      </svg>
     </span>
+
     <span class="line-2">
       <span class="char c-파">파</span><span class="char c-도">도</span>
       <span class="space"></span>
       <span class="char c-위">위</span><span class="char sm c-에">에</span>
+
+      <!-- ✨ 3. [세로획 하단 갈고리] '파' 세로획 끝에서 아래로 내려와 말리는 장식선 (레퍼런스 '타' 하단 스타일) -->
+      <svg class="char-swash swash-파" viewBox="0 0 35 35">
+        <path d="M 21.5 2 C 21.5 14, 21 24, 13 27 C 7 29, 4 23, 8 19 C 10 17, 13 18, 12.5 20 C 11.5 18.5, 9.5 18.5, 8.5 20 C 5.5 23.5, 8 27.5, 13.5 25.5 C 19.5 23, 24.2 14, 24.2 2 Z" fill="currentColor"/>
+        <circle cx="11.5" cy="20.2" r="1.4" fill="currentColor"/>
+      </svg>
+
     </span>
   </h1>
 
-  <!-- ✨ 글자 아래 및 오른쪽 여백을 채우는 나침반 스타일의 우아한 물결 문양 (SVG) -->
+<!-- ✨ 글자 아래 및 오른쪽 여백을 채우는 나침반 스타일의 우아한 물결 문양 (SVG) -->
   <svg class="typo-wave-ornament" viewBox="0 0 240 75">
     
-    <!-- 💡 메인 파도: 양끝 0px, 내부는 2px로 두께 차이를 주어 세리프체 느낌 구현 -->
+    <!-- 💡 메인 파도: 직선 구간(65, 122, 176)은 0.8px 실선으로 묶고, 코너에서만 대각선(X, Y 동시 오프셋)으로 짧게 비대칭 필압 구현 -->
     <path d="M 5 40 
-             C 45 75, 85 20, 125 50 
-             C 165 80, 180 35, 235 39 
-             C 180 37, 165 82, 125 52 
-             C 85 22, 45 77, 5 40 Z" 
-          fill="currentColor" opacity="0.5" />
-<!-- 💡 보조 파도: 전체 Y좌표를 -10px 하여 메인 파도와 더 위쪽에서 겹치도록 수정 -->
+             C 22 54.5, 46 54.5, 65 45.0 
+             C 82 36.5, 102 34.5, 122 49.0 
+             C 138 60.6, 158 63.5, 176 49.0 
+             C 190 37.7, 208 36.8, 235 39.0 
+             C 210 37.5, 193 41.2, 176 49.8 
+             C 162 67.0, 139 61.8, 122 49.8 
+             C 105 38.6, 81 37.6, 65 45.8 
+             C 49 53.8, 28 58.0, 5 40 Z" 
+          fill="currentColor" opacity="0.6" />
+
+    <!-- 💡 보조 파도: 동일하게 직선 구간(90, 150)은 얇게 유지하고, 코너 3곳에만 짧은 비대칭 악센트 적용 -->
     <path d="M 30 52 
-             C 70 85, 110 30, 150 55 
-             C 190 80, 215 50, 225 25
-             C 215 51.5, 190 81.5, 150 56.5
-             C 110 31.5, 70 86.5, 30 52 Z" 
+             C 46 65.0, 70 65.0, 90 53.0 
+             C 108 42.2, 128 40.5, 150 55.0 
+             C 170 68.2, 192 68.5, 225 25.0 
+             C 196 71.6, 171 69.2, 150 55.7 
+             C 131 44.0, 107 43.2, 90 53.7 
+             C 72 64.5, 51 68.0, 30 52 Z" 
           fill="currentColor" opacity="0.5" />
 
-<!-- ✨ 로맨스 판타지풍 별가루 (기존과 동일) -->
-    <!-- 💡 transform 속성을 추가하여 별을 아래로 15px 내림 -->
+    <!-- ✨ 로맨스 판타지풍 별가루 (기존과 동일) -->
     <path d="M 220 7 Q 220 15 228 15 Q 220 15 220 23 Q 220 15 212 15 Q 220 15 220 7 Z" fill="currentColor" opacity="0.5" transform="translate(0, 15)" />
     <path d="M 25 55 Q 25 60 30 60 Q 25 60 25 65 Q 25 60 20 60 Q 25 55 Z" fill="currentColor" opacity="0.7" />
     <path d="M 175 66 Q 175 70 179 70 Q 175 70 175 74 Q 175 70 171 70 Q 175 70 175 66 Z" fill="currentColor" opacity="0.5" />
