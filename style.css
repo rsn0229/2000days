@@ -46,19 +46,37 @@ body {
   width: 100%; height: 100%;
 }
 
-/* 🚀 메인 종이 컨테이너 (tt 코드 디자인 완벽 적용 + 고정 크기) */
+/* 🚀 메인 종이 컨테이너 (질감 및 그림자 디테일 업그레이드) */
 .paper-container {
   position: relative;
   width: 320px;       /* 고정 가로폭 */
   height: 500px;      /* 💡 고정 높이 (내용이 적어도 종이 크기 유지) */
   padding: 40px 30px; 
   background-color: #f2eee5;
+  
+  /* ✨ 3번 제안: 종이 질감(Noise) 및 자연스러운 그라데이션 추가 */
   background-image: 
+    /* 1. 미세한 노이즈 질감 (SVG 코드를 배경으로 직접 삽입) */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E"),
+    /* 2. 세로 접힌 자국 */
     linear-gradient(to right, transparent 0%, rgba(0,0,0,0.06) 49.5%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 51%, transparent 100%),
+    /* 3. 가로 접힌 자국 */
     linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.06) 49.5%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.1) 51%, transparent 100%),
+    /* 4. 대각선 직물 패턴 (기존) */
     repeating-linear-gradient(45deg, rgba(161, 136, 127, 0.03) 0px, rgba(161, 136, 127, 0.03) 1px, transparent 1px, transparent 3px),
-    radial-gradient(circle at center, transparent 40%, rgba(62, 39, 35, 0.1) 100%);
-  box-shadow: 1px 2px 5px rgba(0,0,0,0.15), 0 15px 35px rgba(0,0,0,0.25);
+    /* 5. 가장자리 어두워지는 비네팅 (기존보다 살짝 더 깊게) */
+    radial-gradient(circle at center, transparent 30%, rgba(62, 39, 35, 0.15) 100%);
+  
+  /* 💡 노이즈가 배경색에 자연스럽게 스며들도록 블렌드 모드 적용 */
+  background-blend-mode: multiply, normal, normal, normal, multiply;
+
+  /* 💡 그림자를 검정색에서 '진한 고동색(62,39,35)' 계열로 변경하여 전체적인 톤앤매너를 따뜻하게 맞추고, 
+     안쪽 그림자(inset)를 추가해 종이 가장자리가 살짝 탄 듯한(에이징) 입체감 부여 */
+  box-shadow: 
+    inset 0 0 20px rgba(161, 136, 127, 0.15),
+    1px 2px 5px rgba(62, 39, 35, 0.15), 
+    0 15px 35px rgba(62, 39, 35, 0.25);
+    
   text-align: center; 
   /* transform: rotate(-1.5deg);  삐딱한 감성 */
   border-radius: 5px 255px 3px 25px / 255px 5px 225px 5px;
