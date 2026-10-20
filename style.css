@@ -256,7 +256,9 @@ body {
   position: absolute;
   pointer-events: none;
   overflow: visible;
-  z-index: -1; /* 글자 획 뒤에서 자연스럽게 이어지도록 배치 */
+  z-index: -1;
+  /* 💡 100% 등 작은 배율에서도 브라우저가 선 위치를 임의로 뭉개지 않도록 정밀 렌더링 강제 */
+  shape-rendering: geometricPrecision; 
   transform-origin: center;
   transform: translate(var(--x, 0px), var(--y, 0px)) 
              rotate(var(--rot, 0deg)) 
@@ -281,9 +283,9 @@ body {
   bottom: 0;
   right: 0;
   color: #5088ad; 
-  --x: 10px;
-  --y: 2px;
-  --rot: -2deg;
+  --x: 8px;
+  --y: 3.5px;
+  --rot: -5deg;
   --scale: 1;
 }
 
