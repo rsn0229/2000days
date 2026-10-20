@@ -411,7 +411,8 @@ body {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  z-index: 10000; display: none; justify-content: center; align-items: center;
+  z-index: 10005; /* 💡 엔딩 크레딧(10000)보다 위에 뜨도록 10005로 수정 */
+  display: none; justify-content: center; align-items: center;
   opacity: 0; transition: opacity 0.3s;
 }
 #custom-modal-overlay.open { display: flex; opacity: 1; }

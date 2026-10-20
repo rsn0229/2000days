@@ -36,10 +36,12 @@
 let currentChapterIdx = parseInt(localStorage.getItem("chapter")) || 0;
 let currentScriptIdx = 0;
 let userNickname = localStorage.getItem("nickname") || ""; 
+let isStoryMode = localStorage.getItem("storyMode") === "true"; // 💡 스토리모드 상태 저장
 let bgmAudio = new Audio();
 let typingInterval;
 let isTyping = false;
 let fadeInterval = null; 
+let onModalCloseCallback = null; // 💡 모달 X버튼 클릭 시 실행할 콜백
 
 const DOM = {
   startSection: document.getElementById('start-section'),
@@ -66,95 +68,122 @@ document.addEventListener('click', async (e) => {
       creditBtn.innerText = `준비하는 중${dots}`;
     }, 400); 
 
-try {
-       const data = await getCredits();
+    try {
+      const data = await getCredits();
 
-       if (data && data.length > 0) {
-         let myIndex = -1;
+      if (data && data.length > 0) {
+        // 일반 모드일 때만 내 닉네임을 찾아 맨 뒤로 재배치
+        if (!isStoryMode) {
+          let myIndex = -1;
 
-         for (let i = data.length - 1; i >= 0; i--) {
-           if (data[i] === userNickname || data[i].startsWith(userNickname + " (")) {
-             myIndex = i;
-             break;
-           }
-         }
+          for (let i = data.length - 1; i >= 0; i--) {
+            if (data[i] === userNickname || data[i].startsWith(userNickname + " (")) {
+              myIndex = i;
+              break;
+            }
+          }
 
-         if (myIndex !== -1) {
-           data.splice(myIndex, 1); 
-         } 
+          if (myIndex !== -1) {
+            data.splice(myIndex, 1); 
+          } 
+        }
 
-         data.push(`and <span class="gold-name">${userNickname}</span>`);
-         
-         nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
-       } else {
-         nameListContainer.innerHTML = "<p style='color:#888;'>첫 번째 클리어가 되어주셔서 감사합니다.</p>";
-       }
+        // 💡 스토리모드일 때는 소중한 분 대신 강조색이 적용된 YOU 출력
+        const creditTarget = isStoryMode ? "YOU" : userNickname;
+        data.push(`and <span class="gold-name">${creditTarget}</span>`);
+        
+        nameListContainer.innerHTML = data.map(name => `<div class="credit-name">${name}</div>`).join('');
+      } else {
+        nameListContainer.innerHTML = "<p style='color:#888;'>첫 번째 클리어가 되어주셔서 감사합니다.</p>";
+      }
 
     } catch (error) {
-       console.error(error);
-       nameListContainer.innerHTML = "<p style='color:#888;'>기록을 불러오지 못했습니다.</p>";
+      console.error(error);
+      nameListContainer.innerHTML = "<p style='color:#888;'>기록을 불러오지 못했습니다.</p>";
     } finally {
-       clearInterval(loadingInterval);
-       creditBtn.innerText = "🎬 엔딩 크레딧"; 
+      clearInterval(loadingInterval);
+      creditBtn.innerText = "🎬 엔딩 크레딧"; 
     }
 
-    if (creditOverlay) creditOverlay.classList.add('show');
+    // 💡 엔딩 크레딧 화면 표시 및 스크롤 애니메이션 시작 함수
+    const startEndingCredits = () => {
+      if (creditOverlay) creditOverlay.classList.add('show');
 
-    setTimeout(() => {
-      const creditContent = document.getElementById('credit-content');
-      const restartBtn = document.getElementById('restart-btn');
-      
-      if (creditContent && restartBtn) {
+      setTimeout(() => {
+        const creditContent = document.getElementById('credit-content');
+        const restartBtn = document.getElementById('restart-btn');
         
-        const scrollAnim = creditContent.animate([
-          { transform: 'translateY(0)' },
-          { transform: 'translateY(-100%)' }
-        ], {
-          duration: 19000,
-          fill: 'forwards',
-          easing: 'linear'
-        });
-
-        const btnAnim = restartBtn.animate([
-          { opacity: 0 },
-          { opacity: 1 }
-        ], {
-          duration: 2000,
-          delay: 19000,
-          fill: 'forwards',
-          easing: 'ease-in-out'
-        });
-
-        btnAnim.finished.then(() => {
-          restartBtn.style.pointerEvents = 'all';
-        });
-
-        scrollAnim.finished.then(() => {
-          bgmAudio.loop = false;
-        });
-
-        let isFast = false;
-        const updateSpeed = () => {
-          const rate = isFast ? 4.0 : 1.0;
+        if (creditContent && restartBtn) {
           
-          if (typeof scrollAnim.updatePlaybackRate === 'function') {
-            scrollAnim.updatePlaybackRate(rate);
-            btnAnim.updatePlaybackRate(rate);
-          } else {
-            scrollAnim.playbackRate = rate;
-            btnAnim.playbackRate = rate;
-          }
-        };
+          const scrollAnim = creditContent.animate([
+            { transform: 'translateY(0)' },
+            { transform: 'translateY(-100%)' }
+          ], {
+            duration: 19000,
+            fill: 'forwards',
+            easing: 'linear'
+          });
 
-        creditOverlay.addEventListener('mousedown', () => { isFast = true; updateSpeed(); });
-        creditOverlay.addEventListener('mouseup', () => { isFast = false; updateSpeed(); });
-        creditOverlay.addEventListener('mouseleave', () => { isFast = false; updateSpeed(); });
-        
-        creditOverlay.addEventListener('touchstart', () => { isFast = true; updateSpeed(); }, { passive: true });
-        creditOverlay.addEventListener('touchend', () => { isFast = false; updateSpeed(); }, { passive: true });
-        creditOverlay.addEventListener('touchcancel', () => { isFast = false; updateSpeed(); }, { passive: true });
-      }
-    }, 1500);
+          const btnAnim = restartBtn.animate([
+            { opacity: 0 },
+            { opacity: 1 }
+          ], {
+            duration: 2000,
+            delay: 19000,
+            fill: 'forwards',
+            easing: 'ease-in-out'
+          });
+
+          btnAnim.finished.then(() => {
+            restartBtn.style.pointerEvents = 'all';
+          });
+
+          scrollAnim.finished.then(() => {
+            bgmAudio.loop = false;
+          });
+
+          let isFast = false;
+          const updateSpeed = () => {
+            const rate = isFast ? 4.0 : 1.0;
+            
+            if (typeof scrollAnim.updatePlaybackRate === 'function') {
+              scrollAnim.updatePlaybackRate(rate);
+              btnAnim.updatePlaybackRate(rate);
+            } else {
+              scrollAnim.playbackRate = rate;
+              btnAnim.playbackRate = rate;
+            }
+          };
+
+          creditOverlay.addEventListener('mousedown', () => { isFast = true; updateSpeed(); });
+          creditOverlay.addEventListener('mouseup', () => { isFast = false; updateSpeed(); });
+          creditOverlay.addEventListener('mouseleave', () => { isFast = false; updateSpeed(); });
+          
+          creditOverlay.addEventListener('touchstart', () => { isFast = true; updateSpeed(); }, { passive: true });
+          creditOverlay.addEventListener('touchend', () => { isFast = false; updateSpeed(); }, { passive: true });
+          creditOverlay.addEventListener('touchcancel', () => { isFast = false; updateSpeed(); }, { passive: true });
+        }
+      }, 1500);
+    };
+
+    // 💡 이미 스토리모드인 경우 코드 안내 모달을 띄우지 않고 바로 엔딩 크레딧으로 이동
+    if (isStoryMode) {
+      startEndingCredits();
+    } else {
+      const codeNoticeHtml = `
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 220px; text-align: center;">
+          <div style="font-family: 'Courier New', monospace; font-size: 22px; font-weight: bold; color: #bf360c; letter-spacing: 3px; background: rgba(141, 110, 99, 0.12); padding: 10px 20px; border-radius: 6px; border: 1px dashed #a1887f; margin-bottom: 20px;">
+            STORY1221
+          </div>
+          <p style="font-size: 14px; color: #3e2723; line-height: 1.6; margin: 0; word-break: keep-all;">
+            퍼즐 없이 스토리만 감상하고 싶다면<br>위 코드를 호칭란에 입력하세요
+          </p>
+        </div>
+      `;
+
+      onModalCloseCallback = startEndingCredits;
+      showModal(codeNoticeHtml, true);
+    }
   }
 });
 
@@ -175,11 +204,9 @@ function showModal(htmlContent, showCloseBtn = true) {
 
 // 💡 퍼즐 상태를 유지하면서 오답을 알려주는 미니 모달창 함수
 function showWrongAnswer(textHtml) {
-  // 혹시 이미 떠있다면 중복 방지를 위해 제거
   const existing = document.getElementById('wrong-overlay');
   if (existing) existing.remove();
 
-  // 💡 [도움말 로직 개선] 오답을 냈을 때 숨겨져 있던 도움말 버튼이 스르륵 나타남!
   const hintBtn = document.getElementById('modal-hint-btn');
   if (hintBtn) {
     hintBtn.style.opacity = '1';
@@ -189,7 +216,6 @@ function showWrongAnswer(textHtml) {
   const overlay = document.createElement('div');
   overlay.id = 'wrong-overlay';
   
-  // 1. 화면 전체를 완벽하게 덮는 고정(fixed) 배경! (z-index 극강으로 높임)
   overlay.style.cssText = `
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0, 0, 0, 0.6); 
@@ -199,7 +225,6 @@ function showWrongAnswer(textHtml) {
     z-index: 999999; 
   `;
   
-  // 2. 화면 정중앙에 뜨는 우아한 메시지 상자
   overlay.innerHTML = `
     <div style="
       width: 80%; max-width: 320px; 
@@ -224,6 +249,11 @@ function showWrongAnswer(textHtml) {
 
 function hideModal() {
   DOM.modalOverlay.classList.remove('open');
+  if (typeof onModalCloseCallback === 'function') {
+    const callback = onModalCloseCallback;
+    onModalCloseCallback = null;
+    callback();
+  }
 }
 
 DOM.modalCloseBtn.addEventListener('click', hideModal);
@@ -297,6 +327,39 @@ if (userNickname !== "") {
       showToast("호칭을 입력해 주세요!");
       return; 
     }
+
+    // 💡 첫 진입 시 호칭란에 STORY1221 입력 시 스토리모드 확인 모달 표시
+    if (inputVal.toUpperCase() === "STORY1221") {
+      const storyModeHtml = `
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 220px; text-align: center;">
+          <h3 class="tt-title">스토리모드</h3>
+          <p style="font-size: 14px; margin: 20px 0; line-height: 1.6;">퍼즐 없이 스크립트만 감상합니다.<br>계속할까요?</p>
+          <div>
+            <button id="confirm-story-btn" class="custom-btn">네</button>
+            <button id="cancel-story-btn" class="custom-btn" style="margin-left: 10px;">아니오</button>
+          </div>
+        </div>
+      `;
+      showModal(storyModeHtml, false);
+
+      document.getElementById('confirm-story-btn').addEventListener('click', () => {
+        hideModal();
+        isStoryMode = true;
+        localStorage.setItem("storyMode", "true");
+        userNickname = "소중한 분";
+        localStorage.setItem("nickname", userNickname);
+
+        DOM.startSection.classList.add('hidden');
+        DOM.gameSection.classList.remove('hidden');
+        loadChapter(currentChapterIdx);
+      });
+
+      document.getElementById('cancel-story-btn').addEventListener('click', () => {
+        hideModal();
+      });
+      return;
+    }
+
     userNickname = inputVal;
     localStorage.setItem("nickname", userNickname);
     
@@ -329,6 +392,7 @@ function loadChapter(idx) {
       localStorage.removeItem("chapter");
       localStorage.removeItem("nickname");
       localStorage.removeItem("isSaved");
+      localStorage.removeItem("storyMode");
       location.reload(); 
     });
     return;
@@ -397,8 +461,25 @@ function showScript() {
   }
 
   let rawText = scripts[currentScriptIdx].trim(); 
+
+  // 💡 스토리모드일 때 첫 챕터(0)와 마지막 챕터(12)의 퍼즐 직전 안내 문구 건너뛰기
+  if (
+    isStoryMode &&
+    (currentChapterIdx === 0 || currentChapterIdx === 12) &&
+    scripts[currentScriptIdx + 1] &&
+    scripts[currentScriptIdx + 1].trim() === "[PUZZLE]"
+  ) {
+    currentScriptIdx += 2;
+    showScript();
+    return;
+  }
   
   if (rawText === "[PUZZLE]") {
+    if (isStoryMode) {
+      currentScriptIdx++;
+      showScript();
+      return;
+    }
     renderPuzzle();
     return;
   }
@@ -459,7 +540,7 @@ function renderPuzzle() {
 
   const { ui, init } = handler(puzzle, onComplete);
 
-const hintHtml = chapterData.hint ? `
+  const hintHtml = chapterData.hint ? `
     <div style="position: relative;">
       <button id="modal-hint-btn" style="opacity: 0; pointer-events: none; transition: opacity 0.8s ease-in-out; background: none; border: none; color: #8d6e63; cursor: pointer; font-size: 13px; font-family: inherit; font-weight: bold;">[도움말]</button>
       <div id="hint-text" class="hidden hint-bubble">
@@ -508,6 +589,7 @@ document.getElementById('reset-btn').addEventListener('click', () => {
     localStorage.removeItem("chapter");
     localStorage.removeItem("nickname");
     localStorage.removeItem("isSaved");
+    localStorage.removeItem("storyMode");
     location.reload(); 
   });
 
@@ -533,6 +615,7 @@ document.addEventListener('click', (e) => {
         localStorage.removeItem("chapter");
         localStorage.removeItem("nickname");
         localStorage.removeItem("isSaved"); 
+        localStorage.removeItem("storyMode");
         location.reload(); 
       } else {
         bgmAudio.volume = newVol;
@@ -547,10 +630,27 @@ function showFinale() {
   const overlay = document.getElementById('finale-overlay');
   if (overlay) overlay.classList.add('blackout');
 
-  const finaleNameEl = document.getElementById('finale-player-name');
-  if (finaleNameEl) finaleNameEl.innerText = userNickname || '소중한 분';
+  // 💡 스토리모드일 때는 볼드체 없이 '소중한 분을'로 출력하고, 일반 모드일 때는 볼드체 + '님을' 출력
+  const invitationTextEl = document.querySelector('.invitation-text');
+  if (invitationTextEl) {
+    if (isStoryMode) {
+      invitationTextEl.innerHTML = `
+        닻과 파도가 서로의 곁에 스며든 날,<br>
+        소중한 분을<br>
+        눈부신 출항의 자리에 초대합니다.<br>
+        항해의 첫 물결을 함께해 주세요.
+      `;
+    } else {
+      invitationTextEl.innerHTML = `
+        닻과 파도가 서로의 곁에 스며든 날,<br>
+        <strong id="finale-player-name">${userNickname || '소중한 분'}</strong> 님을<br>
+        눈부신 출항의 자리에 초대합니다.<br>
+        항해의 첫 물결을 함께해 주세요.
+      `;
+    }
+  }
 
-  if (typeof saveNickname === 'function' && userNickname) {
+  if (typeof saveNickname === 'function' && userNickname && !isStoryMode) {
     if (!localStorage.getItem('isSaved')) {
       saveNickname(userNickname);
       localStorage.setItem('isSaved', 'true');
