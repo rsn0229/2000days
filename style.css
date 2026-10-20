@@ -208,7 +208,7 @@ body {
   align-items: baseline;
   align-self: flex-end;
   padding-left: 35px;
-  margin-top: 0px;
+  margin-top: -2px;
   position: relative;
 }
 
@@ -262,7 +262,7 @@ body {
 .hero-typo .c-표 { transform: translateY(2px) scale(1.03); }
 .hero-typo .c-는 { transform: translateY(-1px); }
 
-.hero-typo .c-파 { transform: translateY(1px) scale(1.2); }
+.hero-typo .c-파 { transform: translateY(1px) scale(1.25); }
 .hero-typo .c-도 { transform: translateY(3px) scale(1.03);}
 .hero-typo .c-위 { transform: translateY(-2px); }
 .hero-typo .c-에 { transform: translateY(2px); }
@@ -281,18 +281,6 @@ body {
   transform: translate(var(--x, 0px), var(--y, 0px)) 
              rotate(var(--rot, 0deg)) 
              scale(var(--scale, 1));
-}
-
-.swash-항 {
-  width: 34px;
-  height: 32px;
-  top: 0;
-  left: 0;
-  color: #5e9dad; 
-  --x: -25px;     
-  --y: -3px;  
-  --rot: -18deg;
-  --scale: 1.1;  
 }
 
 .swash-표 {
