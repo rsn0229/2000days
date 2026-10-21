@@ -249,7 +249,7 @@ question: "[가로 열쇠]\n2. 사파이어의 주된 색상\n4. 닻을 지키�
   },
   {
     chapter: 12,
-    title: "12. 바다 앞의 서약",
+    title: "12. 항해의 마침표",
     bgm: "assets/bgm6.mp3",
     scripts: [
       "마침내 결혼식 날이 다가왔다.",
