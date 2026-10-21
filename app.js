@@ -637,15 +637,15 @@ function showFinale() {
       invitationTextEl.innerHTML = `
         닻과 파도가 서로의 곁에 스며든 날,<br>
         소중한 분을<br>
-        눈부신 출항의 자리에 초대합니다.<br>
-        항해의 첫 물결을 함께해 주세요.
+        뜻깊은 자리에 초대합니다.<br>
+        항해의 마침표를 함께해 주세요.
       `;
     } else {
       invitationTextEl.innerHTML = `
         닻과 파도가 서로의 곁에 스며든 날,<br>
         <strong id="finale-player-name">${userNickname || '소중한 분'}</strong> 님을<br>
-        눈부신 출항의 자리에 초대합니다.<br>
-        항해의 첫 물결을 함께해 주세요.
+        뜻깊은 자리에 초대합니다.<br>
+        항해의 마침표를 함께해 주세요.
       `;
     }
   }
