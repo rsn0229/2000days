@@ -264,7 +264,7 @@ question: "[가로 열쇠]\n2. 사파이어의 주된 색상\n4. 닻을 지키�
     puzzle: {
       type: "finale_map",
       question: "",
-      answer: "09016"
+      answer: "09045"
     }
   }
 ];

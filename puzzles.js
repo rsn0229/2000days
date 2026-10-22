@@ -1174,11 +1174,11 @@ if (userAnswer === puzzle.answer) {
       </div>
       
       <div class="address-note">
-        <a href="https://www.google.com/maps?ll=40.1209,9.0129&z=8&t=m&hl=ko&gl=US&mapclient=embed" target="_blank" class="map-link-btn">
-          Porto Flavia <span class="search-icon-blink">🔍</span>
+        <a href="https://maps.app.goo.gl/999R4pXd2UCf1b5v9" target="_blank" class="map-link-btn">
+          Villa Riví <span class="search-icon-blink">🔍</span>
         </a>
 
-        <br>Frazione Masua,<br>
+        <br>Via Ibiza, 36,<br>
         <div class="postal-group">
           <input type="number" class="postal-input" maxlength="1">
           <input type="number" class="postal-input" maxlength="1">
@@ -1186,13 +1186,11 @@ if (userAnswer === puzzle.answer) {
           <input type="number" class="postal-input" maxlength="1">
           <input type="number" class="postal-input" maxlength="1">
         </div>
-        Masua CI, Italy
+        Quartu Sant'Elena CA, Italy
       </div>
     `;
-    // ... 이하 init 로직은 동일 ...
 
     const init = () => {
-      // ... (기존 init 로직 동일하게 유지) ...
       const inputs = document.querySelectorAll('.postal-input');
       const submitBtn = document.getElementById('submit-puzzle');
       submitBtn.innerText = "식장으로 향하기"; 
@@ -1222,7 +1220,8 @@ if (userAnswer === puzzle.answer) {
         if (userAnswer === puzzle.answer) {
           onComplete(); 
         } else {
-          showWrongAnswer("구글 맵에서 Porto Flavia의 정확한 주소를 다시 확인해 보세요."); 
+          // 🐛 오답 시 뜨는 안내 문구도 Villa Riví로 변경!
+          showWrongAnswer("구글 맵에서 Villa Riví의 정확한 주소를 다시 확인해 보세요."); 
         }
       });
     };
