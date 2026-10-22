@@ -1174,8 +1174,8 @@ if (userAnswer === puzzle.answer) {
       </div>
       
       <div class="address-note">
-        <a href="https://maps.google.com/?q=Sardegna,Italy&ll=40.1209,9.0129&z=8" target="_blank" class="map-link-btn">
-          Cala Mariolu<span class="search-icon-blink">🔍</span>
+        <a href="https://maps.google.com/?ll=40.1209,9.0129&z=8" target="_blank" class="map-link-btn">
+          Cala Mariolu <span class="search-icon-blink">🔍</span>
         </a>
 
         <br>Ispuligidenìe<br>
