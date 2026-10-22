@@ -728,7 +728,7 @@ const PuzzleHandlers = {
           } else {
              orderBoard.style.background = 'rgba(76, 175, 80, 0.1)';
              orderBoard.style.color = '#388e3c';
-             orderBoard.innerHTML = `<strong>"✨<br>정말 맛있어요, 한 잔 더 주문할래요!"</strong>`;
+             orderBoard.innerHTML = `<strong>"정말 맛있어요, 한 잔 더 주문할래요!"</strong>`;
              
              submitBtn.disabled = true;
 
@@ -742,7 +742,7 @@ const PuzzleHandlers = {
         } else {
           orderBoard.style.background = 'rgba(244, 67, 54, 0.1)';
           orderBoard.style.color = '#d32f2f';
-          orderBoard.innerHTML = `<strong>"💦<br>음... 맛이 좀 이상해요..."</strong>`;
+          orderBoard.innerHTML = `<strong>"음... 맛이 좀 이상해요..."</strong>`;
 
           currentMix = [];
           updateGlass();
@@ -1109,7 +1109,7 @@ if (userAnswer === puzzle.answer) {
         
         status.style.color = '#388e3c';
         status.style.background = 'rgba(76, 175, 80, 0.1)';
-        status.innerText = "✨ 기억한 순서대로 보석을 터치하세요!";
+        status.innerText = "기억한 순서대로 보석을 터치하세요!";
       };
 
       submitBtn.addEventListener('click', () => {
@@ -1136,7 +1136,7 @@ if (userAnswer === puzzle.answer) {
               isPlayerTurn = false;
               
               if (currentRound === maxRounds) {
-                status.innerText = "💍 완성! 반지가 찬란하게 빛납니다.";
+                status.innerText = "완성! 반지가 찬란하게 빛납니다.";
                 setTimeout(() => onComplete(), 1200);
               } else {
                 currentRound++;
@@ -1175,10 +1175,10 @@ if (userAnswer === puzzle.answer) {
       
       <div class="address-note">
         <a href="https://maps.app.goo.gl/999R4pXd2UCf1b5v9" target="_blank" class="map-link-btn">
-          Villa Riví <span class="search-icon-blink">🔍</span>
+          Cala Mariolu<span class="search-icon-blink">🔍</span>
         </a>
 
-        <br>Via Ibiza, 36,<br>
+        <br>Ispuligidenìe<br>
         <div class="postal-group">
           <input type="number" class="postal-input" maxlength="1">
           <input type="number" class="postal-input" maxlength="1">
@@ -1186,7 +1186,7 @@ if (userAnswer === puzzle.answer) {
           <input type="number" class="postal-input" maxlength="1">
           <input type="number" class="postal-input" maxlength="1">
         </div>
-        Quartu Sant'Elena CA, Italy
+        Baunei OG, Sardegna, Italy
       </div>
     `;
 
@@ -1220,8 +1220,7 @@ if (userAnswer === puzzle.answer) {
         if (userAnswer === puzzle.answer) {
           onComplete(); 
         } else {
-          // 🐛 오답 시 뜨는 안내 문구도 Villa Riví로 변경!
-          showWrongAnswer("구글 맵에서 Villa Riví의 정확한 주소를 다시 확인해 보세요."); 
+          showWrongAnswer("구글 맵에서 Cala Mariolu의 정확한 주소를 다시 확인해 보세요."); 
         }
       });
     };
