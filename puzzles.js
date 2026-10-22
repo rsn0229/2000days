@@ -728,7 +728,7 @@ const PuzzleHandlers = {
           } else {
              orderBoard.style.background = 'rgba(76, 175, 80, 0.1)';
              orderBoard.style.color = '#388e3c';
-             orderBoard.innerHTML = `<strong>"정말 맛있어요, 한 잔 더 주문할래요!"</strong>`;
+             orderBoard.innerHTML = `<strong>"정말 맛있어요,<br>한 잔 더 주문할래요!"</strong>`;
              
              submitBtn.disabled = true;
 
@@ -742,7 +742,7 @@ const PuzzleHandlers = {
         } else {
           orderBoard.style.background = 'rgba(244, 67, 54, 0.1)';
           orderBoard.style.color = '#d32f2f';
-          orderBoard.innerHTML = `<strong>"음... 맛이 좀 이상해요..."</strong>`;
+          orderBoard.innerHTML = `<strong>"음... 맛이 좀 이상해요...<br>다시 만들어 주실래요?"</strong>`;
 
           currentMix = [];
           updateGlass();
